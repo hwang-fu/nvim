@@ -2,7 +2,7 @@
 
 | Key | Mode | Action |
 |-----|------|--------|
-| Ctrl-LeftClick | n | Smart jump (see below). Back: Ctrl-O |
+| `Ctrl-LeftClick` | n | Smart jump (see below). Back: Ctrl-O |
 
 Smart jump behavior (VSCode-style, 2026-08-15):
 

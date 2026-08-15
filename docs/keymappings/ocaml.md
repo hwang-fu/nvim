@@ -5,14 +5,14 @@ below read as typed: `\c` means backslash then c.
 
 | Key | Action |
 |-----|--------|
-| \c | Construct: fill the typed hole under the cursor from valid substitutions |
-| \n / \p | Jump to next / previous typed hole |
-| \s | Switch between .ml and .mli |
-| \i | Infer the interface of the matching .ml (run from the .mli buffer) |
-| \t | Type-enclosing session; then Up/Down grow/shrink the expression, Right/Left raise/lower type verbosity |
-| \j | Syntax-aware jump (fun / let / match / module targets) |
-| \pn / \pp | Next / previous phrase (top-level item) |
-| \r | Toggle the project-scoped utop REPL float |
+| `\c` | Construct: fill the typed hole under the cursor from valid substitutions |
+| `\n` / `\p` | Jump to next / previous typed hole |
+| `\s` | Switch between .ml and .mli |
+| `\i` | Infer the interface of the matching .ml (run from the .mli buffer) |
+| `\t` | Type-enclosing session; then Up/Down grow/shrink the expression, Right/Left raise/lower type verbosity |
+| `\j` | Syntax-aware jump (fun / let / match / module targets) |
+| `\pn` / `\pp` | Next / previous phrase (top-level item) |
+| `\r` | Toggle the project-scoped utop REPL float |
 
 (\p waits timeoutlen before firing since it prefixes \pn / \pp -
 upstream's default, kept as-is.)

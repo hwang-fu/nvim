@@ -12,16 +12,16 @@ place, dd deletes - PERMANENTLY, yy+p copies). Buffer-local:
 
 | Key | Action |
 |-----|--------|
-| Enter | Open entry (see sidebar behavior above); on the `../` first row: go up one directory (NERDTree-style, added 2026-08-14) |
-| - or .. | Go up one directory |
-| _ | Listing of nvim's cwd |
-| ` | :cd into the viewed directory |
-| Ctrl-T / Ctrl-C | Close the sidebar (or a full-window listing) |
-| Ctrl-H | Open entry in horizontal split |
-| Ctrl-P | Preview entry in a float |
-| Ctrl-L | Refresh from disk |
-| g. | Toggle hidden dotfiles |
-| gs / gx | Change sort / open with system handler |
-| g? | Oil's full key help |
+| `Enter` | Open entry (see sidebar behavior above); on the `../` first row: go up one directory (NERDTree-style, added 2026-08-14) |
+| `-` or `..` | Go up one directory |
+| `_` | Listing of nvim's cwd |
+| `` ` `` | :cd into the viewed directory |
+| `Ctrl-T` / `Ctrl-C` | Close the sidebar (or a full-window listing) |
+| `Ctrl-H` | Open entry in horizontal split |
+| `Ctrl-P` | Preview entry in a float |
+| `Ctrl-L` | Refresh from disk |
+| `g.` | Toggle hidden dotfiles |
+| `gs` / `gx` | Change sort / open with system handler |
+| `g?` | Oil's full key help |
 
 (Oil's default Ctrl-S vsplit is disabled so Ctrl-S stays "save".)

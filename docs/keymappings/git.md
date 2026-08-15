@@ -7,17 +7,17 @@ repo, diffview inspects changesets and history.
 
 | Key | Action |
 |-----|--------|
-| ]c / [c | Next / previous hunk |
-| \<leader\>hs | Stage hunk (toggles; visual: selected lines) |
-| \<leader\>hr | Reset hunk to index (visual: selected lines) |
-| \<leader\>hS / \<leader\>hR | Stage / reset entire buffer |
-| \<leader\>hp / \<leader\>hi | Preview hunk float / inline |
-| \<leader\>hb | Blame line (full commit message) |
-| \<leader\>hd / \<leader\>hD | Diff split vs index / vs HEAD~ |
-| \<leader\>hq / \<leader\>hQ | Buffer / all-repo hunks to quickfix |
-| \<leader\>tb | Toggle inline blame virtual text |
-| \<leader\>tw | Toggle word diff |
-| ih | Hunk text object (vih, dih, ...) |
+| `]c` / `[c` | Next / previous hunk |
+| `<leader>hs` | Stage hunk (toggles; visual: selected lines) |
+| `<leader>hr` | Reset hunk to index (visual: selected lines) |
+| `<leader>hS` / `<leader>hR` | Stage / reset entire buffer |
+| `<leader>hp` / `<leader>hi` | Preview hunk float / inline |
+| `<leader>hb` | Blame line (full commit message) |
+| `<leader>hd` / `<leader>hD` | Diff split vs index / vs HEAD~ |
+| `<leader>hq` / `<leader>hQ` | Buffer / all-repo hunks to quickfix |
+| `<leader>tb` | Toggle inline blame virtual text |
+| `<leader>tw` | Toggle word diff |
+| `ih` | Hunk text object (vih, dih, ...) |
 
 Every action is also `:Gitsigns <subcommand>`. Command-only extras:
 blame (whole-buffer view), show [rev], show_commit, change_base /
@@ -29,7 +29,7 @@ comment.
 
 | Key | Action |
 |-----|--------|
-| \<leader\>gg | Open lazygit in a float, rooted at the buffer's repo |
+| `<leader>gg` | Open lazygit in a float, rooted at the buffer's repo |
 
 Inside, lazygit's own keys apply (`?` for the full list): q quits (and
 collapses the float - do not `:q` the window), space stages/checks out,
@@ -41,9 +41,9 @@ terminal mode, `i` to resume.
 
 | Key | Action |
 |-----|--------|
-| \<leader\>gd | `:DiffviewOpen` - working tree vs INDEX (staged drops out) |
-| \<leader\>gh | `:DiffviewFileHistory %` - current file's history |
-| \<leader\>gH | `:DiffviewFileHistory` - whole-repo history |
+| `<leader>gd` | `:DiffviewOpen` - working tree vs INDEX (staged drops out) |
+| `<leader>gh` | `:DiffviewFileHistory %` - current file's history |
+| `<leader>gH` | `:DiffviewFileHistory` - whole-repo history |
 
 In a diffview tab: Tab / S-Tab cycle files, g? help, q leaves. Commands:
 `:DiffviewOpen [rev] [-- paths]` (ranges like `main...HEAD` work),

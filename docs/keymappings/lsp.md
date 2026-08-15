@@ -2,15 +2,15 @@
 
 | Key | Action |
 |-----|--------|
-| K | Hover docs (press K again to enter the popup, q closes) |
-| Ctrl-K | Signature help (works in insert mode) |
-| gd / gD | Go to definition / declaration |
-| gt / gi | Go to type definition / implementation |
-| \<leader\>rn | Rename symbol everywhere |
-| \<leader\>ca | Code action |
-| gl | Line diagnostics float |
-| grr / grn / gra / gri | Neovim 0.11 built-ins: references / rename / action / impl |
-| [d / ]d | Previous / next diagnostic (built-in) |
+| `K` | Hover docs (press K again to enter the popup, q closes) |
+| `Ctrl-K` | Signature help (works in insert mode) |
+| `gd` / `gD` | Go to definition / declaration |
+| `gt` / `gi` | Go to type definition / implementation |
+| `<leader>rn` | Rename symbol everywhere |
+| `<leader>ca` | Code action |
+| `gl` | Line diagnostics float |
+| `grr` / `grn` / `gra` / `gri` | Neovim 0.11 built-ins: references / rename / action / impl |
+| `[d` / `]d` | Previous / next diagnostic (built-in) |
 
 Format-on-save runs automatically per-language
 (lua/hwangfu/lsp/format.lua). Language extras:

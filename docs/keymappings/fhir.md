@@ -2,9 +2,9 @@
 
 | Key | Action |
 |-----|--------|
-| gd | Goto reference |
-| gr | Find usages |
-| \<leader\>fo | Outline |
-| \<leader\>fe | Eval |
-| gl | Diagnostics |
-| ga | Fix |
+| `gd` | Goto reference |
+| `gr` | Find usages |
+| `<leader>fo` | Outline |
+| `<leader>fe` | Eval |
+| `gl` | Diagnostics |
+| `ga` | Fix |
