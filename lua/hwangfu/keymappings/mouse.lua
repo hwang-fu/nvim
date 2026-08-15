@@ -118,6 +118,14 @@ function M.setup()
         "<LeftMouse><Cmd>lua require('hwangfu.keymappings.mouse').smart_definition()<CR>",
         { silent = true, desc = "LSP: smart definition / references (mouse)" }
     )
+
+    -- Ctrl+RightClick: the open-buffers picker (2026-08-15). Shadows
+    -- the built-in tag-stack pop, which the smart jump above bypasses
+    -- anyway (it uses the jumplist; go back with <C-o>).
+    map("n", "<C-RightMouse>", "<Cmd>Telescope buffers<CR>", {
+        silent = true,
+        desc = "Telescope: open buffers (mouse)",
+    })
 end
 
 return M

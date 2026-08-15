@@ -5,6 +5,7 @@
 | Key | Mode | Action |
 |-----|------|--------|
 | `Ctrl-LeftClick` | n | Smart jump on the clicked symbol (see below) |
+| `Ctrl-RightClick` | n | Open the buffers picker (same as `<leader>fb`) |
 
 The smart jump behaves like VSCode's Ctrl+click:
 

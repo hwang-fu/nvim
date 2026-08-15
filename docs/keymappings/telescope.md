@@ -5,7 +5,9 @@
 | Key | Picker |
 |-----|--------|
 | `<leader>ff` | Files by name |
+| `<leader>fF` | Files by name, including ignored and hidden ones |
 | `<leader>fg` | Live grep across the project |
+| `<leader>fG` | Live grep, including ignored and hidden files |
 | `<leader>fs` | Grep the word under the cursor |
 | `<leader>fb` | Open buffers |
 | `<leader>fr` | Recently opened files |

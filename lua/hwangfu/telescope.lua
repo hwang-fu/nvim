@@ -13,7 +13,9 @@
 -- ----------------------------------------------------------------------------
 -- Keybindings (<leader> is Space) - each opens the telescope popup:
 --   <leader>ff   find files by name
+--   <leader>fF   find files, including ignored and hidden ones
 --   <leader>fg   live grep: search file *contents* across the whole project
+--   <leader>fG   live grep, including ignored and hidden files
 --   <leader>fs   grep the word currently under the cursor
 --   <leader>fb   switch between open buffers
 --   <leader>fr   recently opened files
@@ -99,7 +101,15 @@ function M.setup()
     end
 
     map("<leader>ff", builtin.find_files, "Telescope: find files")
+    -- Capital sibling: same picker, but looking past ignore files and
+    -- including dotfiles (2026-08-15).
+    map("<leader>fF", function()
+        builtin.find_files({ no_ignore = true, hidden = true })
+    end, "Telescope: find ALL files (ignored + hidden)")
     map("<leader>fg", builtin.live_grep, "Telescope: live grep (project contents)")
+    map("<leader>fG", function()
+        builtin.live_grep({ additional_args = { "--no-ignore", "--hidden" } })
+    end, "Telescope: live grep ALL files (ignored + hidden)")
     map("<leader>fs", builtin.grep_string, "Telescope: grep word under cursor")
     map("<leader>fb", builtin.buffers, "Telescope: open buffers")
     map("<leader>fr", builtin.oldfiles, "Telescope: recent files")
