@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "docs/keymappings/git.md",
+                "file": "docs/keymappings/navigation.md",
                 "mode": "preview",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "git"
+              "title": "navigation"
             }
           }
         ]
@@ -185,13 +185,14 @@
   },
   "active": "a38e08b886b963a7",
   "lastOpenFiles": [
-    "docs/keymappings/fhir.md",
+    "docs/keymappings/misc.md",
     "docs/keymappings/explorer.md",
+    "docs/keymappings/navigation.md",
+    "docs/keymappings/git.md",
+    "docs/keymappings/fhir.md",
     "docs/keymappings/debugging.md",
     "docs/keymappings/crates.md",
-    "docs/keymappings/misc.md",
     "docs/keymappings/completion.md",
-    "docs/keymappings/git.md",
     "docs/keymappings/lisp.md",
     "docs/keymappings/lsp.md",
     "docs/keymappings/mouse.md",
@@ -210,7 +211,6 @@
     "docs/keymappings/editor.md",
     "docs/KEYBINDINGS.md",
     "docs/keymappings/textobjects.md",
-    "docs/keymappings/navigation.md",
     "docs/keymappings",
     "init.lua.tmp.761282.0988380241f8",
     "init.lua.tmp.761282.d56a80cbb50d"
