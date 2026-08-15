@@ -52,6 +52,7 @@ They also extend a visual selection, and combine with verbs like any motion: `d]
 
 ## Notes
 
-- Works in every treesitter language here except Erlang, which has no upstream queries - the keys quietly do nothing there.
+- When no target exists, the keys warn ("No function found here") and drop you back to normal mode instead of silently doing nothing.
+- Works in every treesitter language here except Erlang, which has no upstream queries - there the keys always take the warning path.
 - Hunk navigation lives on `]h` / `[h` (see [git](git.md)); `]c` / `[c` keep their built-in diff-mode meaning.
 - Jumps land in the jump list, so `Ctrl-O` returns after an overshoot.

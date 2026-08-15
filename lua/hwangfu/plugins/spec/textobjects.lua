@@ -76,29 +76,60 @@ return {
 		local select = require("nvim-treesitter-textobjects.select")
 		local move = require("nvim-treesitter-textobjects.move")
 
-		local function sel(lhs, capture, desc)
+		-- No-target feedback (2026-08-15, user request): a miss warns and
+		-- cancels back to normal mode instead of silently doing nothing.
+		--
+		-- Select objects pre-check with the SAME lookup the plugin uses
+		-- internally (shared.textobject_at_point, honoring the lookahead
+		-- setting); on nil the pending operator / visual mode is
+		-- cancelled with a fed <Esc>. The successful path then runs the
+		-- stock select, which repeats the cheap lookup - the same
+		-- deliberate double-query trade as the mouse smart jump.
+		--
+		-- Motions detect a miss by the cursor not moving; no <Esc>
+		-- needed there (a failed motion already leaves modes intact).
+		local function sel(lhs, capture, desc, label)
 			vim.keymap.set({ "x", "o" }, lhs, function()
+				local cfg = require("nvim-treesitter-textobjects.config").select
+				local found = require("nvim-treesitter-textobjects.shared").textobject_at_point(
+					capture,
+					"textobjects",
+					0,
+					nil,
+					{ lookahead = cfg.lookahead, lookbehind = cfg.lookbehind }
+				)
+				if not found then
+					vim.notify("No " .. label .. " found here", vim.log.levels.WARN)
+					local esc = vim.api.nvim_replace_termcodes("<Esc>", true, false, true)
+					vim.api.nvim_feedkeys(esc, "n", false)
+					return
+				end
 				select.select_textobject(capture, "textobjects")
 			end, { silent = true, desc = desc })
 		end
-		local function mov(lhs, fn, capture, desc)
+		local function mov(lhs, fn, capture, desc, label)
 			vim.keymap.set({ "n", "x", "o" }, lhs, function()
+				local before = vim.api.nvim_win_get_cursor(0)
 				move[fn](capture, "textobjects")
+				local after = vim.api.nvim_win_get_cursor(0)
+				if before[1] == after[1] and before[2] == after[2] then
+					vim.notify("No " .. label, vim.log.levels.WARN)
+				end
 			end, { silent = true, desc = desc })
 		end
 
-		sel("af", "@function.outer", "a function")
-		sel("if", "@function.inner", "inner function")
-		sel("ac", "@class.outer", "a class")
-		sel("ic", "@class.inner", "inner class")
-		sel("aa", "@parameter.outer", "a parameter")
-		sel("ia", "@parameter.inner", "inner parameter")
+		sel("af", "@function.outer", "a function", "function")
+		sel("if", "@function.inner", "inner function", "function")
+		sel("ac", "@class.outer", "a class", "class")
+		sel("ic", "@class.inner", "inner class", "class")
+		sel("aa", "@parameter.outer", "a parameter", "parameter")
+		sel("ia", "@parameter.inner", "inner parameter", "parameter")
 
-		mov("]f", "goto_next_start", "@function.outer", "Next function start")
-		mov("[f", "goto_previous_start", "@function.outer", "Previous function start")
-		mov("]F", "goto_next_end", "@function.outer", "Next function end")
-		mov("[F", "goto_previous_end", "@function.outer", "Previous function end")
-		mov("]]", "goto_next_start", "@class.outer", "Next class start")
-		mov("[[", "goto_previous_start", "@class.outer", "Previous class start")
+		mov("]f", "goto_next_start", "@function.outer", "Next function start", "next function")
+		mov("[f", "goto_previous_start", "@function.outer", "Previous function start", "previous function")
+		mov("]F", "goto_next_end", "@function.outer", "Next function end", "next function end")
+		mov("[F", "goto_previous_end", "@function.outer", "Previous function end", "previous function end")
+		mov("]]", "goto_next_start", "@class.outer", "Next class start", "next class")
+		mov("[[", "goto_previous_start", "@class.outer", "Previous class start", "previous class")
 	end,
 }
