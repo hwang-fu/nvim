@@ -16,10 +16,10 @@ A listing is an ordinary buffer you edit like text, and `:w` applies your edits 
 | `Ctrl-H` | Open the entry in a horizontal split |
 | `Ctrl-V` | Open the entry in a vertical split |
 | `Ctrl-P` | Preview the entry in a float |
-| `Ctrl-L` | Refresh the listing from disk |
+| `Ctrl-S` | Refresh the listing from disk |
 | `g.` | Toggle hidden dotfiles (shown by default) |
 | `gs` | Change the sort order |
 | `gx` | Open the entry with your desktop's default application for that file type - image viewer for pictures, PDF reader, browser for HTML (via xdg-open) |
 | `g?` | Oil's own key help |
 
-Oil's default `Ctrl-S` (open in vsplit) is disabled so that `Ctrl-S` keeps meaning "save".
+`Ctrl-S` deliberately does not save here: a mistyped save gesture re-reads the listing instead of applying pending filesystem operations. `:w` is the one apply key.

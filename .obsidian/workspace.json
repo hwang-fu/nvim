@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "docs/keymappings/explorer.md",
+                "file": "docs/keymappings/movement.md",
                 "mode": "preview",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "explorer"
+              "title": "movement"
             }
           }
         ]
@@ -185,13 +185,13 @@
   },
   "active": "a38e08b886b963a7",
   "lastOpenFiles": [
+    "docs/keymappings/explorer.md",
     "docs/keymappings/debugging.md",
     "docs/keymappings/lsp.md",
     "docs/keymappings/mouse.md",
     "docs/keymappings/misc.md",
     "docs/keymappings/navigation.md",
     "docs/keymappings/completion.md",
-    "docs/keymappings/explorer.md",
     "lua/hwangfu/plugins/spec/oil.lua.tmp.761282.53884d8945dd",
     "lua/hwangfu/plugins/spec/oil.lua.tmp.761282.9e888a9c5e00",
     "docs/keymappings/fhir.md",

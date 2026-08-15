@@ -53,15 +53,17 @@
 -- Opening / inspecting:
 --   <C-h>   open entry in a horizontal split
 --   <C-p>   preview entry in a float (moving the cursor re-previews)
---   <C-l>   refresh the listing from disk
 --   <C-v>   open entry in a vertical split (custom, 2026-08-15;
---           shadows blockwise-visual inside listings only. Oil's own
---           vsplit default was <C-s>, disabled below so the global
---           <C-s> :w map shows through)
---   <C-s>   save = apply pending operations (oil's default <C-s>
---           open-in-vsplit is disabled with `false`)
+--           shadows blockwise-visual inside listings only)
+--   <C-s>   refresh the listing from disk (custom, 2026-08-15: a
+--           mistyped save gesture re-reads instead of applying pending
+--           filesystem operations; :w is the one apply key. Also
+--           replaces oil's <C-s> open-in-vsplit default, which <C-v>
+--           covers)
+--   <C-l>   DISABLED (2026-08-15): was oil's refresh, now on <C-s>;
+--           freed like the global <C-l>
 --
--- File operations: edit the listing like text, then :w (or <C-s>).
+-- File operations: edit the listing like text, then :w.
 -- Every :w shows a confirmation summary before touching disk.
 --   create file     open a new line, type `name.ext`, :w
 --   create folder   same, but end with a slash: `newdir/`, :w
@@ -114,7 +116,8 @@ return {
 					desc = "Close sidebar / listing",
 				},
 				["<C-v>"] = { "actions.select", opts = { vertical = true } },
-				["<C-s>"] = false,
+				["<C-s>"] = "actions.refresh",
+				["<C-l>"] = false,
 				["<C-c>"] = false,
 				[".."] = "actions.parent",
 			},
