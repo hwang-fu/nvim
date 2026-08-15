@@ -147,11 +147,14 @@ function M.setup()
     -- definition, Paste, Select All, How-to disable mouse). Menus are
     -- global, so this runs once at startup, not per buffer.
     --
-    -- "Find file" (2026-08-15, user request): the same plain file
-    -- finder as <leader>t. The separator first (-3- : the stock menu
-    -- already uses -1- and -2-; separator names must be unique).
+    -- "Find file" and "Search inside project" (2026-08-15, user
+    -- request): the same plain file finder as <leader>t and the same
+    -- project-wide live grep as <leader>fg. The separator first (-3- :
+    -- the stock menu already uses -1- and -2-; separator names must be
+    -- unique).
     vim.cmd([[anoremenu PopUp.-3- <Nop>]])
     vim.cmd([[anoremenu PopUp.Find\ file <Cmd>Telescope find_files<CR>]])
+    vim.cmd([[anoremenu PopUp.Search\ inside\ project <Cmd>Telescope live_grep<CR>]])
 end
 
 return M

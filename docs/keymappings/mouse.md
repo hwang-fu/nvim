@@ -30,5 +30,6 @@ A right-click without any modifier is Neovim's stock behavior, no plugin involve
 | Select All | Select the whole buffer |
 | How-to disable mouse | Opens the help page on turning mouse support off |
 | Find file | Open the file finder, same as `<leader>t` (added by this config; the rows above are Neovim's stock entries) |
+| Search inside project | Live grep across the project, same as `<leader>fg` (added by this config) |
 
 The menu is an ordinary Neovim menu named `PopUp`; this config appends its own entries below the stock ones, in `lua/hwangfu/keymappings/mouse.lua`.
