@@ -4,13 +4,14 @@
 
 ## Text objects
 
-A text object does nothing on its own - it names a *region* for another key to act on. The pattern is always **verb + object**: `v` selects the region, `d` deletes it, `y` copies it, `c` deletes it and drops you into insert mode. It is the same grammar as Vim's built-in `diw` (delete a word) - these objects just name code regions instead of words.
+> [!WARNING]
+> **These keys do nothing by themselves.** Typing `af` in normal mode just appends text after the cursor. You must press a verb FIRST - `v` (select), `d` (delete), `y` (copy), or `c` (change) - and only then the object: `vaf`, `daf`, `yaf`, `caf`.
 
-The `a` / `i` prefix chooses how much: `a` is *around* (the whole construct), `i` is *inner* (only its inside).
+A text object names a *region* for the verb to act on. It is the same grammar as Vim's built-in `diw` (delete a word) - these objects just name code regions instead of words.
 
-In plain normal mode `a` still means append and `i` still means insert - nothing changed there. These objects exist only *after* a verb (when Vim is waiting for a region to act on) or inside a visual selection. That is why every combination below starts with a verb, and it is the same mechanics that lets the built-in `diw` work even though `i` alone enters insert mode.
+The `a` / `i` in each object chooses how much: `a` is *around* (the whole construct), `i` is *inner* (only its inside). In plain normal mode `a` and `i` keep meaning append and insert; the objects exist only after a verb or inside a visual selection.
 
-| Object | Region it names |
+| Object (after a verb) | Region it names |
 |--------|-----------------|
 | `af` | A whole function, signature included |
 | `if` | Only the function's body |
