@@ -185,6 +185,8 @@
   },
   "active": "a38e08b886b963a7",
   "lastOpenFiles": [
+    "lua/hwangfu/plugins/spec/oil.lua.tmp.761282.53884d8945dd",
+    "lua/hwangfu/plugins/spec/oil.lua.tmp.761282.9e888a9c5e00",
     "docs/keymappings/fhir.md",
     "docs/keymappings/editor.md",
     "docs/keymappings/debugging.md",
@@ -213,7 +215,6 @@
     "lua/hwangfu/crates.lua.tmp.761282.2ab1d8dfaaaf",
     "docs/keymappings/markdown.md",
     "lua/hwangfu/plugins/init.lua.tmp.761282.495bb20af58c",
-    "lua/hwangfu/keymappings/init.lua.tmp.761282.f116a74536b9",
     "docs/KEYBINDINGS.md",
     "docs/keymappings/textobjects.md"
   ]

@@ -32,8 +32,9 @@
 --           through the same is_hidden_file test as ordinary entries,
 --           and the default "starts with a dot" rule swallowed it
 --           along with the dotfiles. The view_options override below
---           exempts ".." specifically; real dotfiles stay hidden
---           behind g. exactly as before.
+--           exempts ".." specifically; real dotfiles are classified
+--           hidden but VISIBLE by default (show_hidden below);
+--           g. toggles them away.
 --   -       go up one directory
 --   ..      go up one directory (custom alias for `-`, shell muscle
 --           memory carried over from the old NERDTree map; cost: `.`
@@ -72,8 +73,9 @@
 --
 -- Misc:
 --   g?      help float listing every oil binding
---   g.      toggle hidden dotfiles (hidden by default, matching the
---           old nerdtree setup, which never enabled NERDTreeShowHidden)
+--   g.      toggle hidden dotfiles - SHOWN by default since 2026-08-15
+--           (show_hidden = true below); before that they were hidden,
+--           matching the old nerdtree setup
 --   gs      change sort order
 --   gx      open entry with the system handler (browser, viewer, ...)
 --
@@ -115,11 +117,12 @@ return {
 				[".."] = "actions.parent",
 			},
 			view_options = {
-				-- Default rule, minus one case: the ".." parent row
-				-- (see the Navigation comment above). Everything else
-				-- keeps oil's stock "dotfile = hidden" behavior, so
-				-- g. still toggles real dotfiles and show_hidden
-				-- stays at its default false.
+				-- Dotfiles visible by default (2026-08-15); g. hides
+				-- them again per buffer.
+				show_hidden = true,
+				-- Classification rule: oil's stock "dotfile = hidden",
+				-- minus the ".." parent row (see the Navigation comment
+				-- above), so ".." survives even when g. hides dotfiles.
 				is_hidden_file = function(name, _) -- (name, bufnr) contract; bufnr unused
 					if name == ".." then
 						return false
