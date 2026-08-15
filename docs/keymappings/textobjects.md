@@ -8,14 +8,27 @@ A text object does nothing on its own - it names a *region* for another key to a
 
 The `a` / `i` prefix chooses how much: `a` is *around* (the whole construct), `i` is *inner* (only its inside).
 
-| Object | Region it names | Example use |
-|--------|-----------------|-------------|
-| `af` | A whole function, signature included | `daf` deletes the function around the cursor; `yaf` copies it to paste elsewhere |
-| `if` | Only the function's body | `cif` clears the body for a rewrite but keeps the signature |
-| `ac` | A whole class - or struct / impl / module in languages without classes | `vac` selects it to eyeball its extent |
-| `ic` | Only the class body | `dic` empties the class, keeping its header |
-| `aa` | One argument, including its separating comma | `daa` removes an argument from a call without leaving a stray comma |
-| `ia` | Just the argument itself | `cia` retypes an argument, commas untouched |
+| Object | Region it names |
+|--------|-----------------|
+| `af` | A whole function, signature included |
+| `if` | Only the function's body |
+| `ac` | A whole class - or struct / impl / module in languages without classes |
+| `ic` | Only the class body |
+| `aa` | One argument, including its separating comma |
+| `ia` | Just the argument itself |
+
+## Common combinations
+
+| Keys | Effect |
+|------|--------|
+| `vaf` | Select the whole function under the cursor |
+| `yaf` | Copy the whole function, ready to paste elsewhere |
+| `daf` | Delete the whole function |
+| `cif` | Clear the function's body for a rewrite, keeping the signature |
+| `vac` | Select the whole class to eyeball its extent |
+| `dic` | Empty a class, keeping its header |
+| `daa` | Remove an argument from a call without leaving a stray comma |
+| `cia` | Retype an argument, commas untouched |
 
 The cursor only needs to be *anywhere inside* the target: `daf` from deep in a function body still deletes that whole function. If the cursor sits before any function, lookahead targets the next one instead of failing.
 
