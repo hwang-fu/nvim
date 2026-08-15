@@ -8,6 +8,8 @@ Three tools split the work: gitsigns edits hunks inside the buffer, lazygit oper
 
 A hunk is one contiguous block of changed lines. Lowercase keys act on the hunk under the cursor, uppercase on the whole buffer.
 
+The index is git's name for the staging area: the snapshot being assembled for the next commit. Staging (`git add`, or `<leader>hs` here) copies changes from your working file into it. The gutter signs and the diffs below all compare the buffer against the index - which is why signs disappear the moment a change is staged.
+
 | Key | Action |
 |-----|--------|
 | `]h` | Jump to the next hunk |
@@ -42,7 +44,7 @@ Inside the float you are talking to lazygit itself; press `?` there for its key 
 | Key | Action |
 |-----|--------|
 | `<leader>gd` | Open the working tree diff against the index. Staged changes drop out of view |
-| `<leader>gh` | History of the current file |
-| `<leader>gH` | History of the whole repository |
+| `<leader>gh` | History of the whole repository |
+| `<leader>gH` | History of the current file |
 
 Inside a diffview tab, `Tab` and `S-Tab` cycle through changed files, `g?` opens its help, and `q` leaves. The commands accept revisions and paths, for example `:DiffviewOpen main...HEAD -- lua/`, and `:DiffviewFileHistory` over a visual range traces the history of just those lines.
