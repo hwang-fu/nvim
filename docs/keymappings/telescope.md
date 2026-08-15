@@ -4,6 +4,8 @@
 
 | Key | Picker |
 |-----|--------|
+| `<leader>t` | Files by name (short form of `<leader>ff`) |
+| `<leader>T` | Files by name, including ignored and hidden (short form of `<leader>fF`) |
 | `<leader>ff` | Files by name |
 | `<leader>fF` | Files by name, including ignored and hidden ones |
 | `<leader>fg` | Live grep across the project |

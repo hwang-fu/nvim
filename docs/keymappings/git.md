@@ -18,8 +18,8 @@ A hunk is one contiguous block of changed lines. Lowercase keys act on the hunk 
 | `<leader>hb` | Blame the current line with the full commit message |
 | `<leader>hd` / `<leader>hD` | Diff split against the index / against HEAD~ |
 | `<leader>hq` / `<leader>hQ` | Send this buffer's / the whole repo's hunks to the quickfix list |
-| `<leader>tb` | Toggle inline blame virtual text |
-| `<leader>tw` | Toggle word-level diff |
+| `<leader>hB` | Toggle inline blame virtual text |
+| `<leader>hw` | Toggle word-level diff |
 | `ih` | Hunk text object: `vih` selects it, `dih` deletes it |
 
 Every action is also available as `:Gitsigns <subcommand>` with tab completion, including a few that have no keymap - whole-buffer blame, showing a file at an old revision, and changing the diff base. `:Gitsigns <Tab>` shows the full list.

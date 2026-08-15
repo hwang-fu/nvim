@@ -44,8 +44,8 @@
 --   <leader>hD    diff split: buffer vs HEAD~
 --   <leader>hq    buffer hunks -> quickfix list
 --   <leader>hQ    all repo hunks -> quickfix list
---   <leader>tb    toggle inline blame virtual text
---   <leader>tw    toggle word diff
+--   <leader>hB    toggle inline blame virtual text
+--   <leader>hw    toggle word diff
 --   ih            hunk text object (vih selects, dih deletes, ...)
 --
 -- Command-line access: every action is also an ex-command,
@@ -86,7 +86,7 @@
 --
 -- Defaults left as-is (the notable ones):
 --   * current_line_blame = false  -- inline blame virtual text is OFF
---                                    until toggled with <leader>tb.
+--                                    until toggled with <leader>hB.
 --   * max_file_length = 40000     -- gitsigns disables itself in
 --                                    files longer than this.
 --
@@ -133,7 +133,9 @@ return {
 			-- lua/hwangfu/keymappings/: they should not exist in
 			-- buffers that have no git data behind them.
 			--
-			-- Mnemonics: <leader>h* = hunk, <leader>t* = toggle.
+			-- Mnemonics: everything lives under <leader>h (hunk/git);
+			-- the toggles moved here from <leader>t* on 2026-08-15 to
+			-- free that key for the telescope picker.
 			-- Lowercase acts on the hunk under the cursor,
 			-- uppercase on the whole buffer.
 			on_attach = function(bufnr)
@@ -220,8 +222,8 @@ return {
 				end, "Git: all repo hunks to quickfix")
 
 				-- Toggles.
-				map("n", "<leader>tb", gitsigns.toggle_current_line_blame, "Git: toggle inline blame")
-				map("n", "<leader>tw", gitsigns.toggle_word_diff, "Git: toggle word diff")
+				map("n", "<leader>hB", gitsigns.toggle_current_line_blame, "Git: toggle inline blame")
+				map("n", "<leader>hw", gitsigns.toggle_word_diff, "Git: toggle word diff")
 
 				-- Text object: "ih" = inner hunk. Works in
 				-- operator-pending and visual mode, so `vih`

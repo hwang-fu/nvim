@@ -12,6 +12,8 @@
 --
 -- ----------------------------------------------------------------------------
 -- Keybindings (<leader> is Space) - each opens the telescope popup:
+--   <leader>t    find files by name (short form of <leader>ff)
+--   <leader>T    find files, including ignored and hidden (= <leader>fF)
 --   <leader>ff   find files by name
 --   <leader>fF   find files, including ignored and hidden ones
 --   <leader>fg   live grep: search file *contents* across the whole project
@@ -115,6 +117,12 @@ function M.setup()
         })
     end
 
+    -- Short forms (2026-08-15): <leader>t / <leader>T are instant
+    -- aliases of ff / fF; the gitsigns toggles vacated <leader>t*.
+    map("<leader>t", builtin.find_files, "Telescope: find files")
+    map("<leader>T", function()
+        builtin.find_files({ no_ignore = true, hidden = true })
+    end, "Telescope: find ALL files (ignored + hidden)")
     map("<leader>ff", builtin.find_files, "Telescope: find files")
     -- Capital sibling: same picker, but looking past ignore files and
     -- including dotfiles (2026-08-15).

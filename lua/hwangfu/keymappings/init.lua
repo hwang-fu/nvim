@@ -35,7 +35,7 @@
 --
 -- NOT in this folder (buffer-local maps defined where their plugin is
 -- configured, in lua/hwangfu/plugins/spec/<plugin>.lua):
---   * Git hunks         - ]c / [c, <leader>h*, <leader>tb, <leader>tw, ih
+--   * Git hunks         - ]c / [c, <leader>h*, ih
 --                         (gitsigns.nvim spec; see its "Keymap quick
 --                         reference" comment for the full table)
 --   * Oil buffer keys   - <CR> open (also on the always-visible ../ first

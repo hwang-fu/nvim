@@ -33,7 +33,6 @@ return {
 			{ "<leader>g", group = "git ui" },
 			{ "<leader>h", group = "git hunks" },
 			{ "<leader>m", group = "markdown / preview" },
-			{ "<leader>t", group = "toggles" },
 			{ "<localleader>", group = "filetype tools" },
 		})
 	end,
