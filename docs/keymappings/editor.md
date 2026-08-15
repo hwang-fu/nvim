@@ -12,7 +12,7 @@ Familiar shortcuts from mainstream editors, layered on top of Vim without touchi
 | `Ctrl-X` | v | Cut the selection to the system clipboard |
 | `Ctrl-A` | n, i | Select the whole file |
 | `Ctrl-U` | n | Undo |
-| `Ctrl-Z` | n, i | Undo. From insert mode it leaves insert first, so it reverts everything typed since insert began |
+| `Ctrl-Z` | n | Undo |
 | `Ctrl-R` | n | Redo (built in) |
 | `Ctrl-R` | v | Search-and-replace the selected text across the file: the command line is pre-filled and previews live |
 | `Ctrl-/` | n, v | Toggle comments on the current line or selection |

@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "docs/keymappings/editor.md",
+                "file": "docs/keymappings/movement.md",
                 "mode": "preview",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "editor"
+              "title": "movement"
             }
           }
         ]
@@ -185,8 +185,10 @@
   },
   "active": "a38e08b886b963a7",
   "lastOpenFiles": [
-    "docs/keymappings/navigation.md",
+    "lua/hwangfu/keymappings/editor.lua.tmp.761282.2cd939bf2bed",
     "docs/keymappings/editor.md",
+    "docs/keymappings/movement.md",
+    "docs/keymappings/navigation.md",
     "lua/hwangfu/keymappings/editor.lua.tmp.761282.c39d39e7f655",
     "lua/hwangfu/keymappings/navigation.lua.tmp.761282.4ec48379fac3",
     "README.md",

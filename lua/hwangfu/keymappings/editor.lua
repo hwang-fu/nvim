@@ -158,24 +158,13 @@ function M.setup()
 
     -- --- Undo -----------------------------------------------------------
     -- Ctrl-U and Ctrl-Z both undo, mirroring mainstream-editor muscle
-    -- memory. Note that mapping <C-u> in normal mode shadows Vim's
-    -- built-in "scroll half a page up"; the Ctrl/Shift + Up/Down maps
-    -- below cover scrolling, so the override is intentional.
-    --
-    -- Insert mode (<C-z> added 2026-08 on user request - Windows-style
-    -- undo while typing):
-    --   * <C-z> exits insert, then undoes. Because leaving insert mode
-    --     closes the current undo block, a mid-typing <C-z> reverts the
-    --     WHOLE chunk typed since insert began - not just the last
-    --     keystroke; same granularity as typing <Esc>u by hand. You
-    --     land in normal mode afterwards, like the <C-s> save map.
-    --     (This replaces an earlier decision to keep <C-z> normal-mode
-    --     only out of stray-keypress caution.)
-    --   * <C-u> stays UNMAPPED in insert: its built-in there (delete
-    --     back to start of line) is genuinely handy and worth keeping.
+    -- memory, and both are normal-mode only (the insert-mode <C-z>
+    -- variant was removed 2026-08-15). Mapping <C-u> shadows Vim's
+    -- built-in half-page scroll; the Ctrl+Up/Down maps cover scrolling,
+    -- so that is intentional. Insert-mode <C-u> keeps its built-in
+    -- delete-to-line-start.
     map("n", "<C-u>", ":u<CR>", { silent = true, desc = "Undo" })
     map("n", "<C-z>", ":u<CR>", { silent = true, desc = "Undo" })
-    map("i", "<C-z>", "<Esc>:u<CR>", { silent = true, desc = "Undo (exits insert first)" })
 
     -- --- Select all -----------------------------------------------------
     ni("<C-a>", "ggVG")

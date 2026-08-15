@@ -13,7 +13,7 @@
 --                         Save / quit       Ctrl-S (n/i/v), Ctrl-Q (n)
 --                         Substitute        Ctrl-R (v: selection; n is
 --                                           built-in redo)
---                         Undo              Ctrl-U (n), Ctrl-Z (n/i)
+--                         Undo              Ctrl-U / Ctrl-Z (n)
 --                         Select all        Ctrl-A (n/i)
 --                         Visual selection  Shift+arrows (n)
 --                         Scrolling         Ctrl+Up/Down
