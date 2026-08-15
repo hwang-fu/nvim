@@ -1,27 +1,23 @@
-# File explorer - oil.nvim (spec in lua/hwangfu/plugins/spec/oil.lua; sidebar in lua/hwangfu/explorer.lua)
+# File explorer
 
-Ctrl-T (global, see [navigation](navigation.md)) toggles a 35-column
-left SIDEBAR (2026-08-14; previously full-window) listing the current
-buffer's directory. Sidebar behavior: Enter on a folder replaces the
-listing in place (oil is one directory per buffer by design and cannot
-expand a tree inline - accepted trade-off vs switching to nvim-tree);
-Enter on a file opens it in the MAIN window and closes the sidebar.
-Listings are still buffers you edit like text; `:w` applies the
-operations (create by typing names, `newdir/` for folders, rename in
-place, dd deletes - PERMANENTLY, yy+p copies). Buffer-local:
+*Defined in `lua/hwangfu/plugins/spec/oil.lua`, with the sidebar logic in `lua/hwangfu/explorer.lua`.*
+
+`Ctrl-T` (see [navigation](navigation.md)) toggles a 35-column sidebar listing the current buffer's directory. Pressing `Enter` on a folder replaces the listing in place - oil shows one directory per buffer and cannot expand a tree inline. Pressing `Enter` on a file opens it in the main window and closes the sidebar.
+
+A listing is an ordinary buffer you edit like text, and `:w` applies your edits to the filesystem: type a name to create a file, end it with `/` for a folder, rename in place, `dd` a line to delete (permanently), or `yy` and `p` to copy. Every save shows a confirmation first.
 
 | Key | Action |
 |-----|--------|
-| `Enter` | Open entry (see sidebar behavior above); on the `../` first row: go up one directory (NERDTree-style, added 2026-08-14) |
+| `Enter` | Open the entry. On the `../` first row, go up one directory |
 | `-` or `..` | Go up one directory |
-| `_` | Listing of nvim's cwd |
-| `` ` `` | :cd into the viewed directory |
-| `Ctrl-T` / `Ctrl-C` | Close the sidebar (or a full-window listing) |
-| `Ctrl-H` | Open entry in horizontal split |
-| `Ctrl-P` | Preview entry in a float |
-| `Ctrl-L` | Refresh from disk |
+| `_` | Show Neovim's working directory instead |
+| `` ` `` | Change Neovim's working directory to the one being viewed |
+| `Ctrl-T` / `Ctrl-C` | Close the sidebar or listing |
+| `Ctrl-H` | Open the entry in a horizontal split |
+| `Ctrl-P` | Preview the entry in a float |
+| `Ctrl-L` | Refresh the listing from disk |
 | `g.` | Toggle hidden dotfiles |
-| `gs` / `gx` | Change sort / open with system handler |
-| `g?` | Oil's full key help |
+| `gs` / `gx` | Change the sort order / open with the system handler |
+| `g?` | Oil's own key help |
 
-(Oil's default Ctrl-S vsplit is disabled so Ctrl-S stays "save".)
+Oil's default `Ctrl-S` (open in vsplit) is disabled so that `Ctrl-S` keeps meaning "save".

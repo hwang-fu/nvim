@@ -1,16 +1,15 @@
-# Mouse keys (lua/hwangfu/keymappings/mouse.lua)
+# Mouse keys
+
+*Defined in `lua/hwangfu/keymappings/mouse.lua`.*
 
 | Key | Mode | Action |
 |-----|------|--------|
-| `Ctrl-LeftClick` | n | Smart jump (see below). Back: Ctrl-O |
+| `Ctrl-LeftClick` | n | Smart jump on the clicked symbol (see below) |
 
-Smart jump behavior (VSCode-style, 2026-08-15):
+The smart jump behaves like VSCode's Ctrl+click:
 
-- click a **usage** -> jump to its definition (LSP)
-- click a symbol **at its own definition** -> list its references
-  in the quickfix list instead (what VSCode does)
-- **non-LSP buffer** -> classic ctags jump, with one quiet notice on
-  failure instead of the old E433/E426 + press-ENTER pair
+- Clicking a **usage** jumps to the symbol's definition.
+- Clicking a symbol **at its own definition** opens its references in the quickfix list instead.
+- In a buffer **without a language server**, it falls back to a classic ctags jump, and failures print one quiet notice.
 
-The right-click popup menu (Neovim built-in) also offers
-"Go to definition".
+Jump back with `Ctrl-O`. The built-in right-click menu also offers "Go to definition".

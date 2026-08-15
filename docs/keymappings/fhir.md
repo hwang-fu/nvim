@@ -1,10 +1,12 @@
-# FHIR - fhir.nvim (spec in lua/hwangfu/plugins/spec/fhir.lua; FHIR buffers)
+# FHIR
+
+*Defined in `lua/hwangfu/plugins/spec/fhir.lua` (fhir.nvim); active only in FHIR resource buffers.*
 
 | Key | Action |
 |-----|--------|
-| `gd` | Goto reference |
-| `gr` | Find usages |
+| `gd` | Go to the referenced resource |
+| `gr` | Find usages of this resource |
 | `<leader>fo` | Outline |
-| `<leader>fe` | Eval |
+| `<leader>fe` | Evaluate |
 | `gl` | Diagnostics |
-| `ga` | Fix |
+| `ga` | Apply a fix |

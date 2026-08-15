@@ -1,52 +1,47 @@
 # Git
 
-Three layers: gitsigns edits hunks in the buffer, lazygit acts on the
-repo, diffview inspects changesets and history.
+Three tools split the work: gitsigns edits hunks inside the buffer, lazygit operates on the repository, and diffview presents read-only diffs and history.
 
-## gitsigns (spec in lua/hwangfu/plugins/spec/gitsigns.lua; buffer-local in git repos)
+## Hunks - gitsigns
+
+*Defined in `lua/hwangfu/plugins/spec/gitsigns.lua`; the keys exist only in git-tracked buffers.*
+
+A hunk is one contiguous block of changed lines. Lowercase keys act on the hunk under the cursor, uppercase on the whole buffer.
 
 | Key | Action |
 |-----|--------|
-| `]c` / `[c` | Next / previous hunk |
-| `<leader>hs` | Stage hunk (toggles; visual: selected lines) |
-| `<leader>hr` | Reset hunk to index (visual: selected lines) |
-| `<leader>hS` / `<leader>hR` | Stage / reset entire buffer |
-| `<leader>hp` / `<leader>hi` | Preview hunk float / inline |
-| `<leader>hb` | Blame line (full commit message) |
-| `<leader>hd` / `<leader>hD` | Diff split vs index / vs HEAD~ |
-| `<leader>hq` / `<leader>hQ` | Buffer / all-repo hunks to quickfix |
+| `]c` / `[c` | Jump to the next / previous hunk |
+| `<leader>hs` | Stage the hunk; pressing again unstages. In visual mode, stage only the selected lines |
+| `<leader>hr` | Reset the hunk to the index version. In visual mode, only the selected lines |
+| `<leader>hS` / `<leader>hR` | Stage / reset the entire buffer |
+| `<leader>hp` / `<leader>hi` | Preview the hunk in a float / inline as virtual text |
+| `<leader>hb` | Blame the current line with the full commit message |
+| `<leader>hd` / `<leader>hD` | Diff split against the index / against HEAD~ |
+| `<leader>hq` / `<leader>hQ` | Send this buffer's / the whole repo's hunks to the quickfix list |
 | `<leader>tb` | Toggle inline blame virtual text |
-| `<leader>tw` | Toggle word diff |
-| `ih` | Hunk text object (vih, dih, ...) |
+| `<leader>tw` | Toggle word-level diff |
+| `ih` | Hunk text object: `vih` selects it, `dih` deletes it |
 
-Every action is also `:Gitsigns <subcommand>`. Command-only extras:
-blame (whole-buffer view), show [rev], show_commit, change_base /
-reset_base, setloclist, toggle_signs / toggle_numhl / toggle_linehl,
-refresh, attach / detach. Full annotated list in the gitsigns spec
-comment.
+Every action is also available as `:Gitsigns <subcommand>` with tab completion, including a few that have no keymap - whole-buffer blame, showing a file at an old revision, and changing the diff base. The spec's comment lists them all.
 
-## lazygit float (lua/hwangfu/git.lua)
+## Repository - lazygit
+
+*Defined in `lua/hwangfu/git.lua`.*
 
 | Key | Action |
 |-----|--------|
-| `<leader>gg` | Open lazygit in a float, rooted at the buffer's repo |
+| `<leader>gg` | Open lazygit in a floating window, rooted at the buffer's repository |
 
-Inside, lazygit's own keys apply (`?` for the full list): q quits (and
-collapses the float - do not `:q` the window), space stages/checks out,
-c commit, A amend, P/p push/pull, panels via h/l or 1-5. Full quick
-reference in git.lua's header. Escape hatch: `Ctrl-\ Ctrl-N` to leave
-terminal mode, `i` to resume.
+Inside the float you are talking to lazygit itself; press `?` there for its key list. Quit with `q`, which also closes the float - avoid `:q`, which would orphan the running program. To scroll or copy from the float, `Ctrl-\ Ctrl-N` leaves terminal mode and `i` returns.
 
-## diffview (spec in lua/hwangfu/plugins/spec/diffview.lua)
+## Diffs and history - diffview
+
+*Defined in `lua/hwangfu/plugins/spec/diffview.lua`.*
 
 | Key | Action |
 |-----|--------|
-| `<leader>gd` | `:DiffviewOpen` - working tree vs INDEX (staged drops out) |
-| `<leader>gh` | `:DiffviewFileHistory %` - current file's history |
-| `<leader>gH` | `:DiffviewFileHistory` - whole-repo history |
+| `<leader>gd` | Open the working tree diff against the index. Staged changes drop out of view |
+| `<leader>gh` | History of the current file |
+| `<leader>gH` | History of the whole repository |
 
-In a diffview tab: Tab / S-Tab cycle files, g? help, q leaves. Commands:
-`:DiffviewOpen [rev] [-- paths]` (ranges like `main...HEAD` work),
-`:[range]DiffviewFileHistory [paths]` (visual range = line-evolution
-view), `:DiffviewToggleFiles`, `:DiffviewFocusFiles`, `:DiffviewRefresh`,
-`:DiffviewLog`.
+Inside a diffview tab, `Tab` and `S-Tab` cycle through changed files, `g?` opens its help, and `q` leaves. The commands accept revisions and paths, for example `:DiffviewOpen main...HEAD -- lua/`, and `:DiffviewFileHistory` over a visual range traces the history of just those lines.

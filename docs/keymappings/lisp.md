@@ -1,42 +1,40 @@
-# Lisp family (specs in lua/hwangfu/plugins/spec/lisp.lua; added 2026-08-14)
+# Lisp
 
-Four plugins, no overlap. parinfer-rust (parens follow indentation in
-clojure / scheme / lisp / racket / fennel / dune and friends;
-:ParinferOff / :ParinferOn when pasting oddly-indented code) and
-rainbow-delimiters (depth-colored parens in the lisp filetypes) have NO
-keybindings. The two below do:
+*All four plugins are defined in `lua/hwangfu/plugins/spec/lisp.lua`.*
 
-## conjure - eval from buffer (clojure, fennel, racket, scheme buffers)
+Four plugins cover the Lisp family without overlap. Two of them have no keys at all: parinfer-rust keeps parentheses balanced from your indentation as you edit (use `:ParinferOff` and `:ParinferOn` around a weirdly-indented paste), and rainbow-delimiters colors parentheses by nesting depth.
 
-| Key | Action |
-|-----|--------|
-| `\ee` | Eval expression under cursor (result inline) |
-| `\er` | Eval root form under cursor |
-| `\eb` | Eval whole buffer |
-| `\e!` | Eval form and replace it with the result |
-| `\ew` | Eval word under cursor |
-| `\E` | Eval visual selection |
-| `\ls` / `\lv` | Open conjure log in split / vsplit |
-| `gd` | Conjure go-to-definition (falls back to LSP) |
-| `K` | Conjure doc lookup (shadows LSP hover here) |
+## Conjure - evaluate from the buffer
 
-Clojure needs an nREPL running per project (conjure auto-connects via
-.nrepl-port). Fennel evaluates in-process (nfnl client); racket and
-scheme run stdio REPLs conjure manages itself.
-
-## slimv - SLIME for Common Lisp (lisp buffers; leader is COMMA)
-
-Slimv's maps are GLOBAL once loaded - the comma namespace is
-effectively reserved for it. First eval auto-starts an sbcl+swank
-server. Essentials (full list: :help slimv-keyboard):
+Active in Clojure, Fennel, Racket, and Scheme buffers. Results appear inline as virtual text.
 
 | Key | Action |
 |-----|--------|
-| `,c` | Connect to swank server |
-| `,d` / `,e` | Eval defun / eval current expression |
-| `,b` | Eval buffer |
-| `,i` | Inspect object under cursor |
-| `,s` / `,h` | Describe symbol / HyperSpec lookup |
-| `,g` | Set current package |
-| `,y` | Interrupt evaluation |
-| `,,` | Slimv menu (all commands, tab-completable) |
+| `\ee` | Evaluate the expression under the cursor |
+| `\er` | Evaluate the top-level form under the cursor |
+| `\eb` | Evaluate the whole buffer |
+| `\e!` | Evaluate the form and replace it with its result |
+| `\ew` | Evaluate the word under the cursor - useful to inspect a value |
+| `\E` | Evaluate the visual selection |
+| `\ls` / `\lv` | Open conjure's log in a split / vsplit |
+| `gd` | Conjure's go-to-definition, falling back to the LSP |
+| `K` | Conjure's documentation lookup (it shadows LSP hover in these buffers) |
+
+Clojure evaluation needs an nREPL server running in the project; conjure connects on its own through the `.nrepl-port` file. Fennel evaluates inside Neovim with no external process, and Racket and Scheme use REPL processes conjure manages itself.
+
+## Slimv - SLIME for Common Lisp
+
+Active in Lisp buffers, with all commands under the **comma** key - that namespace effectively belongs to slimv. The first evaluation starts an sbcl+swank server automatically.
+
+| Key | Action |
+|-----|--------|
+| `,c` | Connect to the swank server |
+| `,d` / `,e` | Evaluate the current defun / the current expression |
+| `,b` | Evaluate the buffer |
+| `,i` | Inspect the object under the cursor |
+| `,s` / `,h` | Describe the symbol / look it up in the HyperSpec |
+| `,g` | Set the current package |
+| `,y` | Interrupt a running evaluation |
+| `,,` | Open slimv's menu of every command, tab-completable |
+
+The full key list is in `:help slimv-keyboard`.

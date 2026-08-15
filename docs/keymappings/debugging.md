@@ -1,17 +1,17 @@
-# Debugging - nvim-dap (lua/hwangfu/dap.lua; loads on first use)
+# Debugging
+
+*Defined in `lua/hwangfu/dap.lua` (nvim-dap); nothing loads until the first debug key is pressed.*
 
 | Key | Action |
 |-----|--------|
-| `F5` | Start / continue (Rust-aware: routes through rustaceanvim) |
-| `Shift-F5` | Terminate session |
+| `F5` | Start or continue. In Rust buffers this routes through rustaceanvim's target picker |
+| `Shift-F5` | Terminate the session |
 | `F6` | Pause |
-| `F7` | Toggle dap-ui panel |
-| `F8` | `:RustLsp debuggables` - pick a cargo target to debug |
-| `F9` / `Shift-F9` | Toggle breakpoint / conditional breakpoint |
+| `F7` | Toggle the debugger panel |
+| `F8` | Pick a Rust cargo target to debug |
+| `F9` / `Shift-F9` | Toggle a breakpoint / set a conditional breakpoint |
 | `F10` / `F11` / `Shift-F11` | Step over / into / out |
 
-OCaml sessions use ocamlearlybird (installed via opam, not mason) and
-debug BYTECODE only: give the executable stanza `(modes byte exe)`, run
-`dune build`, then F5. The launch config globs `_build/**/*.bc` - one
-match runs directly, several offer a numbered choice, none prompts for
-a path.
+## OCaml
+
+OCaml debugging uses ocamlearlybird (installed through opam) and works on bytecode builds only. Give the executable stanza `(modes byte exe)`, run `dune build`, then press `F5`: the launch config finds `.bc` files under `_build` on its own - a single match runs directly, several offer a choice, and none prompts for a path.

@@ -1,13 +1,12 @@
 # Markdown and preview
 
+*Preview defined in `lua/hwangfu/plugins/spec/live_preview.lua`; in-buffer rendering in `lua/hwangfu/plugins/spec/render_markdown.lua`.*
+
 | Key | Action |
 |-----|--------|
-| `<leader>mp` | `:LivePreview start` - browser preview (md/HTML/adoc/SVG) |
-| `<leader>ms` | `:LivePreview close` - stop the preview server |
-| `<leader>mt` | `:LivePreview pick` - telescope picker of previewable files |
-| `<leader>mr` | `:MarkdownRender toggle` - in-buffer render (render-markdown) |
+| `<leader>mp` | Start the browser preview - Markdown, HTML, AsciiDoc, and SVG, with live reload |
+| `<leader>ms` | Stop the preview server |
+| `<leader>mt` | Pick a previewable file through telescope |
+| `<leader>mr` | Toggle in-buffer Markdown rendering |
 
-`:MarkdownRender` subcommands: enable / disable / toggle, buf_enable /
-buf_disable / buf_toggle, set [true|false], set_buf, preview, expand,
-contract, log, debug, config. (Renamed from upstream's :RenderMarkdown.)
-`:LivePreview help` lists its subcommands. Server: 127.0.0.1:5500.
+The preview serves at `127.0.0.1:5500`. In-buffer rendering is on by default for Markdown files; `:MarkdownRender` offers finer control (enable, disable, per-buffer variants, and more - it was renamed from upstream's `:RenderMarkdown`).

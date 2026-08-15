@@ -1,17 +1,18 @@
-# Telescope (lua/hwangfu/telescope.lua)
+# Telescope
+
+*Defined in `lua/hwangfu/telescope.lua`.*
 
 | Key | Picker |
 |-----|--------|
-| `<leader>ff` | Find files by name |
-| `<leader>fg` | Live grep project contents |
-| `<leader>fs` | Grep word under cursor |
+| `<leader>ff` | Files by name |
+| `<leader>fg` | Live grep across the project |
+| `<leader>fs` | Grep the word under the cursor |
 | `<leader>fb` | Open buffers |
-| `<leader>fr` | Recent files |
+| `<leader>fr` | Recently opened files |
 | `<leader>fd` | Project diagnostics |
 | `<leader>fh` | Neovim help |
-| `<leader>fk` | Search every keymap (discovery tool) |
+| `<leader>fk` | All keymaps - handy for discovering bindings |
 
-All pickers also via `:Telescope <picker> [key=value ...]`; bare
-`:Telescope` lists every picker. Inside the popup: Ctrl-N/P move, Enter
-opens, Ctrl-X/Ctrl-V/Ctrl-T open in split/vsplit/tab, Ctrl-U/D scroll
-preview, Ctrl-C closes, Ctrl-/ shows telescope's own mappings.
+Every picker is also a command: `:Telescope <picker>`, and bare `:Telescope` lists them all.
+
+Inside a picker: `Ctrl-N` / `Ctrl-P` move, `Enter` opens, `Ctrl-X` / `Ctrl-V` / `Ctrl-T` open in a split / vsplit / tab, `Ctrl-U` / `Ctrl-D` scroll the preview, `Ctrl-C` closes, and `Ctrl-/` shows telescope's own mappings.

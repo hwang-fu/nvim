@@ -1,18 +1,21 @@
-# Structural editing - nvim-treesitter-textobjects (spec in lua/hwangfu/plugins/spec/textobjects.lua)
+# Structural editing
 
-Syntax-aware text objects (visual + operator-pending) and motions
-(normal + visual + operator-pending), added 2026-08-14. Works in every
-treesitter language here EXCEPT erlang (no upstream queries - the maps
-quietly no-op there).
+*Defined in `lua/hwangfu/plugins/spec/textobjects.lua` (nvim-treesitter-textobjects).*
+
+Text objects let operators work on syntax units: `vaf` selects a whole function, `dif` deletes just its body, `cia` changes a parameter. The motions jump between those units.
 
 | Key | Action |
 |-----|--------|
-| `af` / `if` | A function / inner function (vaf selects whole def linewise, dif deletes just the body) |
-| `ac` / `ic` | A class / inner class ("class" = struct / impl / module in class-less languages) |
-| `aa` / `ia` | A parameter incl. separating comma / just the parameter |
-| `]f` / `[f` | Next / previous function start |
-| `]F` / `[F` | Next / previous function end |
-| `]]` / `[[` | Next / previous class start (overrides built-in section motions) |
+| `af` / `if` | A function / its body only |
+| `ac` / `ic` | A class / its body only. "Class" adapts per language: struct, impl block, or module where there are no classes |
+| `aa` / `ia` | A parameter with its comma / the parameter alone |
+| `]f` / `[f` | Jump to the next / previous function start |
+| `]F` / `[F` | Jump to the next / previous function end |
+| `]]` / `[[` | Jump to the next / previous class start |
 
-]c / [c remain gitsigns hunk navigation. Motions set the jumplist, so
-Ctrl-O walks back after an overshoot.
+## Notes
+
+- The selections work in visual and operator-pending mode; the jumps also work in normal mode.
+- Every treesitter language here is covered except Erlang, which has no upstream queries - the keys quietly do nothing there.
+- `]c` and `[c` are *not* class motions; they belong to [git](git.md) hunk navigation.
+- Jumps land in the jump list, so `Ctrl-O` returns after an overshoot.

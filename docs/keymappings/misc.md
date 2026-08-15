@@ -1,15 +1,8 @@
 # Everything else
 
-- vim-surround (plugin defaults): `ys{motion}{char}` add, `cs{old}{new}`
-  change, `ds{char}` delete, visual `S{char}` wrap.
-- `:ToggleWS` - toggle whitespace visualization for this window
-  (lua/hwangfu/init.lua).
-- `:Lazy` - plugin manager UI; `:Lazy sync` install/update.
-- `:Mason`, `:MasonInstall`, `:MasonUpdate` - external tool binaries
-  (currently just the codelldb debug adapter).
-- `:TSInstall <lang>` / `:TSUpdate` - treesitter parsers.
-- Colorschemes switch automatically per filetype (lua/hwangfu/colors.lua);
-  no keybinding. Two groups since 2026-08: web/markup (html/htmlangular/
-  css/scss) gets 256_noir; everything else - code, structured config, and
-  markdown alike - gets dracula with a dark-green background. (Markdown
-  previously had its own look via the local green.vim theme.)
+- **vim-surround** works with its stock keys: `ys{motion}{char}` adds a surrounding pair, `cs{old}{new}` changes it, `ds{char}` deletes it, and `S{char}` wraps a visual selection.
+- `:ToggleWS` toggles whitespace visualization for the current window (defined in `lua/hwangfu/init.lua`).
+- `:Lazy` opens the plugin manager; `:Lazy sync` installs and updates.
+- `:Mason` manages external tool binaries - currently only the codelldb debug adapter.
+- `:TSInstall <lang>` and `:TSUpdate` manage treesitter parsers.
+- Colorschemes switch automatically by filetype (`lua/hwangfu/colors.lua`), with no keybinding: web and markup files get 256_noir, everything else gets dracula on a dark-green background.
