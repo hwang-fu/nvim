@@ -17,7 +17,8 @@ A listing is an ordinary buffer you edit like text, and `:w` applies your edits 
 | `Ctrl-P` | Preview the entry in a float |
 | `Ctrl-L` | Refresh the listing from disk |
 | `g.` | Toggle hidden dotfiles (shown by default) |
-| `gs` / `gx` | Change the sort order / open with the system handler |
+| `gs` | Change the sort order |
+| `gx` | Open the entry with your desktop's default application for that file type - image viewer for pictures, PDF reader, browser for HTML (via xdg-open) |
 | `g?` | Oil's own key help |
 
 Oil's default `Ctrl-S` (open in vsplit) is disabled so that `Ctrl-S` keeps meaning "save".
