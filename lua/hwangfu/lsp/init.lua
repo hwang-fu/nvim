@@ -17,6 +17,8 @@
 --   lsp/linters.lua        - external diagnostic-producing CLIs (shellcheck,
 --                            hadolint, checkmake) wrapped as vim.diagnostic
 --                            sources.
+--   lsp/logrotate.lua      - startup size cap for the shared LSP log
+--                            (state/nvim/lsp.log), which core never rotates.
 --
 -- What M.setup() does, in order:
 --   1. vim.filetype.add() for filetypes Neovim does not ship rules for
@@ -26,6 +28,7 @@
 --   3. require + setup() each entry in SERVERS.
 --   4. require + setup() the format module (autocmds + binary check).
 --   5. require + setup() the linters module.
+--   6. require + setup() the logrotate module (deferred LSP-log size check).
 --
 -- Treesitter activation is NOT in here - it lives in the treesitter plugin's
 -- `config = function() ... end` in lua/hwangfu/plugins/spec/treesitter.lua, where it
@@ -192,6 +195,10 @@ function M.setup()
     -- External linters (shellcheck, hadolint, checkmake) as vim.diagnostic
     -- sources.
     require("hwangfu.lsp.linters").setup()
+
+    -- LSP log size cap (deferred a few seconds; trims state/nvim/lsp.log
+    -- when it outgrows the threshold in logrotate.lua).
+    require("hwangfu.lsp.logrotate").setup()
 end
 
 return M
