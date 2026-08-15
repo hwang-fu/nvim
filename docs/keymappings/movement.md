@@ -1,6 +1,6 @@
 # Movement keys
 
-*Defined in `lua/hwangfu/keymappings/editor.lua`.*
+*Defined in `lua/hwangfu/keymappings/movement.lua`.*
 
 | Key | Mode | Action |
 |-----|------|--------|

@@ -16,13 +16,13 @@
 --                         Undo              Ctrl-U / Ctrl-Z (n)
 --                         Select all        Ctrl-A (n/i)
 --                         Visual selection  Shift+arrows (n)
---                         Scrolling         Ctrl+Up/Down
---                         Word motion       Ctrl+Left/Right
---                         Move line         Alt+Up/Down
 --                         Comment toggle    Ctrl-/ (n + v; Ctrl-_ is the
 --                                           same keypress in legacy
 --                                           terminal encodings, not a
 --                                           free key)
+--   * movement.lua    - Scrolling         Ctrl+Up/Down
+--                       Word motion       Ctrl+Left/Right
+--                       Move line         Alt+Up/Down
 --   * mouse.lua       - Ctrl+LeftClick smart jump: LSP definition;
 --                       references when clicked at the definition
 --                       itself; quiet ctags fallback in non-LSP
@@ -80,6 +80,7 @@ local M = {}
 -- require("hwangfu.keymappings").setup()
 function M.setup()
     require("hwangfu.keymappings.editor").setup()
+    require("hwangfu.keymappings.movement").setup()
     require("hwangfu.keymappings.mouse").setup()
     require("hwangfu.keymappings.navigation").setup()
 end
