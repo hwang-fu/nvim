@@ -42,7 +42,7 @@ These are defined in `lua/hwangfu/keymappings/`, one file per page:
 - [ocaml](lsp/ocaml.md) - OCaml editing commands and the utop REPL
 - [haskell](lsp/haskell.md) - HLS subcommands and Hoogle hover
 - [elixir](lsp/elixir.md) - Mix tasks and pipe rewriting
-- [lisp](lisp.md) - evaluating Lisp code from the buffer
+- [lisp](lsp/lisp.md) - evaluating Lisp code from the buffer
 - [crates](crates.md) - Cargo.toml dependency commands
 - [fhir](fhir.md) - FHIR resource tooling
 
