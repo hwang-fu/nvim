@@ -9,11 +9,10 @@ One page for "where is it?" - in the current file, across the project, and by sy
 | `*` / `#` | Search the word under the cursor, forward / backward (built in) |
 | `n` / `N` | Repeat the last search, forward / backward (built in) |
 | `<leader>f/` | Fuzzy search the buffer's lines in a picker - scattered letters match, no regex |
-| `s` | Flash jump: type two characters, every match on screen gets a one-letter label, press the label to land there. Works in normal, visual, and operator-pending mode - `ds` + label deletes up to it |
-| `S` | Flash treesitter select: labels appear on the syntax constructs around the cursor (expression, call, function); pick one to select it |
-| `/` and `?` | The built-in searches; starting with `/` switches to modern regex syntax where `+`, `(`, and `|` work without backslashes |
+| `s` | Flash jump: type a few characters of the target (matched literally, no regex, keep typing to narrow), every match on screen gets a one-letter label; press the label to land on that match, or `Enter` for the first one. Works in normal, visual, and operator-pending mode - `ds` + label deletes up to it |
+| `/` and `?` | The built-in searches; starting with `/\v` switches to modern regex syntax where `+`, `(`, and `|` work without backslashes |
 
-Flash's `s` / `S` shadow the built-in synonyms for `cl` and `cc`; those spellings still work.
+Flash's `s` shadows the built-in synonym for `cl`; that spelling still works.
 
 ## Across the project
 
