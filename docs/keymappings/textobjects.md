@@ -8,6 +8,8 @@ A text object does nothing on its own - it names a *region* for another key to a
 
 The `a` / `i` prefix chooses how much: `a` is *around* (the whole construct), `i` is *inner* (only its inside).
 
+In plain normal mode `a` still means append and `i` still means insert - nothing changed there. These objects exist only *after* a verb (when Vim is waiting for a region to act on) or inside a visual selection. That is why every combination below starts with a verb, and it is the same mechanics that lets the built-in `diw` work even though `i` alone enters insert mode.
+
 | Object | Region it names |
 |--------|-----------------|
 | `af` | A whole function, signature included |
