@@ -38,9 +38,10 @@
 --   * runnables         popup picker of tests / examples / binaries the
 --                       plugin detected in the crate; runs the choice
 --                       in a terminal split.
---   * debuggables       same picker, but via DAP. Wired up now: nvim-dap +
---                       codelldb (codelldb installed by mason) drive it,
---                       configured in lua/hwangfu/dap.lua; <F8> maps to it.
+--   * debuggables       same picker, but via DAP. NOT functional here:
+--                       the nvim-dap stack was removed 2026-08-15 at the
+--                       user's request (debugging happens outside the
+--                       editor for now), so this subcommand errors.
 --   * hover range       (visual mode) show the inferred type of the
 --                       selected expression. Useful when K on a
 --                       generic-fn name only shows `<T>` and you want
@@ -247,7 +248,7 @@ end
 --
 -- The rustaceanvim plugin reads this table at filetype-handler registration
 -- time. Three top-level keys are accepted by the plugin: `tools`, `server`,
--- `dap`. We set all three (dap is empty for now).
+-- `dap`. We set the first two; `dap` is deliberately absent (see below).
 --
 -- tools (editor-side behavior):
 --   * float_win_config.auto_focus = false keeps the existing K muscle
@@ -283,14 +284,13 @@ end
 --     but we set it explicitly so the intent is visible.
 --
 -- dap (debugger):
---   * Intentionally left empty. nvim-dap + codelldb are now installed
---     (codelldb via mason; the DAP stack is configured in
---     lua/hwangfu/dap.lua), and rustaceanvim auto-detects a mason-installed
---     codelldb on its own - so it builds the adapter and launch
---     configurations from cargo metadata without any adapter knob set here.
---     :RustLsp debuggables / debug just work. See :h rustaceanvim.dap and
---     `:checkhealth rustaceanvim` if detection ever fails (the documented
---     fallback is require("rustaceanvim.config").get_codelldb_adapter()).
+--   * Absent on purpose. The whole debugging stack (nvim-dap, dap-ui,
+--     mason/codelldb, lua/hwangfu/dap.lua) was removed 2026-08-15 at the
+--     user's request - debugging happens outside the editor for now.
+--     :RustLsp debuggables / debug therefore error. To bring debugging
+--     back, restore those pieces from git history; rustaceanvim then
+--     auto-detects a mason-installed codelldb with no dap knob needed
+--     here.
 -- ----------------------------------------------------------------------------
 local function install_rustaceanvim_config()
     vim.g.rustaceanvim = {
@@ -438,7 +438,6 @@ local function install_rustaceanvim_config()
             },
         },
 
-        dap = {},
     }
 end
 

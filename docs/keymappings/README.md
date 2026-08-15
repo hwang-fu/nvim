@@ -35,11 +35,10 @@ These are defined in `lua/hwangfu/keymappings/`, one file per page:
 - [git](git.md) - hunk editing, the lazygit window, and diff views
 - [explorer](explorer.md) - the oil.nvim file listings
 - [markdown](markdown.md) - browser preview and in-buffer rendering
-- [debugging](debugging.md) - the debugger's F-keys
 
 ## Languages
 
-- [rust](lsp/rust.md) - rust-analyzer extras and cargo debugging
+- [rust](lsp/rust.md) - rust-analyzer extras
 - [ocaml](lsp/ocaml.md) - OCaml editing commands and the utop REPL
 - [haskell](lsp/haskell.md) - HLS subcommands and Hoogle hover
 - [elixir](lsp/elixir.md) - Mix tasks and pipe rewriting

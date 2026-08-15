@@ -9,8 +9,8 @@
 --
 -- This module is invoked from the crates.nvim plugin spec's `config` hook in
 -- lua/hwangfu/plugins/spec/crates.lua (lazy-loaded on `BufRead Cargo.toml`), NOT from the
--- top-level module list in init.lua. Same pattern as dap.lua and
--- rust_analyzer.lua: the module is wired from its plugin spec so it stays lazy
+-- top-level module list in init.lua. Same pattern as rust_analyzer.lua:
+-- the module is wired from its plugin spec so it stays lazy
 -- and only loads when a Cargo.toml is actually opened.
 --
 -- Integration approach: IN-PROCESS LANGUAGE SERVER, not the nvim-cmp source.

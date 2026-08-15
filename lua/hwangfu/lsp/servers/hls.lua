@@ -159,10 +159,11 @@ function M.setup()
             },
         },
 
-        -- DAP integration: empty placeholder. nvim-dap + a Haskell
-        -- debug adapter (haskell-debug-adapter) are not yet installed;
-        -- once they are, haskell-tools auto-detects and `:Haskell dap`
-        -- subcommands become available. See :h haskell-tools-dap.
+        -- DAP integration: empty placeholder. This config ships no
+        -- debugger stack (the nvim-dap setup was removed 2026-08-15 at
+        -- the user's request). If one ever returns, haskell-tools
+        -- auto-detects nvim-dap + haskell-debug-adapter and `:Haskell
+        -- dap` subcommands appear. See :h haskell-tools-dap.
         dap = {},
     }
 end

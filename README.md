@@ -22,7 +22,6 @@ You need Neovim 0.12 or newer, a terminal with a Nerd Font, and the toolchains o
 | `Ctrl-T` | Toggle the file sidebar |
 | `Ctrl-LeftClick` | Jump to a symbol's definition |
 | `K` | Documentation for the symbol under the cursor |
-| `F5` | Start the debugger |
 
 The full reference lives in [docs/keymappings/](docs/keymappings/README.md), one page per topic. From inside the editor, `<leader>fk` searches every live keymap, and which-key pops up the possibilities whenever you pause mid-shortcut.
 
@@ -40,7 +39,6 @@ The full reference lives in [docs/keymappings/](docs/keymappings/README.md), one
 | `lua/hwangfu/git.lua` | The lazygit floating window |
 | `lua/hwangfu/term.lua` | The shared floating-terminal helper |
 | `lua/hwangfu/repl.lua` | The utop REPL float, built on that helper |
-| `lua/hwangfu/dap.lua` | Debugger setup and the F-key bindings |
 | `lua/hwangfu/crates.lua` | Cargo.toml dependency intelligence |
 | `colors/` | Local colorschemes |
 | `docs/keymappings/` | The keybinding reference, one Markdown page per topic |
@@ -97,13 +95,6 @@ Repository-level work (commit, branch, push) happens in lazygit, floating in a t
 | rainbow-delimiters.nvim | Colors parentheses by nesting depth |
 | conjure | Evaluates code from the buffer with inline results (Clojure, Fennel, Racket, Scheme) |
 | slimv | The full SLIME experience for Common Lisp: debugger, inspector, sbcl + swank |
-
-### Debugging
-
-| Plugin | Purpose |
-|--------|---------|
-| nvim-dap, with dap-ui and virtual text | Debugger client with a panel and inline variable values |
-| mason.nvim | Installs the codelldb adapter binary - its only job here |
 
 ### Appearance
 

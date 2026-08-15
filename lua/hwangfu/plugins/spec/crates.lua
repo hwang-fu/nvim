@@ -17,7 +17,7 @@
 -- ships a moving `stable` tag); `event = "BufRead Cargo.toml"` keeps it off
 -- the startup path until a manifest is actually opened. All behavior lives
 -- in lua/hwangfu/crates.lua, invoked from `config` (same lazy-from-spec
--- pattern as dap.lua / rust_analyzer.lua).
+-- pattern as rust_analyzer.lua).
 return {
 	"saecki/crates.nvim",
 	tag = "stable",

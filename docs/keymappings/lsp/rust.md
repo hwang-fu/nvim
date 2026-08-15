@@ -8,7 +8,6 @@ All common [LSP keys](lsp.md) apply, plus:
 |---------------|--------|
 | `:RustFormat` | Format the buffer with rustfmt (format-on-save is off for Rust by choice) |
 | `K` | Upgraded hover: shows actions you can pick, not just documentation |
-| `F8` | Pick a cargo target to debug (see [debugging](../debugging.md)) |
 
 Cargo.toml dependency management has its own page: [crates](../crates.md).
 
@@ -22,8 +21,8 @@ A bang - `:RustLsp!` - repeats the last runnable, debuggable, or testable withou
 |---------|--------|
 | `:RustLsp runnables` | Pick any runnable target in the project (binaries, tests, doctests) and run it |
 | `:RustLsp run` | Run the target at the cursor position |
-| `:RustLsp debuggables` | Pick a target and debug it through nvim-dap; `F8` is bound to this |
-| `:RustLsp debug` | Debug the target at the cursor position |
+| `:RustLsp debuggables` | Pick a target and debug it through nvim-dap - errors here, since this config ships no debugger stack |
+| `:RustLsp debug` | Like `debuggables` for the target at the cursor position; same caveat |
 | `:RustLsp testables` | Pick a test target and run it |
 | `:RustLsp relatedTests` | Open the tests rust-analyzer associates with the symbol under the cursor |
 | `:RustLsp flyCheck` | Run `cargo check` in the background and publish its diagnostics; `clear` and `cancel` arguments manage a running check |

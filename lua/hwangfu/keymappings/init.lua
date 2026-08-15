@@ -71,11 +71,6 @@
 --                         namespace belongs to slimv (its spec).
 --                         parinfer-rust and rainbow-delimiters add no
 --                         keys at all.
---   * Debugging         - F5 start/continue, S-F5 stop, F6 pause, F7 UI,
---                         F8 Rust debuggables, F9 breakpoint, F10/F11/
---                         S-F11 step over/into/out - global, defined in
---                         lua/hwangfu/dap.lua (bare `keys` triggers in the
---                         nvim-dap spec lazy-load the stack on first press)
 -- ============================================================================
 
 local M = {}
