@@ -13,7 +13,7 @@
 | `<leader>rn` | Rename the symbol across the project |
 | `<leader>ca` | Code actions |
 | `gl` | Show this line's diagnostics in a float |
-| `grr` | List references (built in) |
+| `grr` | Peek references in the [glance](glance.md) panel (upgraded from the built-in quickfix listing) |
 | `grn` | Rename (built in) |
 | `gra` | Code actions (built in) |
 | `gri` | Go to implementation (built in) |

@@ -74,15 +74,21 @@ end
 -- in both normal and insert mode because signature help is most useful while
 -- typing.
 --
--- References is deliberately NOT mapped to `gr` here. Neovim 0.11 ships the
--- default LSP mappings grn / gra / grr / gri (rename / code action /
--- references / implementation). A manual `gr` map is then a prefix of all
--- four, so pressing it stalls for `timeoutlen` (~1s) before firing. Use the
--- built-in `grr` for references instead.
+-- Bare `gr` is deliberately never mapped. Neovim 0.11 ships the default
+-- LSP mappings grn / gra / grr / gri (rename / code action / references /
+-- implementation); a manual `gr` map would be a prefix of all four and
+-- stall each for `timeoutlen` (~1s). The full-length `grr` is fair game
+-- though - it is overridden below to peek references via Glance.
 function M.set_common_keymaps(bufnr)
     local map = function(mode, lhs, rhs)
         vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, silent = true })
     end
+
+    -- grr upgraded (2026-08-15): the built-in lists references into the
+    -- quickfix list; Glance peeks them in an embedded panel instead.
+    -- Same mnemonic, better view - and <C-q> inside the panel still
+    -- sends everything to quickfix when process-all mode is wanted.
+    map("n", "grr", "<Cmd>Glance references<CR>")
 
     map("n", "gd", vim.lsp.buf.definition)
     map("n", "gD", vim.lsp.buf.declaration)
