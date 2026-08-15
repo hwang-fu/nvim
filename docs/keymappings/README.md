@@ -25,7 +25,7 @@ These are defined in `lua/hwangfu/keymappings/`, one file per page:
 - [textobjects](textobjects.md) - select or jump between functions, classes, and parameters
 - [which-key](which-key.md) - the popup that shows available keys as you type
 - [completion](completion.md) - the completion menu
-- [lsp](lsp.md) - language server keys, plus per-language extras
+- [lsp](lsp/lsp.md) - language server keys, with per-language pages under lsp/
 - [telescope](telescope.md) - fuzzy finding
 
 ## Tools
@@ -37,7 +37,10 @@ These are defined in `lua/hwangfu/keymappings/`, one file per page:
 
 ## Languages
 
-- [ocaml](ocaml.md) - OCaml editing commands and the utop REPL
+- [rust](lsp/rust.md) - rust-analyzer extras and cargo debugging
+- [ocaml](lsp/ocaml.md) - OCaml editing commands and the utop REPL
+- [haskell](lsp/haskell.md) - HLS subcommands and Hoogle hover
+- [elixir](lsp/elixir.md) - Mix tasks and pipe rewriting
 - [lisp](lisp.md) - evaluating Lisp code from the buffer
 - [crates](crates.md) - Cargo.toml dependency commands
 - [fhir](fhir.md) - FHIR resource tooling
