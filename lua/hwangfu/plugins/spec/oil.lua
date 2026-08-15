@@ -46,7 +46,8 @@
 --           sidebar would strand the previous buffer in the 35-col
 --           split. Still overrides oil's default <C-t>
 --           open-in-new-tab, which would shadow the global toggle)
---   <C-c>   close the listing (oil default; same effect as <C-t>)
+--   <C-c>   DISABLED (2026-08-15): <C-t> is the one close key; the
+--           key falls back to its harmless built-in
 --
 -- Opening / inspecting:
 --   <C-h>   open entry in a horizontal split
@@ -110,6 +111,7 @@ return {
 					desc = "Close sidebar / listing",
 				},
 				["<C-s>"] = false,
+				["<C-c>"] = false,
 				[".."] = "actions.parent",
 			},
 			view_options = {
