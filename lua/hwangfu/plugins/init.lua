@@ -6,14 +6,28 @@
 -- (init for options, keymap for keybinds, lsp, cmp, colors), each wired up from
 -- the root init.lua.
 --
+-- STRUCTURE (migration in progress, started 2026-08-15): this file is
+-- becoming the thin entrypoint of a per-plugin layout.
+--   * lua/hwangfu/plugins/init.lua  - THIS file (was lua/hwangfu/
+--     plugins.lua): bootstrap + setup() + the not-yet-migrated inline
+--     spec table below.
+--   * lua/hwangfu/plugins/spec/<name>.lua - one file per plugin (or per
+--     inseparable group), returning its lazy.nvim spec. Imported
+--     automatically via { import = "hwangfu.plugins.spec" } in setup().
+--     Each plugin carries its keymaps and documentation with it.
+-- Plugins move from the inline table to spec/ files one at a time, one
+-- commit per move; when the table empties, it and its entry in setup()
+-- get deleted.
+--
 -- Responsibilities, in order:
 --   1. Bootstrap lazy.nvim (clone it on first run).
---   2. Declare the plugin set as a lazy.nvim spec table.
---   3. Hand the spec to require("lazy").setup(...).
+--   2. Declare the (remaining inline) plugin set as a lazy.nvim spec table.
+--   3. Hand spec-dir import + inline table to require("lazy").setup(...).
 --
--- Add a new plugin -> add a spec entry to the `plugins` table below, then
--- restart Neovim (lazy installs missing plugins automatically) or run
--- `:Lazy sync`. Manage plugins interactively with `:Lazy`.
+-- Add a new plugin -> create lua/hwangfu/plugins/spec/<name>.lua returning
+-- its spec, then restart Neovim (lazy installs missing plugins
+-- automatically) or run `:Lazy sync`. Manage plugins interactively with
+-- `:Lazy`.
 --
 -- Migrated from packer.nvim (unmaintained since 2023). The packer -> lazy.nvim
 -- spec translation, for reference when adding plugins:
@@ -64,8 +78,7 @@ end
 -- timing packer used by default, so this migration changes no load behavior.
 -- ----------------------------------------------------------------------------
 local plugins = {
-	-- Add/change/delete surrounding pairs (quotes, brackets, tags).
-	"tpope/vim-surround",
+	-- (vim-surround migrated to spec/surround.lua, 2026-08-15.)
 
 	-- Treesitter: syntax-aware highlighting and parsing.
 	--
@@ -1563,7 +1576,17 @@ local plugins = {
 -- require("hwangfu.plugins").setup()
 function M.setup()
 	bootstrap_lazy()
-	require("lazy").setup(plugins)
+	require("lazy").setup({
+		spec = {
+			-- Per-plugin files: every module under
+			-- lua/hwangfu/plugins/spec/ is imported automatically.
+			{ import = "hwangfu.plugins.spec" },
+			-- Not-yet-migrated inline specs (lazy flattens nested
+			-- lists). Shrinks as the migration proceeds; delete this
+			-- entry together with the table when it empties.
+			plugins,
+		},
+	})
 end
 
 return M
