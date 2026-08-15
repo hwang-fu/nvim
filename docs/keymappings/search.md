@@ -14,6 +14,20 @@ One page for "where is it?" - in the current file, across the project, and by sy
 
 Flash's `s` shadows the built-in synonym for `cl`; that spelling still works.
 
+### The `/` modifiers
+
+Searches are case-sensitive in this config (Neovim's default; `ignorecase` is not set). The modifiers below go inside the pattern and override that per search - anywhere in the pattern, so you can append `\c` after typing the word.
+
+| Modifier | Effect |
+|----------|--------|
+| `\c` | Ignore case for this search: `/hello\c` finds `Hello` and `HELLO` |
+| `\C` | Force exact case |
+| `\v` | "Very magic" from here on: modern regex syntax, `+`, `(`, and pipe work without backslashes |
+| `\V` | "Very nomagic" from here on: everything is literal except `\`, good for searching code like `a.b(x)` |
+| `/word/e` | An offset after the closing `/`: the cursor lands on the end of the match instead of the start |
+
+Matches stay highlighted after the search; `:noh` clears the leftover highlights until the next search.
+
 ## Across the project
 
 | Key | Action |
@@ -37,3 +51,34 @@ Flash's `s` shadows the built-in synonym for `cl`; that spelling still works.
 | `<leader>rn` | Rename the symbol under the cursor across the project, semantically ([lsp](lsp/lsp.md)) |
 | `Ctrl-R` (visual) | Search-and-replace the selected text across the current file ([editor](editor.md)) |
 | `Alt-Q` in a grep picker, then `:cfdo %s/old/new/ge | update` | Project-wide text replace: send the matches to the quickfix list, then run the substitution over every listed file |
+
+### The `:s` command
+
+The shape is `:[range]s/pattern/replacement/flags`. The range decides which lines are touched: bare `:s` is the current line only, `:%s` is the whole file, `:10,20s` is lines 10 to 20, and starting `:` from a visual selection inserts `'<,'>` (the selected lines) for you.
+
+The buffer previews the result live while you type, before you press Enter (`inccommand`).
+
+| Flag | Effect |
+|------|--------|
+| `g` | Replace every match in each line; without it only the first match per line changes |
+| `c` | Confirm each replacement one by one |
+| `i` | Ignore case for the pattern |
+| `I` | Force exact case |
+| `n` | Report the number of matches, change nothing - a match counter |
+| `e` | No error when nothing matches; keeps `:cfdo` runs going over files without a hit |
+
+With the `c` flag, each match asks:
+
+| Answer | Meaning |
+|--------|---------|
+| `y` | Replace this match |
+| `n` | Skip it |
+| `a` | Replace this and all remaining matches |
+| `l` | Replace this one, then stop ("last") |
+| `q` or `Esc` | Stop without replacing this one |
+| `Ctrl-E` / `Ctrl-Y` | Scroll the view without answering |
+
+Two habits worth stealing:
+
+- An empty pattern reuses the last search: `/old_name`, eyeball the highlighted matches, then `:%s//new_name/g` replaces exactly what you just verified.
+- In the replacement, `&` inserts the whole match and `\1` the first capture group: `:%s/\v(\w+)_temp/\1/g` drops a `_temp` suffix.
