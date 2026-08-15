@@ -185,6 +185,8 @@
   },
   "active": "a38e08b886b963a7",
   "lastOpenFiles": [
+    "README.md",
+    "README.md.tmp.761282.6e433da67882",
     "docs/keymappings/misc.md",
     "docs/keymappings/explorer.md",
     "docs/keymappings/navigation.md",
@@ -212,7 +214,6 @@
     "docs/KEYBINDINGS.md",
     "docs/keymappings/textobjects.md",
     "docs/keymappings",
-    "init.lua.tmp.761282.0988380241f8",
-    "init.lua.tmp.761282.d56a80cbb50d"
+    "init.lua.tmp.761282.0988380241f8"
   ]
 }
