@@ -185,8 +185,9 @@
   },
   "active": "a38e08b886b963a7",
   "lastOpenFiles": [
-    "lua/hwangfu/keymappings/editor.lua.tmp.761282.c39d39e7f655",
     "docs/keymappings/navigation.md",
+    "docs/keymappings/editor.md",
+    "lua/hwangfu/keymappings/editor.lua.tmp.761282.c39d39e7f655",
     "lua/hwangfu/keymappings/navigation.lua.tmp.761282.4ec48379fac3",
     "README.md",
     "README.md.tmp.761282.6e433da67882",
@@ -212,9 +213,7 @@
     "lua/hwangfu/keymappings/init.lua.tmp.761282.f116a74536b9",
     "lua/hwangfu/keymappings/editor.lua.tmp.761282.6d171fb916b3",
     "lua/hwangfu/keymappings/editor.lua.tmp.761282.c65c92b4a778",
-    "docs/keymappings/editor.md",
     "docs/KEYBINDINGS.md",
-    "docs/keymappings/textobjects.md",
-    "docs/keymappings"
+    "docs/keymappings/textobjects.md"
   ]
 }

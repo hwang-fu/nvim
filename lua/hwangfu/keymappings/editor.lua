@@ -140,94 +140,17 @@ function M.setup()
         )
     end, { desc = "Reject quit-from-visual (use <Esc> first)" })
 
-    -- --- Substitute across file (Ctrl-R) --------------------------------
+    -- --- Substitute selection (Ctrl-R, visual only) ----------------------
+    -- Yank the selection into register z, then pre-fill
+    -- `:%s/\V<selection>//g` with the cursor parked between the slashes:
+    -- type the replacement and press Enter, with inccommand previewing
+    -- matches live. \V makes the selection match literally (escape covers
+    -- \ and /), and newlines become \n so multi-line selections work.
+    -- No `c` flag by default; add it before Enter to confirm per match.
     --
-    -- Pre-fill the cmdline with `:%s/\V<pat>//g` and park the cursor
-    -- between the two slashes. You type the replacement and press Enter.
-    -- Neovim's built-in `inccommand` (default = "nosplit" in modern
-    -- Neovim) lights up every match in the buffer as you type the
-    -- replacement, so a misfire is recoverable with <Esc> before
-    -- committing.
-    --
-    -- Pre-fill anatomy: `:%s/\V<pat>//g`
-    --   * %       file-wide range (every line).
-    --   * \V      very-nomagic: everything in the pattern is literal
-    --             except backslash and the delimiter /, which we
-    --             escape via vim.fn.escape. So cursor on `.` matches
-    --             literal dots, cursor on `*` matches literal stars.
-    --   * <pat>   the character / selection, escaped.
-    --   * //      empty replacement; cursor lands here (the 2 <Left>s
-    --             at the end of the feedkeys string walk the cursor
-    --             back over `g` and over the trailing `/`).
-    --   * g       replace every occurrence on each line. No `c` flag
-    --             by design: you almost never want to confirm hundreds
-    --             of single-char replacements. Add `c` manually before
-    --             pressing Enter on the rare occasion you want to step.
-    --
-    -- Behavior per mode:
-    --   * n  Substitute the single character under the cursor.
-    --        Multi-byte-aware: matchstr(line, ".", col-1) returns one
-    --        whole character (UTF-8 / Chinese / emoji safe), not one
-    --        byte. On an empty line (or any cursor position where no
-    --        character resolves) vim.notify warns at WARN level and
-    --        we bail without opening the cmdline.
-    --   * v  Substitute the visual selection. The yank uses register
-    --        "z" so we don't clobber " (unnamed) or + (system
-    --        clipboard); empty selection bails silently because the
-    --        only way to land here is via an aborted visual that has
-    --        no length. Multi-line selections work because we convert
-    --        literal newlines in the yank to \n in the pattern (Vim's
-    --        regex syntax for end-of-line).
-    --   * i  Deliberately unbound. Preserves Vim's built-in "insert
-    --        register" (<C-r>" pastes last yank, <C-r>0 pastes most
-    --        recent explicit yank, <C-r>+ pastes from system
-    --        clipboard, etc.) -- too useful to override.
-    --
-    -- This mapping replaces the previous <C-r> = reload-buffer
-    -- binding. Reload is now `:e<CR>` (3 keystrokes). Vim's built-in
-    -- redo on <C-r> remains shadowed by this mapping (same as before);
-    -- use `:redo<CR>` for redo, or remember that `.` (repeat last
-    -- change) covers most "do that again" cases without needing redo.
-    map("n", "<C-r>", function()
-        local char = vim.fn.matchstr(vim.fn.getline("."), ".", vim.fn.col(".") - 1)
-        if char == "" then
-            vim.notify(
-                "Ctrl-R: no character under cursor (empty line or past EOL)",
-                vim.log.levels.WARN
-            )
-            return
-        end
-        local pat = vim.fn.escape(char, [[\/]])
-        vim.api.nvim_feedkeys(
-            ":%s/\\V" .. pat .. "//g"
-                .. string.rep(vim.api.nvim_replace_termcodes("<Left>", true, false, true), 2),
-            "n",
-            false
-        )
-    end, { desc = "Substitute char under cursor across file" })
-
-    -- Visual variant: string-RHS / <C-r>= idiom instead of a Lua
-    -- callback. A Lua function callback in a visual-mode mapping has
-    -- timing weirdness around the visual-mode exit and the
-    -- '< / '> marks not being set yet when the callback fires; the
-    -- canonical Vim approach below sidesteps the whole question by
-    -- letting Vim execute the key sequence directly while still in
-    -- visual mode. Breakdown of the RHS:
-    --   "zy     yank the active selection into register z (preserves
-    --           the unnamed " register and the system clipboard +)
-    --   :       open the cmdline
-    --   %s/\V   start substitute, file-wide, very-nomagic so the
-    --           contents match literally
-    --   <C-r>=  expression register insertion -- the next expression's
-    --           result gets inserted into the cmdline
-    --     substitute(escape(@z, '\/'), '\n', '\\n', 'g')
-    --       escape \ and / in @z (for \V and the / delimiter), then
-    --       convert real newlines to the literal two-char \n so multi-
-    --       line selections match end-of-line in the regex.
-    --   <CR>    end the expression-register evaluation
-    --   //g     empty replacement, global flag (no `c`; add manually
-    --           on the rare occasion you want per-match confirm)
-    --   <Left><Left>   park cursor between the two slashes
+    -- Normal-mode <C-r> is Vim's BUILT-IN REDO, restored 2026-08-15 (a
+    -- substitute-under-cursor map shadowed it before). Insert-mode <C-r>
+    -- keeps its built-in insert-from-register.
     map("v", "<C-r>",
         [["zy:%s/\V<C-r>=substitute(escape(@z, '\/'), '\n', '\\n', 'g')<CR>//g<Left><Left>]],
         { desc = "Substitute selection across file" }

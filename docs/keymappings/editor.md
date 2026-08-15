@@ -13,8 +13,8 @@ Familiar shortcuts from mainstream editors, layered on top of Vim without touchi
 | `Ctrl-A` | n, i | Select the whole file |
 | `Ctrl-U` | n | Undo |
 | `Ctrl-Z` | n, i | Undo. From insert mode it leaves insert first, so it reverts everything typed since insert began |
-| `Ctrl-R` | n | Search-and-replace the character under the cursor: the command line is pre-filled and previews live as you type the replacement |
-| `Ctrl-R` | v | The same, for the selected text |
+| `Ctrl-R` | n | Redo (built in) |
+| `Ctrl-R` | v | Search-and-replace the selected text across the file: the command line is pre-filled and previews live |
 | `Ctrl-/` | n, v | Toggle comments on the current line or selection |
 | `Shift-arrows` | n | Start a selection and extend it in that direction |
 | `Ctrl-Up` | n, i, v | Scroll up without moving the cursor; in visual mode extend the selection up a line |
@@ -26,5 +26,5 @@ Familiar shortcuts from mainstream editors, layered on top of Vim without touchi
 
 ## Notes
 
-- `Ctrl-R` shadows Vim's built-in redo; use `:redo` when you need it. Inside insert mode, `Ctrl-R` keeps its built-in meaning (insert from a register).
+- In insert mode `Ctrl-R` keeps its built-in meaning: insert from a register.
 - `Ctrl-_` triggers the same comment toggle: older terminals and default tmux send the physical Ctrl+/ keypress as `Ctrl-_`.

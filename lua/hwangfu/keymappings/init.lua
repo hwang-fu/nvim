@@ -11,7 +11,8 @@
 --   * editor.lua      - the editing shortcuts:
 --                         Clipboard         Ctrl-D yank, Ctrl-X cut (v)
 --                         Save / quit       Ctrl-S (n/i/v), Ctrl-Q (n)
---                         Substitute        Ctrl-R (n: char; v: selection)
+--                         Substitute        Ctrl-R (v: selection; n is
+--                                           built-in redo)
 --                         Undo              Ctrl-U (n), Ctrl-Z (n/i)
 --                         Select all        Ctrl-A (n/i)
 --                         Visual selection  Shift+arrows (n)
