@@ -28,6 +28,37 @@ Searches are case-sensitive in this config (Neovim's default; `ignorecase` is no
 
 Matches stay highlighted after the search; `:noh` clears the leftover highlights until the next search.
 
+### The everyday regex atoms
+
+The same pattern syntax drives `/`, `?`, and the pattern half of `:s`. The split that trips everyone coming from other tools: some operators work bare, the rest need a backslash in front.
+
+These work bare:
+
+| Atom | Matches |
+|------|---------|
+| `.` | Any single character |
+| `*` | Zero or more of what precedes it |
+| `^` and `$` | Start and end of line |
+| `[abc]`, `[a-z]`, `[^abc]` | One character from the set, the range, or anything but the set |
+
+These need the backslash:
+
+| Atom | Matches |
+|------|---------|
+| `\+` | One or more of what precedes it |
+| `\?` | Zero or one |
+| `\{2,5}` | Two to five repeats |
+| `\(...\)` | A group; group N comes back as `\N` on the replacement side of `:s` |
+| `\<` and `\>` | Word boundaries: `/\<let\>` matches `let` but not `letter` |
+| `\w` and `\W` | A word character (letter, digit, underscore) and its opposite |
+| `\s` and `\S` | Whitespace and its opposite |
+| `\d` and `\D` | A digit and its opposite |
+| `\zs` and `\ze` | Pin where the reported match starts / ends: `/fn \zs\w\+` matches only the name after `fn ` |
+
+Alternation is backslashed too: `\(red\|blue\)` matches either word.
+
+The second table is the reason `\v` exists: after `\v` the operators drop their backslashes and `\v(red|blue)+` reads like a regex from any other tool. The class shorthands `\w`, `\s`, `\d` keep their backslash either way, exactly as in PCRE.
+
 ## Across the project
 
 | Key | Action |
