@@ -4,7 +4,7 @@
 
 ## Text objects
 
-> [!WARNING]
+> [!NOTE]
 > **These keys do nothing by themselves.** Typing `af` in normal mode just appends text after the cursor. You must press a verb FIRST - `v` (select), `d` (delete), `y` (copy), or `c` (change) - and only then the object: `vaf`, `daf`, `yaf`, `caf`.
 
 A text object names a *region* for the verb to act on. It is the same grammar as Vim's built-in `diw` (delete a word) - these objects just name code regions instead of words.
