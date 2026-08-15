@@ -8,7 +8,7 @@ Familiar shortcuts from mainstream editors, layered on top of Vim without touchi
 |-----|------|--------|
 | `Ctrl-S` | n, i, v | Save the file. In visual mode the selection is dropped first |
 | `Ctrl-Q` | n | Quit the window. In insert or visual mode it shows an error instead, telling you to press Esc first |
-| `Ctrl-C` / `Ctrl-D` | v | Copy the selection to the system clipboard |
+| `Ctrl-D` | v | Copy the selection to the system clipboard |
 | `Ctrl-X` | v | Cut the selection to the system clipboard |
 | `Ctrl-A` | n, i | Select the whole file |
 | `Ctrl-U` | n | Undo |

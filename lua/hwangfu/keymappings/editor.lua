@@ -71,7 +71,8 @@ function M.setup()
 
     -- --- Clipboard (system) ---------------------------------------------
     map("v", "<C-D>", '"+y')
-    map("v", "<C-c>", '"+y')
+    -- (<C-c> copy alias removed 2026-08-15; visual <C-c> is back to its
+    -- built-in cancel-selection behavior.)
     map("v", "<C-X>", '"+x')
     -- Save (visual/select) needs a Lua callback rather than the obvious
     -- string RHS "<Esc>:w<CR>". Quirk: when Select mode was entered via

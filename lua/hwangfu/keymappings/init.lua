@@ -9,7 +9,7 @@
 -- STRUCTURE (split from the single lua/hwangfu/keymap.lua on 2026-08-15,
 -- one file per domain; each file documents its own maps in full):
 --   * editor.lua      - the editing shortcuts:
---                         Clipboard         Ctrl-C/D yank, Ctrl-X cut (v)
+--                         Clipboard         Ctrl-D yank, Ctrl-X cut (v)
 --                         Save / quit       Ctrl-S (n/i/v), Ctrl-Q (n)
 --                         Substitute        Ctrl-R (n: char; v: selection)
 --                         Undo              Ctrl-U (n), Ctrl-Z (n/i)
