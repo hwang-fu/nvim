@@ -1531,22 +1531,8 @@ local plugins = {
 		end,
 	},
 
-	-- ARM assembly syntax highlighting.
-	"ARM9/arm-syntax-vim",
-
-	{
-		"hwang-fu/fhir.nvim",
-		opts = {
-			keymaps = {
-				goto_reference = "gd",
-				find_usages = "gr",
-				outline = "<leader>fo",
-				eval = "<leader>fe",
-				diagnostics = "gl",
-				fix = "ga",
-			},
-		},
-	},
+	-- (arm-syntax-vim migrated to spec/arm_syntax.lua, fhir.nvim to
+	-- spec/fhir.lua, 2026-08-15.)
 }
 
 -- ----------------------------------------------------------------------------
