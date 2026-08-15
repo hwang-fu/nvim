@@ -6,13 +6,19 @@
 |-----|--------|
 | `K` | Hover documentation. Press `K` again to enter the popup; `q` closes it |
 | `Ctrl-K` | Signature help, also while typing in insert mode |
-| `gd` / `gD` | Go to definition / declaration |
-| `gt` / `gi` | Go to type definition / implementation |
+| `gd` | Go to definition |
+| `gD` | Go to declaration |
+| `gt` | Go to type definition |
+| `gi` | Go to implementation |
 | `<leader>rn` | Rename the symbol across the project |
 | `<leader>ca` | Code actions |
 | `gl` | Show this line's diagnostics in a float |
-| `grr` / `grn` / `gra` / `gri` | Neovim's built-ins for references / rename / actions / implementation |
-| `[d` / `]d` | Previous / next diagnostic (built in) |
+| `grr` | List references (built in) |
+| `grn` | Rename (built in) |
+| `gra` | Code actions (built in) |
+| `gri` | Go to implementation (built in) |
+| `[d` | Previous diagnostic (built in) |
+| `]d` | Next diagnostic (built in) |
 
 Formatting runs automatically on save, per language; `lua/hwangfu/lsp/format.lua` defines which formatter each language uses.
 
