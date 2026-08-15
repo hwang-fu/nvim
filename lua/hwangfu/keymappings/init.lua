@@ -44,11 +44,9 @@
 --                         quick reference" comment for the full table)
 --   * Git UI            - <leader>gg lazygit float (lua/hwangfu/git.lua);
 --                         <leader>gd / gh / gH diffview (its spec's keys)
---   * Browser preview   - <leader>mp start / ms close / mt pick
---                         (live-preview.nvim spec)
---   * Markdown render   - <leader>mr (or :MarkdownRender toggle) toggles
---                         in-buffer rendering on/off (render-markdown.nvim
---                         spec; lazy `ft`/`keys`/`cmd` triggers, default on)
+--   * Markdown/preview  - commands only, no keys (:LivePreview,
+--                         :MarkdownRender; specs of live-preview.nvim
+--                         and render-markdown.nvim)
 --   * Textobjects       - af/if, ac/ic, aa/ia (visual + operator-
 --                         pending); ]f/[f, ]F/[F, ]]/[[ motions
 --                         (nvim-treesitter-textobjects spec; ]c/[c stay

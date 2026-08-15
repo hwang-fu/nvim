@@ -19,24 +19,15 @@
 -- "127.0.0.1". The one non-default is picker = "telescope" - explicit
 -- beats auto-detect, and telescope is the only picker installed.
 --
--- Keymaps (<leader>m* namespace, shared with render-markdown's mr):
---   <leader>mp   :LivePreview start   preview current file in browser
---   <leader>ms   :LivePreview close   stop the preview server
---   <leader>mt   :LivePreview pick    telescope picker of previewable files
--- Semantics vs the old mkdp maps: mp now works on any supported
--- filetype (not just markdown), ms was "stop" (now close), mt was
--- "toggle" (live-preview has no toggle; pick is the nearest verb).
+-- Command-driven, no keymaps (the <leader>m* set was removed
+-- 2026-08-15 to free the namespace): :LivePreview start / close /
+-- pick, working on any supported filetype.
 --
--- cmd + keys lazy-load the plugin on first use; it previously loaded
+-- cmd lazy-loads the plugin on first use; it previously loaded
 -- eagerly at startup for no benefit.
 return {
 	"brianhuster/live-preview.nvim",
 	cmd = { "LivePreview" },
-	keys = {
-		{ "<leader>mp", "<cmd>LivePreview start<CR>", desc = "Preview: start (browser)" },
-		{ "<leader>ms", "<cmd>LivePreview close<CR>", desc = "Preview: stop server" },
-		{ "<leader>mt", "<cmd>LivePreview pick<CR>", desc = "Preview: pick file (telescope)" },
-	},
 	config = function()
 		require("livepreview.config").set({
 			picker = "telescope",

@@ -32,7 +32,6 @@ return {
 			{ "<leader>f", group = "find / telescope" },
 			{ "<leader>g", group = "git ui" },
 			{ "<leader>h", group = "git hunks" },
-			{ "<leader>m", group = "markdown / preview" },
 			{ "<localleader>", group = "filetype tools" },
 		})
 	end,

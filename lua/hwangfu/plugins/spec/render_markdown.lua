@@ -10,39 +10,31 @@
 --
 -- Default ON. The setup() call below passes enabled = true (also the
 -- plugin's own default), so rendering goes live the moment a Markdown
--- buffer loads -- no manual step. Toggle the GLOBAL render state (every
--- Markdown buffer at once) two equivalent ways:
---
---   <leader>mr             keymap ("markdown render")
---   :MarkdownRender toggle the control command -- turns rendering ON if
---                          it is off, OFF if it is on
+-- buffer loads -- no manual step. :MarkdownRender toggle flips the
+-- GLOBAL render state (every Markdown buffer at once). Command-driven,
+-- no keymaps: the old <leader>mr was removed 2026-08-15 to free the
+-- namespace.
 --
 -- COMMAND NAME. Upstream hardcodes its command as `:RenderMarkdown`
 -- (registered from the plugin's own plugin/ directory, which lazy sources
 -- just before our config() runs). To honor the rename we delete that
 -- stock command in config() and install our own `:MarkdownRender`, a thin
 -- wrapper that forwards every subcommand to render-markdown's public API.
--- The <leader>mr keymap runs `:MarkdownRender toggle`, so key and command
--- still share one path. All upstream subcommands carry over under the new
--- name, with tab-completion:
+-- All upstream subcommands carry over under the new name, with
+-- tab-completion:
 --   :MarkdownRender enable / disable / toggle              (global)
 --   :MarkdownRender buf_enable / buf_disable / buf_toggle  (this buffer)
 --   :MarkdownRender set true|false  /  set_buf true|false
 --   :MarkdownRender preview / expand / contract / log / debug / config
 -- A bare `:MarkdownRender` with no argument enables, matching upstream.
 --
--- The keymap sits in the <leader>m* "markdown" namespace beside the
--- live-preview keys (mp / ms / mt) and does not collide with any
--- existing binding. Lazy-load triggers are `ft = "markdown"` (opening a
--- Markdown file), `keys` (the <leader>mr press) and
--- `cmd = { "MarkdownRender" }` (typing the command); render-markdown stays
--- unloaded until the first of these fires. The `ft` trigger is what makes
+-- Lazy-load triggers are `ft = "markdown"` (opening a Markdown file)
+-- and `cmd = { "MarkdownRender" }` (typing the command); render-markdown
+-- stays unloaded until either fires. The `ft` trigger is what makes
 -- "default ON" actually visible -- opening a Markdown file loads the
 -- plugin, which then renders the buffer immediately because enabled =
--- true. (The old enabled = false setup deliberately had NO ft trigger,
--- since there was nothing to do on open; enabling by default inverts that
--- reasoning, so the ft trigger is now required.) `keys`/`cmd` still reach
--- it from a cold start in a non-Markdown buffer.
+-- true. `cmd` still reaches it from a cold start in a non-Markdown
+-- buffer.
 --
 -- NON-OBVIOUS side effect of the `ft` trigger: when we set no explicit
 -- `file_types`, render-markdown adopts lazy.nvim's `ft` value as its
@@ -77,13 +69,6 @@ return {
 	-- value also becomes the plugin's file_types -- see the NON-OBVIOUS
 	-- note above before adding more entries here.
 	ft = { "markdown" },
-	keys = {
-		{
-			"<leader>mr",
-			"<cmd>MarkdownRender toggle<CR>",
-			desc = "Markdown: toggle in-buffer render",
-		},
-	},
 	cmd = { "MarkdownRender" },
 	config = function()
 		-- Rendering ON by default. enabled = true is also the plugin's
