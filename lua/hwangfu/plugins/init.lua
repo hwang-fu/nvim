@@ -107,19 +107,7 @@ local plugins = {
 
 	-- (oil migrated to spec/oil.lua, 2026-08-15.)
 
-	-- Telescope: fuzzy finder / popup picker (files, live-grep, buffers, ...).
-	-- Configured in lua/hwangfu/telescope.lua. plenary.nvim is a required
-	-- library; telescope-fzf-native is a compiled sorter (built via `make`).
-	{
-		"nvim-telescope/telescope.nvim",
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-			{
-				"nvim-telescope/telescope-fzf-native.nvim",
-				build = "make",
-			},
-		},
-	},
+	-- (telescope migrated to spec/telescope.lua, 2026-08-15.)
 
 	-- Elixir IDE wrapper over ElixirLS (and optionally Next LS).
 	--
