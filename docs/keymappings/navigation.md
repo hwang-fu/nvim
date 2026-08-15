@@ -7,7 +7,7 @@
 | `Ctrl-T` | n | Toggle the file sidebar: a 35-column oil.nvim listing of the current buffer's directory |
 | `]b` | n | Next buffer (`:bnext`) |
 | `[b` | n | Previous buffer (`:bprevious`) |
-| `<leader>bd` | n | Close the current buffer |
+| `<leader>bd` | n | Close the current buffer (`:bdelete`) |
 | `Ctrl-O` / `Ctrl-I` | n | Retrace cursor-position history backward / forward, often across buffers (built in) |
 | `Ctrl-^` | n | Flip between the current and previous buffer (built in) |
 
