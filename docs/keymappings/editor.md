@@ -17,9 +17,12 @@ Familiar shortcuts from mainstream editors, layered on top of Vim without touchi
 | `Ctrl-R` | v | The same, for the selected text |
 | `Ctrl-/` | n, v | Toggle comments on the current line or selection |
 | `Shift-arrows` | n | Start a selection and extend it in that direction |
-| `Ctrl-Up` / `Ctrl-Down` | n, i | Scroll without moving the cursor. In visual mode they extend the selection by a line instead |
-| `Ctrl-Left` / `Ctrl-Right` | n, i, v | Move by one word. In visual mode the selection extends |
-| `Alt-Up` / `Alt-Down` | n, v, i | Move the current line or selected block up or down, re-indenting as it goes |
+| `Ctrl-Up` | n, i, v | Scroll up without moving the cursor; in visual mode extend the selection up a line |
+| `Ctrl-Down` | n, i, v | Scroll down without moving the cursor; in visual mode extend the selection down a line |
+| `Ctrl-Left` | n, i, v | Move one word left; in visual mode extend the selection |
+| `Ctrl-Right` | n, i, v | Move one word right; in visual mode extend the selection |
+| `Alt-Up` | n, i, v | Move the current line or selected block up, re-indenting |
+| `Alt-Down` | n, i, v | Move the current line or selected block down, re-indenting |
 
 ## Notes
 
