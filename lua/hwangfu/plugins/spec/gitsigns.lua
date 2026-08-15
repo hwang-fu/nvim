@@ -30,7 +30,7 @@
 -- h = hunk, t = toggle; lowercase acts on the hunk under the cursor,
 -- uppercase on the whole buffer. <leader> is space.
 --
---   ]c / [c       jump to next / previous hunk
+--   ]h / [h       jump to next / previous hunk
 --   <leader>hs    stage hunk (press again to unstage)
 --                 visual: stage only the selected lines
 --   <leader>hr    reset hunk to index version (recover with u)
@@ -149,20 +149,20 @@ return {
 					})
 				end
 
-				-- Navigation. ]c / [c are Vim's built-in
-				-- jump-to-next/prev-difference keys in diff mode;
-				-- reusing them for hunks is the community
-				-- convention. In an actual diff window (e.g. the
-				-- <leader>hd split below, or `nvim -d`) fall
-				-- through to the built-in behavior.
-				map("n", "]c", function()
+				-- Navigation. ]h / [h, h for hunk (moved off the
+				-- community-conventional ]c / [c on 2026-08-15; those
+				-- now keep their built-in diff-mode meaning
+				-- untouched). The diff-window fallthrough is kept so
+				-- the keys still behave sensibly in `nvim -d` or the
+				-- <leader>hd split.
+				map("n", "]h", function()
 					if vim.wo.diff then
 						vim.cmd.normal({ "]c", bang = true })
 					else
 						gitsigns.nav_hunk("next")
 					end
 				end, "Git: next hunk")
-				map("n", "[c", function()
+				map("n", "[h", function()
 					if vim.wo.diff then
 						vim.cmd.normal({ "[c", bang = true })
 					else

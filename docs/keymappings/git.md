@@ -10,7 +10,8 @@ A hunk is one contiguous block of changed lines. Lowercase keys act on the hunk 
 
 | Key | Action |
 |-----|--------|
-| `]c` / `[c` | Jump to the next / previous hunk |
+| `]h` | Jump to the next hunk |
+| `[h` | Jump to the previous hunk |
 | `<leader>hs` | Stage the hunk; pressing again unstages. In visual mode, stage only the selected lines |
 | `<leader>hr` | Reset the hunk to the index version. In visual mode, only the selected lines |
 | `<leader>hS` / `<leader>hR` | Stage / reset the entire buffer |

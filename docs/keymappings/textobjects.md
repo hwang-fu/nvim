@@ -17,5 +17,5 @@ Text objects let operators work on syntax units: `vaf` selects a whole function,
 
 - The selections work in visual and operator-pending mode; the jumps also work in normal mode.
 - Every treesitter language here is covered except Erlang, which has no upstream queries - the keys quietly do nothing there.
-- `]c` and `[c` are *not* class motions; they belong to [git](git.md) hunk navigation.
+- Hunk navigation lives on `]h` / `[h` (see [git](git.md)); `]c` / `[c` keep their built-in diff-mode meaning.
 - Jumps land in the jump list, so `Ctrl-O` returns after an overshoot.
