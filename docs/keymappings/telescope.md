@@ -11,6 +11,7 @@
 | `<leader>fg` | Live grep across the project |
 | `<leader>fG` | Live grep, including ignored and hidden files |
 | `<leader>fs` | Grep the word under the cursor |
+| `<leader>f/` | Fuzzy search the current buffer's lines - no regex needed |
 | `<leader>fb` | Open buffers |
 | `<leader>fr` | Recently opened files |
 | `<leader>fd` | Project diagnostics |

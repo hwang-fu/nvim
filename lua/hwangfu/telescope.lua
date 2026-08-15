@@ -19,6 +19,7 @@
 --   <leader>fg   live grep: search file *contents* across the whole project
 --   <leader>fG   live grep, including ignored and hidden files
 --   <leader>fs   grep the word currently under the cursor
+--   <leader>f/   fuzzy search the current buffer's lines
 --   <leader>fb   switch between open buffers
 --   <leader>fr   recently opened files
 --   <leader>fd   project diagnostics (LSP errors / warnings)
@@ -134,6 +135,9 @@ function M.setup()
         builtin.live_grep({ additional_args = { "--no-ignore", "--hidden" } })
     end, "Telescope: live grep ALL files (ignored + hidden)")
     map("<leader>fs", builtin.grep_string, "Telescope: grep word under cursor")
+    -- Fuzzy search the CURRENT buffer's lines - the no-regex answer to
+    -- "/" (2026-08-15). Slash mnemonic: f/ = find by searching.
+    map("<leader>f/", builtin.current_buffer_fuzzy_find, "Telescope: fuzzy search this buffer")
     map("<leader>fb", builtin.buffers, "Telescope: open buffers")
     map("<leader>fr", builtin.oldfiles, "Telescope: recent files")
     map("<leader>fd", builtin.diagnostics, "Telescope: diagnostics")
