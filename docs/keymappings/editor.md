@@ -24,4 +24,4 @@ Familiar shortcuts from mainstream editors, layered on top of Vim without touchi
 ## Notes
 
 - `Ctrl-R` shadows Vim's built-in redo; use `:redo` when you need it. Inside insert mode, `Ctrl-R` keeps its built-in meaning (insert from a register).
-- `Ctrl-_` triggers the same comment toggle as `Ctrl-/`. It is not a second binding to reclaim: older terminals and default tmux deliver the physical Ctrl+/ keypress as `Ctrl-_`, so anything else bound there would fire when you press Ctrl+/.
+- `Ctrl-_` triggers the same comment toggle: older terminals and default tmux send the physical Ctrl+/ keypress as `Ctrl-_`.

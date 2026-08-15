@@ -23,4 +23,4 @@ Some features are commands only: `:OCamlTypeExpression <expr>` prints an arbitra
 
 ## Notes
 
-- `\p` waits a moment before firing because it is a prefix of `\pn` and `\pp`. That is the upstream default, kept as is.
+- `\p` pauses briefly before firing because it is also the start of `\pn` and `\pp`.

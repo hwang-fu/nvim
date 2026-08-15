@@ -6,4 +6,4 @@ Press any mapped prefix - Space, backslash, `]`, `[`, `g`, `z` - and pause. A po
 
 Buffer-local keys appear only in buffers where they actually exist: the popup reads the live mappings, not a static list.
 
-There are no keys to learn for this plugin itself. It complements `<leader>fk`, which searches all keymaps through telescope, and this documentation folder.
+The plugin adds no keys of its own. To search keymaps instead of browsing them, `<leader>fk` opens a telescope picker.

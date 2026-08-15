@@ -22,7 +22,7 @@ A hunk is one contiguous block of changed lines. Lowercase keys act on the hunk 
 | `<leader>tw` | Toggle word-level diff |
 | `ih` | Hunk text object: `vih` selects it, `dih` deletes it |
 
-Every action is also available as `:Gitsigns <subcommand>` with tab completion, including a few that have no keymap - whole-buffer blame, showing a file at an old revision, and changing the diff base. The spec's comment lists them all.
+Every action is also available as `:Gitsigns <subcommand>` with tab completion, including a few that have no keymap - whole-buffer blame, showing a file at an old revision, and changing the diff base. `:Gitsigns <Tab>` shows the full list.
 
 ## Repository - lazygit
 

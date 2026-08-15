@@ -2,7 +2,7 @@
 
 *All four plugins are defined in `lua/hwangfu/plugins/spec/lisp.lua`.*
 
-Four plugins cover the Lisp family without overlap. Two of them have no keys at all: parinfer-rust keeps parentheses balanced from your indentation as you edit (use `:ParinferOff` and `:ParinferOn` around a weirdly-indented paste), and rainbow-delimiters colors parentheses by nesting depth.
+Four plugins cover the Lisp family. Two of them have no keys at all: parinfer-rust keeps parentheses balanced from your indentation as you edit (use `:ParinferOff` and `:ParinferOn` around a weirdly-indented paste), and rainbow-delimiters colors parentheses by nesting depth.
 
 ## Conjure - evaluate from the buffer
 

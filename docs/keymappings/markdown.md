@@ -9,4 +9,4 @@
 | `<leader>mt` | Pick a previewable file through telescope |
 | `<leader>mr` | Toggle in-buffer Markdown rendering |
 
-The preview serves at `127.0.0.1:5500`. In-buffer rendering is on by default for Markdown files; `:MarkdownRender` offers finer control (enable, disable, per-buffer variants, and more - it was renamed from upstream's `:RenderMarkdown`).
+The preview serves at `127.0.0.1:5500`. In-buffer rendering is on by default for Markdown files; `:MarkdownRender` offers finer control, with enable / disable / per-buffer subcommands and tab completion.

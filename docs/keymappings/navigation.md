@@ -11,4 +11,4 @@
 ## Notes
 
 - The keys available *inside* the sidebar are documented in [explorer](explorer.md).
-- Worth remembering, though built in rather than mapped here: `Ctrl-O` and `Ctrl-I` walk the jump list back and forward after any go-to-definition style jump, and `Ctrl-^` flips to the previous buffer.
+- Three built-ins pair well with these: `Ctrl-O` and `Ctrl-I` walk the jump list back and forward after any go-to-definition jump, and `Ctrl-^` flips to the previous buffer.
