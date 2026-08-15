@@ -4,7 +4,8 @@ Summary of every custom keybinding and plugin command in this config,
 one page per domain. Compiled 2026-08-01; updated 2026-08-14 (OCaml
 session, oil sidebar, textobjects, which-key, lisp cluster) and
 2026-08-15 (smart mouse jump; split from the single KEYBINDINGS.md
-into this folder; Ctrl-L comment alias removed). Each page names the file where the bindings are
+into this folder; Ctrl-L comment alias removed; crates keymaps
+replaced by :Crates commands). Each page names the file where the bindings are
 defined - the comments there carry the full rationale.
 
 Conventions:
@@ -41,7 +42,7 @@ Languages:
 
 - [ocaml](ocaml.md) - ocaml.nvim + utop REPL
 - [lisp](lisp.md) - conjure, slimv (parinfer / rainbow have no keys)
-- [crates](crates.md) - Cargo.toml dependency intelligence
+- [crates](crates.md) - Cargo.toml dependency commands (`:Crates ...`; no keymaps)
 - [fhir](fhir.md) - fhir.nvim
 
 Leftovers: [misc](misc.md) - vim-surround, :ToggleWS, :Lazy / :Mason /

@@ -11,7 +11,7 @@
 -- taplo's existing K / <leader>ca bindings on Cargo.toml, so neither
 -- lua/hwangfu/completion.lua nor the LSP keymaps need changing. See the
 -- long note in lua/hwangfu/crates.lua for the full rationale and the
--- <leader>c* keymap reference.
+-- :Crates command reference.
 --
 -- tag = "stable" follows the plugin's release-channel guidance (the repo
 -- ships a moving `stable` tag); `event = "BufRead Cargo.toml"` keeps it off

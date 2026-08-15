@@ -49,67 +49,36 @@
 local M = {}
 
 -- ----------------------------------------------------------------------------
--- Buffer-local keymaps, installed from the crates LSP on_attach below so they
--- exist only on Cargo.toml buffers the crates client attaches to.
+-- NO KEYMAPS, by explicit choice (2026-08-15). A <leader>c* set (13 maps)
+-- lived here until then; removed on user request to keep the <leader>c
+-- namespace free for future mappings. Everything is reached three ways:
 --
--- Only the crates-SPECIFIC verbs are bound here. The standard LSP verbs that
--- crates also provides - hover (K) and code actions (<leader>ca) - are
--- intentionally NOT rebound: taplo's basic_on_attach already binds them on
--- this buffer, and they query every attached client, so crates' hover /
--- actions already ride those.
+--   * :Crates <subcommand> - the plugin's OWN global command with tab
+--     completion (registered by crates.nvim itself; nothing to define
+--     here). The subcommands, grouped:
+--       popups    show_versions_popup / show_features_popup /
+--                 show_dependencies_popup / show_crate_popup /
+--                 show_popup / popup_available / focus_popup / hide_popup
+--       change    update_crate / update_crates (visual range) /
+--                 update_all_crates, and the upgrade_* trio likewise;
+--                 use_git_source
+--       view      toggle / show / hide (inline version info),
+--                 reload (drop cache, re-fetch), update (re-fetch)
+--       reshape   expand_plain_crate_to_inline_table /
+--                 extract_crate_into_table
+--       browser   open_documentation / open_cratesio / open_homepage /
+--                 open_repository
 --
--- <leader>ca is DELIBERATELY left alone. crates.nvim's own recommended keymaps
--- put update_all_crates on <leader>ca, but that is exactly the code-action key
--- on every LSP buffer in this config. Rebinding it would shadow code actions
--- on Cargo.toml. update_all_crates / upgrade_all_crates are instead reachable
--- via the `:Crates update_all_crates` / `:Crates upgrade_all_crates` commands,
--- and per-crate update / upgrade is offered as a code action under <leader>ca.
+--   * K            hover with version / feature detail - the standard
+--                  LSP hover that taplo's basic_on_attach binds on this
+--                  buffer queries EVERY attached client, crates included.
 --
--- Keymap groups (all under <leader>c, buffer-local to Cargo.toml):
---   popups   cv versions   cf features   cd dependencies
---   change   cu update     cU upgrade    (also work on a visual selection)
---   view     ct toggle inline info       cr reload from crates.io
---   shape    cx expand to inline table   cX extract into [dependencies.x]
---   browser  cD docs.rs    cC crates.io  cH homepage   cR repository
+--   * <leader>ca   code actions: per-crate update / upgrade / open docs
+--                  and friends, through the same every-client LSP route.
+--                  (crates.nvim's README suggests putting
+--                  update_all_crates on <leader>ca; deliberately not
+--                  done - that IS the code-action key here.)
 -- ----------------------------------------------------------------------------
-local function install_keymaps(bufnr)
-    local crates = require("crates")
-
-    local function nmap(lhs, rhs, desc)
-        vim.keymap.set("n", lhs, rhs, { buffer = bufnr, silent = true, desc = desc })
-    end
-    local function vmap(lhs, rhs, desc)
-        vim.keymap.set("v", lhs, rhs, { buffer = bufnr, silent = true, desc = desc })
-    end
-
-    -- Popups (contextual to the crate on the current line).
-    nmap("<leader>cv", crates.show_versions_popup, "Crates: versions popup")
-    nmap("<leader>cf", crates.show_features_popup, "Crates: features popup")
-    nmap("<leader>cd", crates.show_dependencies_popup, "Crates: dependencies popup")
-
-    -- Update (move to newest version allowed by the current requirement) and
-    -- upgrade (rewrite the requirement to the newest version). Visual-mode
-    -- variants act on every crate in the selection.
-    nmap("<leader>cu", crates.update_crate, "Crates: update crate")
-    vmap("<leader>cu", crates.update_crates, "Crates: update selected crates")
-    nmap("<leader>cU", crates.upgrade_crate, "Crates: upgrade crate")
-    vmap("<leader>cU", crates.upgrade_crates, "Crates: upgrade selected crates")
-
-    -- Visibility / data.
-    nmap("<leader>ct", crates.toggle, "Crates: toggle inline info")
-    nmap("<leader>cr", crates.reload, "Crates: reload from crates.io")
-
-    -- Reshape a dependency entry between `foo = \"1\"` and the expanded
-    -- [dependencies.foo] table form.
-    nmap("<leader>cx", crates.expand_plain_crate_to_inline_table, "Crates: expand to inline table")
-    nmap("<leader>cX", crates.extract_crate_into_table, "Crates: extract into table")
-
-    -- Open the crate's pages in a browser.
-    nmap("<leader>cD", crates.open_documentation, "Crates: open docs.rs")
-    nmap("<leader>cC", crates.open_crates_io, "Crates: open crates.io")
-    nmap("<leader>cH", crates.open_homepage, "Crates: open homepage")
-    nmap("<leader>cR", crates.open_repository, "Crates: open repository")
-end
 
 -- ----------------------------------------------------------------------------
 -- Entry point.
@@ -128,9 +97,6 @@ function M.setup()
             completion = true,
             hover = true,
             actions = true,
-            on_attach = function(_, bufnr)
-                install_keymaps(bufnr)
-            end,
         },
     })
 end

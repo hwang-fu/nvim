@@ -27,7 +27,8 @@ return {
 		wk.setup({})
 		wk.add({
 			{ "<leader>b", group = "buffers" },
-			{ "<leader>c", group = "crates (Cargo.toml)" },
+			-- (<leader>c group label removed 2026-08-15: the crates
+			-- keymaps became :Crates commands; the namespace is free.)
 			{ "<leader>f", group = "find / telescope" },
 			{ "<leader>g", group = "git ui" },
 			{ "<leader>h", group = "git hunks" },
