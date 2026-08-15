@@ -23,6 +23,7 @@
 --   * movement.lua    - Scrolling         Ctrl+Up/Down
 --                       Word motion       Ctrl+Left/Right
 --                       Move line         Alt+Up/Down
+--                       Window resize     Alt+h/j/k/l
 --   * mouse.lua       - Ctrl+LeftClick smart jump: LSP definition;
 --                       references when clicked at the definition
 --                       itself; quiet ctags fallback in non-LSP

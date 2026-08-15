@@ -16,7 +16,7 @@ This folder documents every custom keybinding and user command in the Neovim con
 These are defined in `lua/hwangfu/keymappings/`, one file per page:
 
 - [editor](editor.md) - saving, undo, clipboard, selection, and comment toggling
-- [movement](movement.md) - scrolling, word motion, and line moving
+- [movement](movement.md) - scrolling, word motion, line moving, and window resizing
 - [mouse](mouse.md) - jump to definition with Ctrl+click
 - [navigation](navigation.md) - the file sidebar and buffer switching
 

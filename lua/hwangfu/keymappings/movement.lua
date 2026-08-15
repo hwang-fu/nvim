@@ -93,6 +93,16 @@ function M.setup()
         silent = true,
         desc = "Move line down (insert)",
     })
+    -- --- Window resize (Alt + h/j/k/l) ------------------------------------
+    -- Resize the CURRENT window; hold the key for continuous growth or
+    -- shrinkage. Step of 2 keeps it quick without jumping. Alt+arrows
+    -- are taken by line moving; the letter forms were free. One-shot
+    -- alternatives stay built in: <C-w>= equalize, <C-w>_ / <C-w>|
+    -- maximize, :resize N exact.
+    map("n", "<M-h>", "<Cmd>vertical resize -2<CR>", { silent = true, desc = "Window narrower" })
+    map("n", "<M-l>", "<Cmd>vertical resize +2<CR>", { silent = true, desc = "Window wider" })
+    map("n", "<M-j>", "<Cmd>resize -2<CR>", { silent = true, desc = "Window shorter" })
+    map("n", "<M-k>", "<Cmd>resize +2<CR>", { silent = true, desc = "Window taller" })
 end
 
 return M
