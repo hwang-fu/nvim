@@ -21,7 +21,9 @@
 --     install the same way as on every other LSP buffer, then overrides
 --     K with rustaceanvim's hover-with-actions), and a few tools knobs.
 --   * Notification filter - drops rust-analyzer's transient -32xxx
---     errors from vim.notify (see long comment below).
+--     errors from vim.notify, and flattens rustaceanvim's 4-line
+--     "standalone mode" notice into one warning line so it cannot
+--     trigger the hit-enter prompt (see long comment below).
 --   * :RustFormat user command - on-demand rustfmt via the LSP, named
 --     to dodge the legacy :RustFmt from runtime/rust.vim.
 --
@@ -99,6 +101,42 @@ local M = {}
 --   * Startup failures like "Failed to start rust_analyzer: ..." (the
 --     "rust_analyzer:" token appears mid-string, not at the start).
 --
+-- Second filter case - the standalone-mode notice (2026-08-15, user
+-- request). When a .rs file opens outside any Cargo project, rustaceanvim
+-- notifies:
+--
+--     rustaceanvim:
+--     No project root found.
+--     Starting rust-analyzer client in detached/standalone mode (with
+--     reduced functionality).
+--
+-- The level is already INFO - the blocking "Press ENTER or type command
+-- to continue" prompt comes from the message being FOUR LINES tall, not
+-- from its severity: any echo taller than cmdheight (1) triggers the
+-- hit-enter prompt regardless of level. The plugin offers no config knob
+-- for this (checked its config/internal.lua, 2026-08-15), so the wrapper
+-- below rewrites the message to a single line at WARN level. One line
+-- never overflows the cmdline, so opening a bare .rs file no longer
+-- stops for a keypress; the notice still appears and lands in :messages.
+-- Matched on the distinctive "detached/standalone mode" substring so the
+-- plugin's OTHER no-root message (the ERROR when standalone is disabled)
+-- passes through untouched - that one signals rust-analyzer NOT starting
+-- and deserves to be loud (moot here while server.standalone = true).
+--
+-- Third filter case - the server-status health dump (found while testing
+-- the case above, 2026-08-15). When rust-analyzer finishes initializing
+-- with health != ok, rustaceanvim's server_status.lua handler notifies
+-- "rust-analyzer health status is [error]: <result.message>" - and
+-- result.message can embed an ENTIRE failed cargo invocation, stack
+-- backtraces included (hundreds of lines on a bare .rs file, where
+-- workspace discovery always fails on a stable toolchain). Same
+-- hit-enter blocking as above, magnified. The alternative knob,
+-- server.status_notify_level = false, silences the signal entirely;
+-- flattening keeps the one-line fact and points at :RustLsp logFile,
+-- where the full text already lands. The handler emits via
+-- vim.notify_once, which resolves vim.notify at call time, so this
+-- wrapper does intercept it.
+--
 -- Implementation notes:
 --   * One-shot install via a module-level sentinel; re-running M.setup()
 --     does not stack additional wrappers around vim.notify.
@@ -117,8 +155,25 @@ local function install_notify_filter()
 
     local orig_notify = vim.notify
     vim.notify = function(msg, level, opts)
-        if type(msg) == "string" and msg:match("^rust_analyzer:%s*%-32%d+") then
-            return
+        if type(msg) == "string" then
+            if msg:match("^rust_analyzer:%s*%-32%d+") then
+                return
+            end
+            if msg:find("detached/standalone mode", 1, true) then
+                return orig_notify(
+                    "rustaceanvim: no Cargo project found; rust-analyzer runs standalone",
+                    vim.log.levels.WARN,
+                    opts
+                )
+            end
+            local health = msg:match("rust%-analyzer.- health status is %[(%w+)%]")
+            if health then
+                return orig_notify(
+                    "rustaceanvim: rust-analyzer health is [" .. health .. "]; :RustLsp logFile has details",
+                    vim.log.levels.WARN,
+                    opts
+                )
+            end
         end
         return orig_notify(msg, level, opts)
     end
