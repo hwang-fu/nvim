@@ -48,7 +48,7 @@ These need the backslash:
 | `\+` | One or more of what precedes it |
 | `\?` | Zero or one |
 | `\{2,5}` | Two to five repeats |
-| `\(...\)` | A group; group N comes back as `\N` on the replacement side of `:s` |
+| `\(...\)` | A group; counting starts at 1, so the first group comes back as `\1` on the replacement side of `:s`. `\0` is not a group but the whole match, same as `&` |
 | `\<` and `\>` | Word boundaries: `/\<let\>` matches `let` but not `letter` |
 | `\w` and `\W` | A word character (letter, digit, underscore) and its opposite |
 | `\s` and `\S` | Whitespace and its opposite |
@@ -112,4 +112,4 @@ With the `c` flag, each match asks:
 Two habits worth stealing:
 
 - An empty pattern reuses the last search: `/old_name`, eyeball the highlighted matches, then `:%s//new_name/g` replaces exactly what you just verified.
-- In the replacement, `&` inserts the whole match and `\1` the first capture group: `:%s/\v(\w+)_temp/\1/g` drops a `_temp` suffix.
+- In the replacement, `&` (or `\0`) inserts the whole match and `\1` the first capture group - counting starts at 1: `:%s/\v(\w+)_temp/\1/g` drops a `_temp` suffix.
