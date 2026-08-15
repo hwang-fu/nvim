@@ -5,7 +5,7 @@
 | Key | Mode | Action |
 |-----|------|--------|
 | `Ctrl-LeftClick` | n | Smart jump on the clicked symbol (see below) |
-| `Ctrl-RightClick` | n | Ripgrep the clicked word across the project: live grep opens pre-filled with it; erase the prefill to search for anything else. The buffers picker this used to open lives on `<leader>fb` |
+| `Ctrl-RightClick` | n | Live grep across the open buffers: an empty ripgrep prompt whose search scope is just the files currently open. Buffers by name stay on `<leader>fb`, whole-project grep on `<leader>fg` |
 
 The smart jump behaves like VSCode's Ctrl+click:
 
@@ -15,7 +15,8 @@ The smart jump behaves like VSCode's Ctrl+click:
 
 Jump back with `Ctrl-O`.
 
-The two Ctrl-clicks form a pair: `Ctrl-LeftClick` asks where the symbol is *defined*, `Ctrl-RightClick` asks where the *text appears*.
+> [!NOTE]
+> The `Ctrl-RightClick` grep reads files from disk, as ripgrep does - unsaved buffer modifications are invisible to it, and unnamed scratch buffers are not searched.
 
 ## Plain right-click
 

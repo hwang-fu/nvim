@@ -27,9 +27,9 @@
 --   * mouse.lua       - Ctrl+LeftClick smart jump: LSP definition;
 --                       references when clicked at the definition
 --                       itself; quiet ctags fallback in non-LSP
---                       buffers (back: <C-o>). Ctrl+RightClick greps
---                       the clicked word across the project (live_grep
---                       pre-filled; erase the prefill to type freely)
+--                       buffers (back: <C-o>). Ctrl+RightClick opens
+--                       an empty live-grep prompt scoped to the OPEN
+--                       buffers (ripgrep; reads disk, not unsaved edits)
 --   * navigation.lua  - Ctrl-T oil sidebar toggle (see
 --                       lua/hwangfu/explorer.lua); ]b / [b buffer
 --                       cycle, <leader>bd close buffer
