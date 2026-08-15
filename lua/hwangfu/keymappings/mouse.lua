@@ -100,6 +100,35 @@ function M.smart_definition()
     end)
 end
 
+-- ----------------------------------------------------------------------------
+-- Ctrl+RightClick: ripgrep the clicked word (2026-08-15, replacing the
+-- earlier open-buffers picker - buffers stay reachable on <leader>fb).
+--
+-- The content-search twin of the smart jump above: Ctrl+LeftClick asks
+-- "where is this DEFINED", Ctrl+RightClick asks "where does this TEXT
+-- APPEAR". Opens telescope live_grep PRE-FILLED with the word under
+-- the click, so one click sweeps the project for it - and because it
+-- is live_grep (not grep_string), erasing the prefill degrades into a
+-- plain type-anything ripgrep prompt, the <leader>fg experience.
+--
+-- Implementation note: the cursor is positioned via getmousepos(), not
+-- by feeding a <RightMouse> key first (the <LeftMouse>-prefix trick the
+-- smart jump uses). A fed <RightMouse> would fall through to the
+-- built-in popup_setpos handling and open the right-click menu on top
+-- of the picker. Clicks outside any text area (statusline, cmdline)
+-- leave the cursor where it was and open the picker with that word;
+-- clicks on whitespace open it empty.
+-- ----------------------------------------------------------------------------
+function M.grep_at_click()
+    local mp = vim.fn.getmousepos()
+    if mp.winid ~= 0 then
+        vim.api.nvim_set_current_win(mp.winid)
+        pcall(vim.api.nvim_win_set_cursor, mp.winid, { mp.line, math.max(mp.column - 1, 0) })
+    end
+    local word = vim.fn.expand("<cword>")
+    require("telescope.builtin").live_grep({ default_text = word })
+end
+
 -- require("hwangfu.keymappings.mouse").setup()
 function M.setup()
     local function map(modes, lhs, rhs, opts)
@@ -119,12 +148,13 @@ function M.setup()
         { silent = true, desc = "LSP: smart definition / references (mouse)" }
     )
 
-    -- Ctrl+RightClick: the open-buffers picker (2026-08-15). Shadows
-    -- the built-in tag-stack pop, which the smart jump above bypasses
-    -- anyway (it uses the jumplist; go back with <C-o>).
-    map("n", "<C-RightMouse>", "<Cmd>Telescope buffers<CR>", {
+    -- Ctrl+RightClick: ripgrep the clicked word (full story in
+    -- M.grep_at_click's comment above). Shadows the built-in tag-stack
+    -- pop, which the smart jump above bypasses anyway (it uses the
+    -- jumplist; go back with <C-o>).
+    map("n", "<C-RightMouse>", "<Cmd>lua require('hwangfu.keymappings.mouse').grep_at_click()<CR>", {
         silent = true,
-        desc = "Telescope: open buffers (mouse)",
+        desc = "Telescope: grep the clicked word (mouse)",
     })
 end
 

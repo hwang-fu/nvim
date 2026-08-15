@@ -5,7 +5,7 @@
 | Key | Mode | Action |
 |-----|------|--------|
 | `Ctrl-LeftClick` | n | Smart jump on the clicked symbol (see below) |
-| `Ctrl-RightClick` | n | Open the buffers picker (same as `<leader>fb`) |
+| `Ctrl-RightClick` | n | Ripgrep the clicked word across the project: live grep opens pre-filled with it; erase the prefill to search for anything else. The buffers picker this used to open lives on `<leader>fb` |
 
 The smart jump behaves like VSCode's Ctrl+click:
 
@@ -14,6 +14,8 @@ The smart jump behaves like VSCode's Ctrl+click:
 - In a buffer **without a language server**, it falls back to a classic ctags jump and says so briefly when nothing is found.
 
 Jump back with `Ctrl-O`.
+
+The two Ctrl-clicks form a pair: `Ctrl-LeftClick` asks where the symbol is *defined*, `Ctrl-RightClick` asks where the *text appears*.
 
 ## Plain right-click
 
