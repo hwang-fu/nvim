@@ -66,7 +66,8 @@
 --
 -- Getting back after a jump: gd / grr can land you in a different file.
 -- <C-o> jumps back to where you came from, <C-i> jumps forward again, and
--- <C-^> toggles to the previously-edited buffer. See keymap.lua's Buffers
+-- <C-^> toggles to the previously-edited buffer. See the Buffers section
+-- of keymappings/navigation.lua
 -- section for more on moving between files.
 -- ============================================================================
 

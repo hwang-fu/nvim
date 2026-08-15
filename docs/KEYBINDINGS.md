@@ -13,7 +13,7 @@ comments there carry the full rationale.
 
 ASCII-only, like the rest of the config.
 
-## Core editing (lua/hwangfu/keymap.lua)
+## Core editing (lua/hwangfu/keymappings/: editor / mouse / navigation .lua)
 
 | Key | Mode | Action |
 |-----|------|--------|

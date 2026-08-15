@@ -130,7 +130,7 @@ return {
 			-- attaches to a buffer (i.e. the file is inside a git
 			-- repo). This is the plugin's recommended pattern and
 			-- the reason these maps live here rather than in
-			-- lua/hwangfu/keymap.lua: they should not exist in
+			-- lua/hwangfu/keymappings/: they should not exist in
 			-- buffers that have no git data behind them.
 			--
 			-- Mnemonics: <leader>h* = hunk, <leader>t* = toggle.

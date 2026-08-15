@@ -125,7 +125,7 @@ function M.setup()
 	vim.o.encoding = "utf-8"
 	vim.o.wildmenu = true -- ":<Tab>" pops up a menu of completions
 	vim.o.clipboard = "unnamedplus" -- y/p use the system clipboard by default
-	vim.g.mapleader = " " -- <leader> = space (used by mappings in keymap.lua)
+	vim.g.mapleader = " " -- <leader> = space (used by mappings in keymappings/)
 	vim.g.maplocalleader = "\\" -- <localleader> = backslash (filetype-scoped maps, e.g. ocaml.nvim)
 
 	-- ------------------------------------------------------------------------

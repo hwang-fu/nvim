@@ -8,7 +8,8 @@
 --        completion - completion engine (blink.cmp)
 --        lsp       - language servers, format-on-save, linters
 --        telescope - fuzzy finder (files, grep, buffers, ...)
---        keymap    - global keybindings
+--        keymappings - global keybindings (per-domain folder: editor /
+--                    mouse / navigation, indexed in its init.lua)
 --        git       - lazygit floating-terminal keymap
 --        repl      - utop floating REPL for OCaml buffers
 --        explorer  - oil sidebar toggle (required on demand by keymap /
@@ -64,7 +65,7 @@ require("hwangfu.completion").setup()
 require("hwangfu.lsp").setup()
 require("hwangfu.telescope").setup()
 
-require("hwangfu.keymap").setup()
+require("hwangfu.keymappings").setup()
 require("hwangfu.git").setup()
 require("hwangfu.repl").setup()
 require("hwangfu.colors").setup()

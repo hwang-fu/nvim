@@ -77,7 +77,7 @@
 --   gx      open entry with the system handler (browser, viewer, ...)
 --
 -- The global <C-t> toggle (open oil at the current buffer's directory
--- / close it) lives in lua/hwangfu/keymap.lua with the other global
+-- / close it) lives in lua/hwangfu/keymappings/navigation.lua with the other global
 -- maps; the keys above are buffer-local to oil listings and belong
 -- here with the plugin, same split as the gitsigns hunk maps.
 --
