@@ -8,7 +8,8 @@
 | `]b` | n | Next buffer (`:bnext`) |
 | `[b` | n | Previous buffer (`:bprevious`) |
 | `<leader>bd` | n | Close the current buffer (`:bdelete`) |
-| `Ctrl-O` / `Ctrl-I` | n | Retrace cursor-position history backward / forward, often across buffers (built in) |
+| `Ctrl-O` | n | Jump back in cursor-position history, often across buffers (built in, `:h CTRL-O`) |
+| `Ctrl-I` | n | Jump forward again (built in, `:h CTRL-I`) |
 | `Ctrl-^` | n | Flip between the current and previous buffer (built in) |
 
 ## Notes
