@@ -58,6 +58,7 @@ Managed by lazy.nvim. Each plugin's spec, keymaps, and documentation live togeth
 | vim-surround | Add, change, and delete surrounding pairs |
 | blink.cmp | Completion, with a compiled fuzzy matcher |
 | which-key.nvim | Shows available keys when you pause mid-shortcut |
+| flash.nvim | Labeled jumps: type two characters, press the label that appears on your target |
 | glance.nvim | VSCode-style peek panel for references, definitions, and implementations |
 
 ### Files and search

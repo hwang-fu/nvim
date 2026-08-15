@@ -28,6 +28,7 @@ These are defined in `lua/hwangfu/keymappings/`, one file per page:
 - [lsp](lsp/lsp.md) - language server keys, with per-language pages under lsp/
 - [glance](lsp/glance.md) - peek references and definitions in an embedded panel
 - [telescope](telescope.md) - fuzzy finding
+- [search](search.md) - the searching guide: in-file, project-wide, by symbol, and replacing
 
 ## Tools
 

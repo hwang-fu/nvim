@@ -51,6 +51,9 @@
 --                         pending); ]f/[f, ]F/[F, ]]/[[ motions
 --                         (nvim-treesitter-textobjects spec; ]c/[c stay
 --                         with gitsigns hunks)
+--   * Flash jumps       - s labeled jump, S treesitter select
+--                         (flash.nvim spec; shadows the cl / cc
+--                         synonyms)
 --   * Keymap discovery  - which-key popup on any pending prefix; leader
 --                         groups labeled in its spec (which-key.nvim)
 --   * OCaml editing     - <localleader>* in OCaml buffers, <localleader>

@@ -7,6 +7,7 @@
   "dracula.nvim": { "branch": "main", "commit": "ae752c13e95fb7c5f58da4b5123cb804ea7568ee" },
   "elixir-tools.nvim": { "branch": "main", "commit": "b51b48edc668924a6b2f6610f9a0aff34741d20e" },
   "fhir.nvim": { "branch": "main", "commit": "b3ba10c8287a6f26fe173122ce1c54e8566e4656" },
+  "flash.nvim": { "branch": "main", "commit": "b6346946d10d07998efee029fb0f7a593806d0cd" },
   "gitsigns.nvim": { "branch": "main", "commit": "5be654f2232c10ddcad19c1607a67b6b4b78fc29" },
   "glance.nvim": { "branch": "master", "commit": "bf86d8b79dce808e65fdb6e9269d0b4ed6d2eefc" },
   "gruvbox.nvim": { "branch": "main", "commit": "154eb5ff5b96d0641307113fa385eaf0d36d9796" },
