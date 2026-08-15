@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "docs/keymappings/git.md",
+                "file": "docs/keymappings/crates.md",
                 "mode": "preview",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "git"
+              "title": "crates"
             }
           }
         ]
@@ -185,20 +185,21 @@
   },
   "active": "a38e08b886b963a7",
   "lastOpenFiles": [
+    "docs/keymappings/explorer.md",
+    "docs/keymappings/debugging.md",
+    "docs/keymappings/crates.md",
+    "docs/keymappings/completion.md",
+    "docs/keymappings/git.md",
     "docs/keymappings/lisp.md",
     "docs/keymappings/lsp.md",
     "docs/keymappings/mouse.md",
-    "docs/keymappings/crates.md",
     "docs/keymappings/which-key.md",
     "docs/keymappings/README.md",
     "docs/keymappings/ocaml.md",
     "docs/keymappings/telescope.md",
-    "docs/keymappings/git.md",
     "lua/hwangfu/plugins/spec/which_key.lua.tmp.761282.a68ee3de2b44",
     "lua/hwangfu/crates.lua.tmp.761282.666f8ebbcf35",
     "lua/hwangfu/crates.lua.tmp.761282.2ab1d8dfaaaf",
-    "docs/keymappings/completion.md",
-    "docs/keymappings/debugging.md",
     "docs/keymappings/markdown.md",
     "lua/hwangfu/plugins/init.lua.tmp.761282.495bb20af58c",
     "lua/hwangfu/keymappings/init.lua.tmp.761282.f116a74536b9",
@@ -208,7 +209,6 @@
     "docs/keymappings/misc.md",
     "docs/KEYBINDINGS.md",
     "docs/keymappings/fhir.md",
-    "docs/keymappings/explorer.md",
     "docs/keymappings/textobjects.md",
     "docs/keymappings/navigation.md",
     "docs/keymappings",

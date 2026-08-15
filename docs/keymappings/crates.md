@@ -2,7 +2,7 @@
 
 *Defined in `lua/hwangfu/crates.lua` (crates.nvim); active only in Cargo.toml buffers.*
 
-This plugin has no keymappings, by choice - the `<leader>c` namespace stays free. Everything runs through its `:Crates` command, which tab-completes its subcommands once a Cargo.toml has been opened.
+Everything runs through the `:Crates` command, which tab-completes its subcommands once a Cargo.toml has been opened.
 
 | Command | Action |
 |---------|--------|
