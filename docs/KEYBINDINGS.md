@@ -35,6 +35,7 @@ ASCII-only, like the rest of the config.
 | ]b / [b | n | Next / previous buffer |
 | \<leader\>bd | n | Close buffer |
 | Ctrl-T | n | Toggle the oil sidebar at buffer's directory (35-col left split since 2026-08-14) |
+| Ctrl-LeftClick | n | Jump to definition (LSP); clicked at the definition itself: list references instead (VSCode-style, 2026-08-15); non-LSP buffers fall back to ctags quietly. Back: Ctrl-O |
 
 Note: Ctrl-R shadows built-in redo (use `:redo`); insert-mode Ctrl-R keeps
 the built-in insert-register behavior.
@@ -317,15 +318,15 @@ server. Essentials (full list: :help slimv-keyboard):
 
 ## Debugging - nvim-dap (lua/hwangfu/dap.lua; loads on first use)
 
-| Key | Action |
-|-----|--------|
-| F5 | Start / continue (Rust-aware: routes through rustaceanvim) |
-| Shift-F5 | Terminate session |
-| F6 | Pause |
-| F7 | Toggle dap-ui panel |
-| F8 | `:RustLsp debuggables` - pick a cargo target to debug |
-| F9 / Shift-F9 | Toggle breakpoint / conditional breakpoint |
-| F10 / F11 / Shift-F11 | Step over / into / out |
+| Key                   | Action                                                     |
+| --------------------- | ---------------------------------------------------------- |
+| F5                    | Start / continue (Rust-aware: routes through rustaceanvim) |
+| Shift-F5              | Terminate session                                          |
+| F6                    | Pause                                                      |
+| F7                    | Toggle dap-ui panel                                        |
+| F8                    | `:RustLsp debuggables` - pick a cargo target to debug      |
+| F9 / Shift-F9         | Toggle breakpoint / conditional breakpoint                 |
+| F10 / F11 / Shift-F11 | Step over / into / out                                     |
 
 OCaml sessions use ocamlearlybird (installed via opam, not mason) and
 debug BYTECODE only: give the executable stanza `(modes byte exe)`, run
