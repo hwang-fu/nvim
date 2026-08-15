@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "docs/KEYBINDINGS.md",
+                "file": "docs/keymappings/completion.md",
                 "mode": "preview",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "KEYBINDINGS"
+              "title": "completion"
             }
           }
         ]
@@ -185,6 +185,26 @@
   },
   "active": "a38e08b886b963a7",
   "lastOpenFiles": [
+    "docs/keymappings/misc.md",
+    "docs/keymappings/completion.md",
+    "docs/KEYBINDINGS.md",
+    "docs/keymappings/fhir.md",
+    "docs/keymappings/debugging.md",
+    "docs/keymappings/lisp.md",
+    "docs/keymappings/ocaml.md",
+    "docs/keymappings/crates.md",
+    "docs/keymappings/markdown.md",
+    "docs/keymappings/explorer.md",
+    "docs/keymappings/git.md",
+    "docs/keymappings/telescope.md",
+    "docs/keymappings/lsp.md",
+    "docs/keymappings/which-key.md",
+    "docs/keymappings/textobjects.md",
+    "docs/keymappings/navigation.md",
+    "docs/keymappings/mouse.md",
+    "docs/keymappings/editor.md",
+    "docs/keymappings/README.md",
+    "docs/keymappings",
     "init.lua.tmp.761282.0988380241f8",
     "init.lua.tmp.761282.d56a80cbb50d",
     "lua/hwangfu/keymappings/mouse.lua.tmp.761282.1e87a95ae919",
@@ -193,8 +213,6 @@
     "lua/hwangfu/keymappings/editor.lua",
     "lua/hwangfu/keymappings/init.lua",
     "lua/hwangfu/keymappings/init.lua.tmp.761282.b4c8657f6486",
-    "lua/hwangfu/keymappings",
-    "lua/hwangfu/keymap.lua.tmp.761282.5cf2d317444e",
-    "lua/hwangfu/keymap.lua.tmp.761282.8bcac82b125e"
+    "lua/hwangfu/keymappings"
   ]
 }

@@ -1,7 +1,7 @@
 -- ============================================================================
 -- Keymap discovery popup (which-key.nvim): pause mid-keypress and a
 -- popup lists every continuation with its desc= text. The living
--- counterpart of docs/KEYBINDINGS.md and telescope's <leader>fk:
+-- counterpart of docs/keymappings/ and telescope's <leader>fk:
 -- nearly every map in this config already carries a desc, so the
 -- popup arrives fully labeled with zero per-map work here.
 -- Buffer-local maps (gitsigns hunks, oil keys, ocaml.nvim's

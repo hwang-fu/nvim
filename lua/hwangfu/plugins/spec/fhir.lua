@@ -1,6 +1,6 @@
 -- ============================================================================
 -- fhir.nvim: FHIR resource tooling (own plugin). Keymaps below are
--- buffer-local to FHIR buffers and documented in docs/KEYBINDINGS.md.
+-- buffer-local to FHIR buffers and documented in docs/keymappings/fhir.md.
 -- ============================================================================
 
 return {
