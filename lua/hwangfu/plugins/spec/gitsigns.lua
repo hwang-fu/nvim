@@ -39,12 +39,12 @@
 --   <leader>hR    reset entire buffer
 --   <leader>hp    preview hunk in a float
 --   <leader>hi    preview hunk inline (virtual text)
---   <leader>hb    blame current line (full commit message)
+--   <leader>hb    toggle inline blame virtual text
 --   <leader>hd    diff split: buffer vs index
 --   <leader>hD    diff split: buffer vs HEAD~
 --   <leader>hq    buffer hunks -> quickfix list
 --   <leader>hQ    all repo hunks -> quickfix list
---   <leader>hB    toggle inline blame virtual text
+--   <leader>hB    blame current line (full commit message)
 --   <leader>hw    toggle word diff
 --   ih            hunk text object (vih selects, dih deletes, ...)
 --
@@ -86,7 +86,7 @@
 --
 -- Defaults left as-is (the notable ones):
 --   * current_line_blame = false  -- inline blame virtual text is OFF
---                                    until toggled with <leader>hB.
+--                                    until toggled with <leader>hb.
 --   * max_file_length = 40000     -- gitsigns disables itself in
 --                                    files longer than this.
 --
@@ -205,7 +205,7 @@ return {
 				-- one) -- useful right after committing.
 				map("n", "<leader>hp", gitsigns.preview_hunk, "Git: preview hunk (float)")
 				map("n", "<leader>hi", gitsigns.preview_hunk_inline, "Git: preview hunk (inline)")
-				map("n", "<leader>hb", function()
+				map("n", "<leader>hB", function()
 					gitsigns.blame_line({ full = true })
 				end, "Git: blame line")
 				map("n", "<leader>hd", gitsigns.diffthis, "Git: diff against index")
@@ -222,7 +222,7 @@ return {
 				end, "Git: all repo hunks to quickfix")
 
 				-- Toggles.
-				map("n", "<leader>hB", gitsigns.toggle_current_line_blame, "Git: toggle inline blame")
+				map("n", "<leader>hb", gitsigns.toggle_current_line_blame, "Git: toggle inline blame")
 				map("n", "<leader>hw", gitsigns.toggle_word_diff, "Git: toggle word diff")
 
 				-- Text object: "ih" = inner hunk. Works in

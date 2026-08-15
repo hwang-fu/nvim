@@ -16,10 +16,10 @@ A hunk is one contiguous block of changed lines. Lowercase keys act on the hunk 
 | `<leader>hr` | Reset the hunk to the index version. In visual mode, only the selected lines |
 | `<leader>hS` / `<leader>hR` | Stage / reset the entire buffer |
 | `<leader>hp` / `<leader>hi` | Preview the hunk in a float / inline as virtual text |
-| `<leader>hb` | Blame the current line with the full commit message |
+| `<leader>hb` | Toggle inline blame virtual text |
 | `<leader>hd` / `<leader>hD` | Diff split against the index / against HEAD~ |
 | `<leader>hq` / `<leader>hQ` | Send this buffer's / the whole repo's hunks to the quickfix list |
-| `<leader>hB` | Toggle inline blame virtual text |
+| `<leader>hB` | Blame the current line with the full commit message |
 | `<leader>hw` | Toggle word-level diff |
 | `ih` | Hunk text object: `vih` selects it, `dih` deletes it |
 
