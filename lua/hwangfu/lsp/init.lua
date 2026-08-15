@@ -28,7 +28,7 @@
 --   5. require + setup() the linters module.
 --
 -- Treesitter activation is NOT in here - it lives in the treesitter plugin's
--- `config = function() ... end` inside lua/hwangfu/plugins.lua, where it
+-- `config = function() ... end` in lua/hwangfu/plugins/spec/treesitter.lua, where it
 -- attaches to every filetype via `pattern = "*"`.
 --
 -- Adding a new server:
@@ -50,7 +50,7 @@
 --
 -- Servers NOT in SERVERS by design:
 --   * rust_analyzer         - owned by the rustaceanvim plugin (see
---                             lua/hwangfu/plugins.lua and lsp/servers/
+--                             plugins/spec/rustaceanvim.lua and lsp/servers/
 --                             rust_analyzer.lua). rustaceanvim does its
 --                             own vim.lsp.config + vim.lsp.enable, and
 --                             calling helpers.define_server here would
@@ -58,7 +58,7 @@
 --                             from the plugin spec's `init` hook
 --                             instead of from this SERVERS loop.
 --   * elixirls              - owned by the elixir-tools.nvim plugin
---                             (see lua/hwangfu/plugins.lua and
+--                             (see plugins/spec/elixir_tools.lua and
 --                             lsp/servers/elixirls.lua). Same reasoning
 --                             as rust_analyzer: the plugin owns LSP
 --                             setup end-to-end via require("elixir").
@@ -67,7 +67,7 @@
 --                             elixir-tools needs to be on the runtime-
 --                             path before require("elixir") resolves).
 --   * hls                   - owned by the haskell-tools.nvim plugin
---                             (see lua/hwangfu/plugins.lua and
+--                             (see plugins/spec/haskell_tools.lua and
 --                             lsp/servers/hls.lua). Same author and
 --                             pattern as rust_analyzer / rustaceanvim:
 --                             configuration goes through vim.g.

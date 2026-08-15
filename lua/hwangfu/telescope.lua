@@ -7,7 +7,7 @@
 -- browse-the-directory style; the two can happily coexist.
 --
 -- The plugin specs (telescope.nvim + plenary.nvim + telescope-fzf-native) live
--- in lua/hwangfu/plugins.lua. This module configures telescope and maps the
+-- in lua/hwangfu/plugins/spec/telescope.lua. This module configures telescope and maps the
 -- keybindings; it is wired up from the root init.lua.
 --
 -- ----------------------------------------------------------------------------

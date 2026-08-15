@@ -24,7 +24,7 @@
 --   * Buffers           - ]b / [b cycle, <leader>bd close
 --
 -- NOT in this file (buffer-local maps defined where their plugin is
--- configured, in lua/hwangfu/plugins.lua):
+-- configured, in lua/hwangfu/plugins/spec/<plugin>.lua):
 --   * Git hunks         - ]c / [c, <leader>h*, <leader>tb, <leader>tw, ih
 --                         (gitsigns.nvim spec; see its "Keymap quick
 --                         reference" comment for the full table)
@@ -468,7 +468,7 @@ function M.setup()
     --
     -- Buffer-local keys inside oil listings (`..` up-dir alias, the
     -- sidebar-aware <CR> and <C-t> overrides, <C-s> passthrough to save)
-    -- are configured in oil's spec in lua/hwangfu/plugins.lua, next to
+    -- are configured in oil's spec (plugins/spec/oil.lua), next to
     -- the plugin they belong to -- the same split used for the gitsigns
     -- hunk maps.
     map("n", "<C-t>", function()

@@ -9,7 +9,7 @@
 -- the tree, so scratch projects get Jane Street style and project files
 -- always win.
 --
--- RELATIONSHIP TO ocaml.nvim (plugins.lua): the tarides/ocaml.nvim plugin
+-- RELATIONSHIP TO ocaml.nvim (plugins/spec/ocaml.lua): the tarides/ocaml.nvim plugin
 -- adds :OCaml* commands (construct, hole navigation, switch intf/impl,
 -- type search, ...) ON TOP of the client defined here - it does NOT start
 -- or own the LSP client. This file must therefore stay in the SERVERS

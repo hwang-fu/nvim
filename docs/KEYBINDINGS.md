@@ -39,7 +39,7 @@ ASCII-only, like the rest of the config.
 Note: Ctrl-R shadows built-in redo (use `:redo`); insert-mode Ctrl-R keeps
 the built-in insert-register behavior.
 
-## Structural editing - nvim-treesitter-textobjects (spec in lua/hwangfu/plugins.lua)
+## Structural editing - nvim-treesitter-textobjects (spec in lua/hwangfu/plugins/spec/textobjects.lua)
 
 Syntax-aware text objects (visual + operator-pending) and motions
 (normal + visual + operator-pending), added 2026-08-14. Works in every
@@ -58,7 +58,7 @@ quietly no-op there).
 ]c / [c remain gitsigns hunk navigation. Motions set the jumplist, so
 Ctrl-O walks back after an overshoot.
 
-## Keymap discovery - which-key.nvim (spec in lua/hwangfu/plugins.lua)
+## Keymap discovery - which-key.nvim (spec in lua/hwangfu/plugins/spec/which_key.lua)
 
 Added 2026-08-14. Pause after any mapped prefix (Space, backslash, ],
 [, g, z, ...) and a popup lists every continuation with its
@@ -139,7 +139,7 @@ preview, Ctrl-C closes, Ctrl-/ shows telescope's own mappings.
 Three layers: gitsigns edits hunks in the buffer, lazygit acts on the
 repo, diffview inspects changesets and history.
 
-### gitsigns (spec in lua/hwangfu/plugins.lua; buffer-local in git repos)
+### gitsigns (spec in lua/hwangfu/plugins/spec/gitsigns.lua; buffer-local in git repos)
 
 | Key | Action |
 |-----|--------|
@@ -173,7 +173,7 @@ c commit, A amend, P/p push/pull, panels via h/l or 1-5. Full quick
 reference in git.lua's header. Escape hatch: `Ctrl-\ Ctrl-N` to leave
 terminal mode, `i` to resume.
 
-### diffview (spec in lua/hwangfu/plugins.lua)
+### diffview (spec in lua/hwangfu/plugins/spec/diffview.lua)
 
 | Key | Action |
 |-----|--------|
@@ -187,7 +187,7 @@ In a diffview tab: Tab / S-Tab cycle files, g? help, q leaves. Commands:
 view), `:DiffviewToggleFiles`, `:DiffviewFocusFiles`, `:DiffviewRefresh`,
 `:DiffviewLog`.
 
-## File explorer - oil.nvim (spec in lua/hwangfu/plugins.lua; sidebar in lua/hwangfu/explorer.lua)
+## File explorer - oil.nvim (spec in lua/hwangfu/plugins/spec/oil.lua; sidebar in lua/hwangfu/explorer.lua)
 
 Ctrl-T (global) toggles a 35-column left SIDEBAR (2026-08-14; previously
 full-window) listing the current buffer's directory. Sidebar behavior:
@@ -242,7 +242,7 @@ contract, log, debug, config. (Renamed from upstream's :RenderMarkdown.)
 
 Completion, hover (K) and code actions (\<leader\>ca) ride the LSP layer.
 
-## OCaml - ocaml.nvim + utop REPL (specs in plugins.lua; REPL in lua/hwangfu/repl.lua)
+## OCaml - ocaml.nvim + utop REPL (spec in plugins/spec/ocaml.lua; REPL in lua/hwangfu/repl.lua)
 
 Buffer-local to OCaml buffers. `<localleader>` is backslash, so the keys
 below read as typed: `\c` means backslash then c.
@@ -272,7 +272,7 @@ loaded) or plain `utop` outside a project. Toggling it away only hides the
 window - the session keeps running per project; utop ends with `#quit` or
 Ctrl-D. Escape hatch: `Ctrl-\ Ctrl-N` leaves terminal mode, `i` resumes.
 
-## Lisp family (specs in lua/hwangfu/plugins.lua; added 2026-08-14)
+## Lisp family (specs in lua/hwangfu/plugins/spec/lisp.lua; added 2026-08-14)
 
 Four plugins, no overlap. parinfer-rust (parens follow indentation in
 clojure / scheme / lisp / racket / fennel / dune and friends;
@@ -333,7 +333,7 @@ debug BYTECODE only: give the executable stanza `(modes byte exe)`, run
 match runs directly, several offer a numbered choice, none prompts for a
 path.
 
-## FHIR - fhir.nvim (spec in lua/hwangfu/plugins.lua; FHIR buffers)
+## FHIR - fhir.nvim (spec in lua/hwangfu/plugins/spec/fhir.lua; FHIR buffers)
 
 gd goto reference, gr find usages, \<leader\>fo outline, \<leader\>fe eval,
 gl diagnostics, ga fix.

@@ -16,7 +16,7 @@
 --        colors    - per-filetype colorscheme switching
 --        (init)    - editor options and general autocmds
 --
--- Add a new plugin -> add a spec entry in lua/hwangfu/plugins.lua, then restart
+-- Add a new plugin -> add a spec file under lua/hwangfu/plugins/spec/, then restart
 -- Neovim (lazy.nvim installs it automatically) or run `:Lazy sync`. Add new
 -- behavior -> put it in one of the other lua/hwangfu/ modules.
 -- ============================================================================

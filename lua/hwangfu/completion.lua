@@ -4,7 +4,7 @@
 -- Migrated from nvim-cmp (2026-08); this module was lua/hwangfu/cmp.lua.
 -- One plugin now covers what took five (nvim-cmp + cmp-nvim-lsp /
 -- cmp-buffer / cmp-path / cmp-cmdline) plus the LuaSnip pair - see the
--- removal note in lua/hwangfu/plugins.lua.
+-- removal note in lua/hwangfu/plugins/spec/blink.lua.
 --
 -- What's wired up:
 --   * Engine          - blink.cmp with its prebuilt Rust fuzzy matcher

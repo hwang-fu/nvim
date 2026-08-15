@@ -30,8 +30,8 @@
 --
 -- Who calls what (no setup() - the module is required on demand):
 --   * keymap.lua  <C-t> (global)      -> M.toggle()
---   * plugins.lua oil spec  <CR>      -> M.select()      (oil buffers)
---   * plugins.lua oil spec  <C-t>     -> M.smart_close() (oil buffers;
+--   * plugins/spec/oil.lua  <CR>      -> M.select()      (oil buffers)
+--   * plugins/spec/oil.lua  <C-t>     -> M.smart_close() (oil buffers;
 --     shadows the global map there - see that function's comment)
 -- ============================================================================
 

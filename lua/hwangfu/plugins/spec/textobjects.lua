@@ -1,8 +1,8 @@
 -- Treesitter textobjects: syntax-aware text objects and motions.
 --
--- Runs the `main` branch to MATCH the nvim-treesitter spec above,
--- which is also on main - the two rewrites moved API in lockstep and
--- mixing branches breaks both. Configuration on main is manual
+-- Runs the `main` branch to MATCH the nvim-treesitter spec
+-- (spec/treesitter.lua), which is also on main - the two rewrites
+-- moved API in lockstep and mixing branches breaks both. Configuration on main is manual
 -- keymaps around the plugin's select / move modules (the old
 -- master-branch declarative `textobjects = {...}` table inside
 -- nvim-treesitter's setup no longer exists on this branch).

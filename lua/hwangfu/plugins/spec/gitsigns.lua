@@ -2,7 +2,7 @@
 --
 -- One of three git layers: gitsigns edits hunks IN the buffer; the
 -- <leader>g* namespace holds the repo-level UI (lazygit float in
--- lua/hwangfu/git.lua, plus the diffview.nvim spec just below this
+-- lua/hwangfu/git.lua, plus the diffview.nvim spec in spec/diffview.lua, formerly below this
 -- one).
 --
 -- Runs an async `git diff` for every attached buffer and keeps it

@@ -10,7 +10,7 @@
 -- commands.
 --
 -- This module is invoked from the elixir-tools.nvim plugin spec's
--- `config` hook in lua/hwangfu/plugins.lua (NOT from lsp/init.lua's
+-- `config` hook in lua/hwangfu/plugins/spec/elixir_tools.lua (NOT from lsp/init.lua's
 -- SERVERS loop). The `config` ordering guarantees that elixir-tools is
 -- already on the runtimepath before we `require("elixir")`.
 --

@@ -19,7 +19,7 @@
 -- so prose renders the same as code, per user preference; green.vim stays
 -- in colors/ if that ever reverts.)
 --
--- Every colorscheme listed in `plugins.lua`'s plugin block is fair game here,
+-- Every colorscheme listed in plugins/spec/colorschemes.lua is fair game here,
 -- as is anything in this config's colors/ directory (256_noir, minimo, green,
 -- ...); swap in gruvbox / tokyonight / vague etc. if you want to experiment.
 --

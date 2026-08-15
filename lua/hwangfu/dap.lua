@@ -5,11 +5,11 @@
 -- lets one client (nvim-dap) drive many different debug adapters through a
 -- common interface. Unlike LSP, DAP does NOT attach on file open - nvim-dap
 -- stays completely idle until a debug session is explicitly started. That is
--- why the whole stack is lazy-loaded (see the nvim-dap spec in plugins.lua)
+-- why the whole stack is lazy-loaded (see the nvim-dap spec in plugins/spec/dap.lua)
 -- and costs nothing at startup or when opening a buffer.
 --
 -- This module is invoked from the nvim-dap plugin spec's `config` hook in
--- lua/hwangfu/plugins.lua, NOT from the top-level module list in init.lua.
+-- plugins/spec/dap.lua, NOT from the top-level module list in init.lua.
 -- That is deliberate and mirrors how rust_analyzer.lua is wired from
 -- rustaceanvim's `init` hook: configuring DAP from init.lua would force the
 -- stack to load at startup and defeat the lazy-loading. `config` runs the
@@ -31,7 +31,7 @@
 --     install_ocaml() below. Its binary comes from opam (`opam install
 --     earlybird`), NOT from mason, matching how this config sources every
 --     language tool from its own toolchain (see the mason spec's note in
---     plugins.lua).
+--     plugins/spec/mason.lua).
 --
 -- What this module owns:
 --   * Breakpoint / stopped-line signs   - ASCII glyphs (see ASCII-only note).
@@ -268,11 +268,12 @@ end
 -- Keymaps (F-keys, VS Code muscle memory).
 --
 -- These are the real mappings. The matching bare key strings in the nvim-dap
--- spec's `keys` field in plugins.lua exist only to LAZY-LOAD the stack: the
+-- spec's `keys` field in plugins/spec/dap.lua exist only to LAZY-LOAD the stack: the
 -- first press loads nvim-dap (running config -> this setup, which installs the
 -- mappings below), then lazy.nvim re-feeds the keystroke so the now-live
--- mapping fires. Keeping the trigger list in plugins.lua and the behavior here
--- preserves the "plugins.lua = what/how-loaded, modules = behavior" split.
+-- mapping fires. Keeping the trigger list in plugins/spec/dap.lua and the
+-- behavior here preserves the "spec = what/how-loaded, modules = behavior"
+-- split.
 --
 -- F-key map:
 --   F5        continue / start (Rust-aware - see below)

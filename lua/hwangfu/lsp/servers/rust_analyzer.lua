@@ -10,7 +10,7 @@
 -- hover-actions features.
 --
 -- This module is invoked from the rustaceanvim plugin spec's `init` hook
--- in lua/hwangfu/plugins.lua (NOT from lsp/init.lua's SERVERS loop). The
+-- in lua/hwangfu/plugins/spec/rustaceanvim.lua (NOT from lsp/init.lua's SERVERS loop). The
 -- `init` ordering guarantees vim.g.rustaceanvim is populated before
 -- rustaceanvim's filetype handler registers itself.
 --

@@ -134,7 +134,7 @@ function M.setup()
 	-- (Empty since 2026-08. vim.g.NERDTreeWinSize lived here until nerdtree
 	-- was replaced by oil.nvim; oil uses the full window, so there is no
 	-- pane-width knob. Plugin behavior is configured in each plugin's spec
-	-- in lua/hwangfu/plugins.lua; the section is kept for future vim.g.*
+	-- in its spec file under lua/hwangfu/plugins/spec/; the section is kept for future vim.g.*
 	-- knobs that must be set before a plugin loads.)
 
 	-- ------------------------------------------------------------------------

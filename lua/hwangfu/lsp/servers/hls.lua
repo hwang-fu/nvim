@@ -10,7 +10,7 @@
 -- about this conflict.
 --
 -- This module is invoked from the haskell-tools.nvim plugin spec's
--- `init` hook in lua/hwangfu/plugins.lua (NOT from lsp/init.lua's
+-- `init` hook in lua/hwangfu/plugins/spec/haskell_tools.lua (NOT from lsp/init.lua's
 -- SERVERS loop). The `init` ordering guarantees vim.g.haskell_tools is
 -- populated before haskell-tools' filetype handler registers itself.
 --

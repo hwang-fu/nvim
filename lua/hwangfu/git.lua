@@ -7,13 +7,15 @@
 -- itself is installed system-wide (a `go install` binary on PATH).
 --
 -- Division of labor across the git tooling:
---   * gitsigns (plugins.lua)  - in-buffer hunks: signs, stage / reset,
+--   * gitsigns (plugins/spec/gitsigns.lua) - in-buffer hunks: signs,
+--                               stage / reset,
 --                               blame, buffer-vs-index diffs (<leader>h*).
 --   * THIS MODULE             - repo-level porcelain: stage, commit,
 --                               branch, push / pull, conflicts -
 --                               everything lazygit does, floating over
 --                               the editor.
---   * diffview (plugins.lua)  - read-only inspection: whole-changeset
+--   * diffview (plugins/spec/diffview.lua) - read-only inspection:
+--                               whole-changeset
 --                               side-by-side diffs and history
 --                               (<leader>gd / gh / gH).
 --
