@@ -57,13 +57,28 @@ function M.setup()
     -- forward again. <C-^> toggles between the current and previous buffer.
     -- (<C-o> / <C-i> / <C-^> are built-in Neovim keys, listed here for
     -- reference; this file does not map them.)
-    map("n", "]b", ":bnext<CR>", {
+    -- With a single listed buffer, :bnext/:bprevious silently stay put;
+    -- explain the no-op with a WARN notice instead (WARN, not ERROR: a
+    -- short one-line notify interrupts nothing).
+    local function cycle_buffer(cmd)
+        if #vim.fn.getbufinfo({ buflisted = 1 }) <= 1 then
+            vim.notify("Only one buffer is open", vim.log.levels.WARN)
+            return
+        end
+        vim.cmd(cmd)
+    end
+
+    map("n", "]b", function()
+        cycle_buffer("bnext")
+    end, {
         silent = true,
-        desc = "Next buffer",
+        desc = "Next buffer (warns when only one is open)",
     })
-    map("n", "[b", ":bprevious<CR>", {
+    map("n", "[b", function()
+        cycle_buffer("bprevious")
+    end, {
         silent = true,
-        desc = "Previous buffer",
+        desc = "Previous buffer (warns when only one is open)",
     })
     map("n", "<leader>bd", ":bdelete<CR>", {
         silent = true,
