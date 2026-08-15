@@ -14,6 +14,7 @@ A listing is an ordinary buffer you edit like text, and `:w` applies your edits 
 | `` ` `` | Change Neovim's working directory to the one being viewed |
 | `Ctrl-T` | Close the sidebar or listing |
 | `Ctrl-H` | Open the entry in a horizontal split |
+| `Ctrl-V` | Open the entry in a vertical split |
 | `Ctrl-P` | Preview the entry in a float |
 | `Ctrl-L` | Refresh the listing from disk |
 | `g.` | Toggle hidden dotfiles (shown by default) |

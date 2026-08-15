@@ -54,11 +54,12 @@
 --   <C-h>   open entry in a horizontal split
 --   <C-p>   preview entry in a float (moving the cursor re-previews)
 --   <C-l>   refresh the listing from disk
---   <C-s>   save = apply pending operations (custom: oil's default
---           <C-s> open-in-vsplit is disabled with `false` so the
---           global <C-s> :w map shows through. Consequence: there is
---           currently NO open-in-vsplit key in oil -- use <C-h> and
---           move the window, or bind a replacement here if missed.)
+--   <C-v>   open entry in a vertical split (custom, 2026-08-15;
+--           shadows blockwise-visual inside listings only. Oil's own
+--           vsplit default was <C-s>, disabled below so the global
+--           <C-s> :w map shows through)
+--   <C-s>   save = apply pending operations (oil's default <C-s>
+--           open-in-vsplit is disabled with `false`)
 --
 -- File operations: edit the listing like text, then :w (or <C-s>).
 -- Every :w shows a confirmation summary before touching disk.
@@ -112,6 +113,7 @@ return {
 					end,
 					desc = "Close sidebar / listing",
 				},
+				["<C-v>"] = { "actions.select", opts = { vertical = true } },
 				["<C-s>"] = false,
 				["<C-c>"] = false,
 				[".."] = "actions.parent",
