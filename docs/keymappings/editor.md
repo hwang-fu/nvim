@@ -14,8 +14,7 @@ motions.
 | `Ctrl-Z` | n, i | Undo (from insert: exits insert and reverts the whole typed chunk) |
 | `Ctrl-R` | n | Substitute char under cursor across file (pre-fills :%s) |
 | `Ctrl-R` | v | Substitute the visual selection across file |
-| `Ctrl-/` (or `Ctrl-_`) | n, v | Toggle comment (delegates to built-in gc) |
-| `Ctrl-L` | v | Toggle comment (older alias, same gc) |
+| `Ctrl-/` | n, v | Toggle comment (delegates to built-in gc). `Ctrl-_` fires the same map: it is this keypress's legacy terminal encoding, not a separate free key |
 | `Shift-arrows` | n | Enter visual mode and extend selection |
 | `Ctrl-Up` / `Ctrl-Down` | n, i | Scroll viewport (v: extend selection by line) |
 | `Ctrl-Left` / `Ctrl-Right` | n, i, v | Word motion (v extends) |

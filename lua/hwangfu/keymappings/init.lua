@@ -18,7 +18,10 @@
 --                         Scrolling         Ctrl+Up/Down
 --                         Word motion       Ctrl+Left/Right
 --                         Move line         Alt+Up/Down
---                         Comment toggle    Ctrl-/ (and Ctrl-_), <C-l> (v)
+--                         Comment toggle    Ctrl-/ (n + v; Ctrl-_ is the
+--                                           same keypress in legacy
+--                                           terminal encodings, not a
+--                                           free key)
 --   * mouse.lua       - Ctrl+LeftClick smart jump: LSP definition;
 --                       references when clicked at the definition
 --                       itself; quiet ctags fallback in non-LSP

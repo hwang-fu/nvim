@@ -96,10 +96,9 @@ function M.setup()
         vim.api.nvim_feedkeys(esc, "tx", false)
         vim.cmd("silent! write")
     end, { silent = true, desc = "Save file (exit visual/select first)" })
-    map("v", "<C-l>", "gc", {
-        remap = true,
-        desc = "Toggle comment",
-    })
+    -- (A visual-mode <C-l> alias for `gc` lived here until 2026-08-15;
+    -- removed on user request to free the key - Ctrl-/ in the Comment
+    -- toggle section below is the one comment binding.)
 
     -- --- Save / quit ----------------------------------------------------
     -- Save (Ctrl-S) is bound in both normal and insert: hitting it
@@ -371,9 +370,12 @@ function M.setup()
     -- VS Code parallel for Ctrl+/ in insert anyway -- exit insert
     -- first if you want to toggle a comment.
     --
-    -- Note: the visual-mode <C-l> map in the Clipboard section above
-    -- ALSO toggles comment (it predates this section). The two
-    -- bindings coexist; they delegate to the same `gc` operator.
+    -- History: a visual-mode <C-l> alias (predating this section) also
+    -- toggled comments until 2026-08-15; removed to keep Ctrl-/ as the
+    -- ONE comment binding and free <C-l> for future use. <C-_> below is
+    -- NOT a second binding in that sense: it is the same physical
+    -- Ctrl+/ keypress as delivered by legacy terminal encodings (see
+    -- the explanation above), so it can never be reassigned safely.
     for _, lhs in ipairs({ "<C-/>", "<C-_>" }) do
         map("n", lhs, "gcc", {
             remap = true,

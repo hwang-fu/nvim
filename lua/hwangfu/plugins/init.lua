@@ -34,9 +34,9 @@
 --
 -- Not-a-plugin note (kept from the old inline table): comment toggling
 -- is handled by Neovim's built-in gc / gcc / gbc operators (0.10+).
--- Comment.nvim was previously installed but is now redundant; the
--- visual-mode <C-l> map in lua/hwangfu/keymappings/editor.lua still works because it
--- remaps to `gc`, which resolves to the built-in.
+-- Comment.nvim was previously installed but is now redundant; Ctrl-/
+-- in lua/hwangfu/keymappings/editor.lua delegates to `gc` (the old
+-- visual-mode <C-l> alias was removed 2026-08-15).
 -- ============================================================================
 
 local M = {}
