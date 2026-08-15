@@ -15,4 +15,6 @@
 
 Every picker is also a command: `:Telescope <picker>`, and bare `:Telescope` lists them all.
 
+Both search pickers respect ignore files by default. To look past them: `:Telescope find_files no_ignore=true hidden=true` (`no_ignore` skips `.gitignore` rules, `hidden` adds dotfiles; each works alone), and `:Telescope live_grep additional_args=--no-ignore` for grep, where the flag goes straight to ripgrep (add `--hidden` for dotfiles).
+
 Inside a picker: `Ctrl-N` / `Ctrl-P` move, `Enter` opens, `Ctrl-X` / `Ctrl-V` / `Ctrl-T` open in a split / vsplit / tab, `Ctrl-U` / `Ctrl-D` scroll the preview, `Ctrl-C` closes, and `Ctrl-/` shows telescope's own mappings.
