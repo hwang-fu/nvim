@@ -26,6 +26,7 @@ These are defined in `lua/hwangfu/keymappings/`, one file per page:
 - [which-key](which-key.md) - the popup that shows available keys as you type
 - [completion](completion.md) - the completion menu
 - [lsp](lsp/lsp.md) - language server keys, with per-language pages under lsp/
+- [glance](lsp/glance.md) - peek references and definitions in an embedded panel
 - [telescope](telescope.md) - fuzzy finding
 
 ## Tools
