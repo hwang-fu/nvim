@@ -15,7 +15,18 @@ All common [LSP keys](lsp.md) apply. These keys exist only in OCaml buffers. The
 | `\pn` / `\pp` | Jump to the next / previous top-level phrase |
 | `\r` | Toggle the utop REPL float for this project |
 
-Some features are commands only: `:OCamlTypeExpression <expr>` prints an arbitrary expression's type, `:OCamlFindIdentifierDefinition` and friends look up a named identifier, and `:OCamlSearchDefinition` searches by type, for example `int -> string`.
+## Commands
+
+Every key above also exists as a command (`:OCamlConstruct` for `\c`, `:OCamlSwitchIntfImpl` for `\s`, and so on). The ones below are command-only; each takes one argument.
+
+| Command | Action |
+|---------|--------|
+| `:OCamlTypeExpression <expr>` | Print the type of any expression you give it, without putting it in the buffer |
+| `:OCamlFindIdentifierDefinition <name>` | Jump to the definition of an identifier given by name - the `.ml` implementation side |
+| `:OCamlFindIdentifierDeclaration <name>` | Jump to the declaration of an identifier given by name - the `.mli` interface side |
+| `:OCamlDocumentIdentifier <name>` | Show the documentation of an identifier given by name |
+| `:OCamlSearchDefinition <query>` | Search definitions by type, for example `int -> string`; a name works as a query too |
+| `:OCamlSearchDeclaration <query>` | The same search, landing on declarations instead of definitions |
 
 ## The REPL float
 
