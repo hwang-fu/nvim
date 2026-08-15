@@ -55,7 +55,7 @@
 --   <C-v>           open it in a vertical split
 --   <C-t>           open it in a new tab
 --   <C-u> / <C-d>   scroll the preview pane up / down
---   <C-c>           close the popup
+--   <C-q>           close the popup (also Esc; <C-c> is neutralized)
 --   <C-/>           show telescope's own full list of mappings
 -- ============================================================================
 
@@ -65,6 +65,7 @@ local M = {}
 function M.setup()
     local telescope = require("telescope")
 
+    local actions = require("telescope.actions")
     telescope.setup({
         defaults = {
             -- Plain ASCII prompt and selection caret. Telescope defaults to
@@ -73,6 +74,20 @@ function M.setup()
             -- defaults back.
             prompt_prefix = "> ",
             selection_caret = "> ",
+            -- Ctrl-Q closes the picker (2026-08-15), matching the global
+            -- Ctrl-Q = quit convention. This shadows telescope's default
+            -- insert-mode <C-q> (send results to the quickfix list); Esc
+            -- still closes from insert mode too. <C-c> is neutralized.
+            mappings = {
+                i = {
+                    ["<C-q>"] = actions.close,
+                    ["<C-c>"] = actions.nop,
+                },
+                n = {
+                    ["<C-q>"] = actions.close,
+                    ["<C-c>"] = actions.nop,
+                },
+            },
         },
     })
 

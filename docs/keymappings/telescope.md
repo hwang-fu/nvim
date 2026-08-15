@@ -17,4 +17,17 @@
 
 Every picker is also a command: `:Telescope <picker>`, and bare `:Telescope` lists them all.
 
-Inside a picker: `Down` / `Up` (or `Ctrl-N` / `Ctrl-P`) move, `Enter` opens, `Ctrl-X` / `Ctrl-V` / `Ctrl-T` open in a split / vsplit / tab, `Ctrl-U` / `Ctrl-D` scroll the preview, `Ctrl-C` closes, and `Ctrl-/` shows telescope's own mappings.
+## Inside a picker
+
+| Key | Action |
+|-----|--------|
+| `Down` | Next result (also `Ctrl-N`) |
+| `Up` | Previous result (also `Ctrl-P`) |
+| `Enter` | Open the selected result |
+| `Ctrl-X` | Open it in a horizontal split |
+| `Ctrl-V` | Open it in a vertical split |
+| `Ctrl-T` | Open it in a new tab |
+| `Ctrl-U` | Scroll the preview up |
+| `Ctrl-D` | Scroll the preview down |
+| `Ctrl-Q` | Close the picker (also `Esc`) |
+| `Ctrl-/` | Show telescope's own mappings |
