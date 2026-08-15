@@ -6,6 +6,10 @@ Two conventions run through everything. Every file carries extensive comments ex
 
 Requires Neovim 0.12+, a terminal with a Nerd Font, and the language toolchains you actually use (see below).
 
+## Keybindings
+
+`<leader>` is Space, `<localleader>` is backslash, and comma belongs to slimv. The full reference lives in [docs/keymappings/](docs/keymappings/README.md), one page per topic, and `<leader>fk` searches every live keymap from inside the editor.
+
 ## Layout
 
 | Path | Contents |
@@ -97,10 +101,6 @@ Most servers run through Neovim's native `vim.lsp.config()`, one small file each
 Three are owned by their language plugin instead, because the plugin manages the client end-to-end: rust-analyzer (rustaceanvim), HLS (haskell-tools), and ElixirLS (elixir-tools).
 
 Servers and formatters come from each language's own toolchain - rustup, opam, ghcup, go install, luarocks - rather than from mason, so they always match the compiler in use. Formatting runs on save per language; missing formatter binaries are reported once at startup.
-
-## Keybindings
-
-`<leader>` is Space, `<localleader>` is backslash, and comma belongs to slimv. The full reference lives in [docs/keymappings/](docs/keymappings/README.md), one page per topic, and `<leader>fk` searches every live keymap from inside the editor.
 
 ## Setup on a new machine
 
