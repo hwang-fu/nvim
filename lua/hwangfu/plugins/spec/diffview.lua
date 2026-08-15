@@ -19,8 +19,10 @@
 --                                         HEAD: staged changes drop
 --                                         out of the view - the same
 --                                         base gitsigns diffs against)
---   <leader>gh   DiffviewFileHistory %    history of the current file
---   <leader>gH   DiffviewFileHistory      history of the whole repo
+--   <leader>gh   DiffviewFileHistory      history of the whole repo
+--   <leader>gH   DiffviewFileHistory %    history of the current file
+--                (swapped 2026-08-15 at the user's request: lowercase
+--                gets the broader view, uppercase narrows to the file)
 -- Inside a diffview tab:
 --   <Tab> / <S-Tab>         next / previous changed file
 --   g?                      diffview's own help for the current panel
@@ -60,8 +62,8 @@ return {
 	},
 	keys = {
 		{ "<leader>gd", "<cmd>DiffviewOpen<CR>", desc = "Git: diffview (working tree vs index)" },
-		{ "<leader>gh", "<cmd>DiffviewFileHistory %<CR>", desc = "Git: file history (current file)" },
-		{ "<leader>gH", "<cmd>DiffviewFileHistory<CR>", desc = "Git: repo history" },
+		{ "<leader>gh", "<cmd>DiffviewFileHistory<CR>", desc = "Git: repo history" },
+		{ "<leader>gH", "<cmd>DiffviewFileHistory %<CR>", desc = "Git: file history (current file)" },
 	},
 	config = function()
 		require("diffview").setup({})
