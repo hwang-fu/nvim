@@ -75,9 +75,10 @@ local function setup_format_on_save()
             "*.mli",
             "*.pl",
             "*.pm",
-            "*.ex",
-            "*.exs",
-            "*.heex",
+            -- "*.ex" / "*.exs" / "*.heex" moved to their own autocmd
+            -- below (2026-08-16): ElixirLS only attaches inside a Mix
+            -- project, so the Elixir handler warns instead of silently
+            -- no-oping when there is no mix.exs up-tree.
             -- "*.erl" / "*.hrl" were here until 2026-08-14. ELP does not
             -- implement textDocument/formatting (verified; see
             -- lsp/servers/elp.lua), so LSP format-on-save was a silent
@@ -90,6 +91,39 @@ local function setup_format_on_save()
             vim.lsp.buf.format({
                 async = false,
             })
+        end,
+    })
+
+    -- ------------------------------------------------------------------------
+    -- (a2) Elixir: LSP formatting, gated on being inside a Mix project.
+    --
+    -- ElixirLS (started by elixir-tools) only attaches when a mix.exs
+    -- exists somewhere up-tree; on a stray .ex/.exs script NO server
+    -- attaches, so the generic handler above would run vim.lsp.buf.format
+    -- as a silent no-op - the file saves unformatted with no hint why
+    -- (verified 2026-08-16; the same silent-no-op trap Erlang fell into
+    -- with ELP). This handler makes the situation explicit: inside a Mix
+    -- project it formats exactly like the generic handler; outside, it
+    -- skips the call and warns ONCE PER BUFFER (a buffer-local flag -
+    -- warning on every save of a scratch script would be nagging).
+    -- ------------------------------------------------------------------------
+    vim.api.nvim_create_autocmd("BufWritePre", {
+        group = format_group,
+        pattern = { "*.ex", "*.exs", "*.heex" },
+        callback = function(args)
+            if vim.fs.root(args.buf, "mix.exs") then
+                vim.lsp.buf.format({
+                    async = false,
+                })
+                return
+            end
+            if not vim.b[args.buf].hwangfu_no_mix_warned then
+                vim.b[args.buf].hwangfu_no_mix_warned = true
+                vim.notify(
+                    "Elixir: no Mix project up-tree; format-on-save skipped (ElixirLS needs mix.exs)",
+                    vim.log.levels.WARN
+                )
+            end
         end,
     })
 

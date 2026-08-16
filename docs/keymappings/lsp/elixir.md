@@ -27,3 +27,6 @@ Test files get "Run test" codelenses above ExUnit functions.
 
 > [!NOTE]
 > The plugin also defines an `:Elixir nextls ...` command family, but those subcommands only talk to Next LS, the alternative language server this config does not run.
+
+> [!NOTE]
+> Everything on this page needs a Mix project: ElixirLS only attaches when a `mix.exs` exists up-tree. On a stray `.ex` / `.exs` script there is no server, and format-on-save is skipped with a one-time warning instead of silently doing nothing.
