@@ -71,17 +71,31 @@ local M = {}
 -- Binary resolution: prefer the project-local opam switch (2026-08-16,
 -- user request).
 --
--- `opam switch create .` gives a project its own switch in <root>/_opam,
--- with its own compiler AND its own ocamllsp. Using that ocamllsp is not
+-- `opam switch create .` gives a project its own switch in _opam/, with
+-- its own compiler AND its own ocamllsp. Using that ocamllsp is not
 -- just a nicety: the server must read cmt/cmi artifacts produced by the
 -- switch's compiler, and a version mismatch against the global switch's
--- ocamllsp degrades or breaks analysis. So: if <root>/_opam/bin/ocamllsp
--- exists and is executable, spawn it; otherwise fall back to `ocamllsp`
--- from $PATH (the global default switch).
+-- ocamllsp degrades or breaks analysis. So: walk UPWARD from the LSP
+-- root and spawn the nearest _opam's bin/ocamllsp if it is executable
+-- (the root itself is checked first); otherwise fall back to `ocamllsp`
+-- from $PATH (the global default switch). The upward walk mirrors
+-- opam's own directory-based resolution rule (`opam env` semantics):
+-- the switch may sit ABOVE the dune project root, as in a multi-project
+-- repo whose subfolders each carry a dune-project while one shared
+-- _opam lives at the repo top (e.g. ~/proj/ocamlpractice).
 --
--- The local branch also prepends <root>/_opam/bin to the server's PATH,
--- so subprocesses ocamllsp spawns (dune, ocamlformat) resolve from the
--- same switch instead of half-local half-global.
+-- History note (2026-08-16, same-day correction): the first version
+-- probed exactly <root>/_opam/bin/ocamllsp. In multi-project repos the
+-- root marker resolves to the subfolder, the shared _opam one level up
+-- was never seen, and the config always fell through to the PATH
+-- fallback - silently, the binary just wasn't the switch's.
+--
+-- Accepted limitation: the OPAMSWITCH environment variable (which real
+-- opam lets override directory-based selection) is not consulted.
+--
+-- The local branch also prepends the found _opam/bin to the server's
+-- PATH, so subprocesses ocamllsp spawns (dune, ocamlformat) resolve
+-- from the same switch instead of half-local half-global.
 --
 -- Mechanics: `cmd` as a FUNCTION is invoked per client start with
 -- (dispatchers, resolved_config) - runtime lsp/client.lua calls
@@ -94,10 +108,17 @@ local function start_ocamllsp(dispatchers, config)
     local env
     local root = config.root_dir
     if root then
-        local local_bin = root .. "/_opam/bin/ocamllsp"
-        if vim.fn.executable(local_bin) == 1 then
-            bin = local_bin
-            env = { PATH = root .. "/_opam/bin:" .. (vim.env.PATH or "") }
+        -- Walk upward like opam itself does: the switch may sit above the
+        -- dune project root (multi-project repo sharing one _opam at its
+        -- top, e.g. ~/proj/ocamlpractice), or in the root itself (single
+        -- project). Nearest _opam wins, matching `opam env` semantics.
+        local hit = vim.fs.find("_opam", { upward = true, path = root, type = "directory" })[1]
+        if hit then
+            local local_bin = hit .. "/bin/ocamllsp"
+            if vim.fn.executable(local_bin) == 1 then
+                bin = local_bin
+                env = { PATH = hit .. "/bin:" .. (vim.env.PATH or "") }
+            end
         end
     end
     return vim.lsp.rpc.start({ bin }, dispatchers, {
