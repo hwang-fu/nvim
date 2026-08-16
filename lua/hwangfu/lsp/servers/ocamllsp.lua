@@ -138,11 +138,18 @@ function M.setup()
             "reason",
             "dune",
         },
+        -- Tiered (2026-08-16, user request): the inner list is tier 1,
+        -- searched over the ENTIRE ancestry first; ".git" is tier 2, a
+        -- true fallback consulted only when no dune/opam marker exists
+        -- anywhere up-tree. With the old flat list all four markers
+        -- ranked equally and only distance decided, so a vendored git
+        -- checkout INSIDE a dune project (its .git nearer than the
+        -- parent's dune-project) would win the root. Within a tier,
+        -- nearest still wins, so multi-project repos keep rooting at
+        -- each subfolder's own dune-project.
         root_markers = {
-            "dune-project",
-            "dune-workspace",
+            { "dune-project", "dune-workspace", "*.opam" },
             ".git",
-            "*.opam",
         },
         settings = {
             -- Type-signature lenses above top-level definitions. The
