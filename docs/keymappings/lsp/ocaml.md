@@ -32,6 +32,18 @@ Every key above also exists as a command (`:OCamlConstruct` for `\c`, `:OCamlSwi
 
 `\r` opens utop in a floating terminal. Inside a dune project it runs `dune utop .` from the project root, so your own libraries are built and loaded; elsewhere it falls back to plain utop. Toggling the float away only hides it - the session keeps running per project until utop exits (`#quit` or `Ctrl-D`). To scroll or copy from the float, `Ctrl-\ Ctrl-N` leaves terminal mode and `i` returns.
 
+## Project-wide references need the index
+
+Finding references across files (`grr`, `Ctrl-LeftClick` at a definition) depends on index files that dune builds **only on request** - a plain `dune build` never creates them. Without the index, ocamllsp silently degrades to same-buffer occurrences: a `val` in an `.mli` reports exactly one reference, itself.
+
+Build the index inside the project with:
+
+```
+dune build @ocaml-index
+```
+
+The files land in `_build` (`cctx.ocaml-index`, one per library or executable), so they add no source-tree noise - but `dune clean` deletes them, and they go stale as code changes. Rerun the command when references start looking thin, or keep `dune build @ocaml-index -w` running in a spare terminal during longer sessions.
+
 ## Notes
 
 - `\p` pauses briefly before firing because it is also the start of `\pn` and `\pp`.
