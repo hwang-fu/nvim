@@ -67,11 +67,48 @@ local M = {}
 -- change-driven re-requests.
 -- ----------------------------------------------------------------------------
 
+-- ----------------------------------------------------------------------------
+-- Binary resolution: prefer the project-local opam switch (2026-08-16,
+-- user request).
+--
+-- `opam switch create .` gives a project its own switch in <root>/_opam,
+-- with its own compiler AND its own ocamllsp. Using that ocamllsp is not
+-- just a nicety: the server must read cmt/cmi artifacts produced by the
+-- switch's compiler, and a version mismatch against the global switch's
+-- ocamllsp degrades or breaks analysis. So: if <root>/_opam/bin/ocamllsp
+-- exists and is executable, spawn it; otherwise fall back to `ocamllsp`
+-- from $PATH (the global default switch).
+--
+-- The local branch also prepends <root>/_opam/bin to the server's PATH,
+-- so subprocesses ocamllsp spawns (dune, ocamlformat) resolve from the
+-- same switch instead of half-local half-global.
+--
+-- Mechanics: `cmd` as a FUNCTION is invoked per client start with
+-- (dispatchers, resolved_config) - runtime lsp/client.lua calls
+-- config.cmd(dispatchers, config) - so config.root_dir (resolved from
+-- root_markers below) picks the binary per project. vim.lsp.rpc.start
+-- is the same spawn path a list-valued cmd takes internally.
+-- ----------------------------------------------------------------------------
+local function start_ocamllsp(dispatchers, config)
+    local bin = "ocamllsp"
+    local env
+    local root = config.root_dir
+    if root then
+        local local_bin = root .. "/_opam/bin/ocamllsp"
+        if vim.fn.executable(local_bin) == 1 then
+            bin = local_bin
+            env = { PATH = root .. "/_opam/bin:" .. (vim.env.PATH or "") }
+        end
+    end
+    return vim.lsp.rpc.start({ bin }, dispatchers, {
+        cwd = root,
+        env = env,
+    })
+end
+
 function M.setup()
     helpers.define_server("ocamllsp", {
-        cmd = {
-            "ocamllsp",
-        },
+        cmd = start_ocamllsp,
         filetypes = {
             "ocaml",
             "ocaml.menhir",

@@ -47,3 +47,4 @@ The files land in `_build` (`cctx.ocaml-index`, one per library or executable), 
 ## Notes
 
 - `\p` pauses briefly before firing because it is also the start of `\pn` and `\pp`.
+- Projects with a local opam switch (`_opam/`, from `opam switch create .`) automatically get that switch's own `ocamllsp`, with the switch's `bin` first on the server's PATH so dune and ocamlformat come from the same switch; projects without one use the global `ocamllsp`.
