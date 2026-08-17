@@ -34,17 +34,19 @@ Aliases compose by chaining colons, as the `:portal` row shows - with one caveat
 
 ## Evaluating
 
-| Key | Action |
-|-----|--------|
-| `\ee` | Evaluate the expression under the cursor |
-| `\er` | Evaluate the top-level form under the cursor - the workhorse: edit a function, `\er`, it is live |
-| `\eb` | Evaluate the whole file as currently shown in the editor, saved or not |
-| `\ew` | Evaluate the word under the cursor - inspect what a symbol currently holds |
-| `\e!` | Evaluate the form and replace its text with the result, right in the file |
-| `\E` | Evaluate the visual selection |
-| `\ei` | Interrupt the oldest running evaluation - the escape hatch for an accidental infinite loop |
-| `\xr` | Show the macroexpansion of the current form (`\x1` expands one step, `\xa` expands everything) |
-| `\ls` / `\lv` | Open conjure's log of results in a split / vsplit |
+Every key also exists as a command, created by conjure in Clojure files - the Command column below. Four more are global: `:ConjureEval <code>` evaluates arbitrary text you type, `:ConjureConnect [host] [port]` connects anywhere, `:ConjureClientState` switches state keys, and `:ConjureSchool` starts conjure's interactive tutorial.
+
+| Key | Command | Action |
+|-----|---------|--------|
+| `\ee` | `:ConjureEvalCurrentForm` | Evaluate the expression under the cursor |
+| `\er` | `:ConjureEvalRootForm` | Evaluate the top-level form under the cursor - the workhorse: edit a function, `\er`, it is live |
+| `\eb` | `:ConjureEvalBuf` | Evaluate the whole file as currently shown in the editor, saved or not |
+| `\ew` | `:ConjureEvalWord` | Evaluate the word under the cursor - inspect what a symbol currently holds |
+| `\e!` | `:ConjureEvalReplaceForm` | Evaluate the form and replace its text with the result, right in the file |
+| `\E` | `:ConjureEvalVisual` | Evaluate the visual selection |
+| `\ei` | `:ConjureCljInterrupt` | Interrupt the oldest running evaluation - the escape hatch for an accidental infinite loop |
+| `\xr` | `:ConjureCljMacroExpand` | Show the macroexpansion of the current form (`\xa` / `:ConjureCljMacroExpandAll` expands everything) |
+| `\ls` / `\lv` | `:ConjureLogSplit` / `:ConjureLogVSplit` | Open conjure's log of results in a split / vsplit |
 
 The idiomatic scratchpad is the rich comment block: a `(comment ...)` at the bottom of a file full of loose expressions. The compiler ignores it; you put the cursor inside any form and `\ee` it. Experiments stay in the file, versioned, without ever running at load time.
 
@@ -52,40 +54,40 @@ The idiomatic scratchpad is the rich comment block: a `(comment ...)` at the bot
 
 Tests are expressions too - these run them in the live REPL, no separate command:
 
-| Key | Action |
-|-----|--------|
-| `\tc` | Run the test under the cursor |
-| `\tn` | Run all tests in this namespace |
-| `\tN` | Run the tests of the alternate namespace - from `foo.clj`, runs `foo-test` |
-| `\ta` | Run every currently loaded test |
+| Key | Command | Action |
+|-----|---------|--------|
+| `\tc` | `:ConjureCljRunCurrentTest` | Run the test under the cursor |
+| `\tn` | `:ConjureCljRunCurrentNsTests` | Run all tests in this namespace |
+| `\tN` | `:ConjureCljRunAlternateNsTests` | Run the tests of the alternate namespace - from `foo.clj`, runs `foo-test` |
+| `\ta` | `:ConjureCljRunAllTests` | Run every currently loaded test |
 
 ## Refreshing - the reloaded workflow
 
 Hours of redefining things make the live process drift from what a cold start would produce (deleted functions linger, stale definitions survive). The cure is refreshing namespaces from disk, and it is one key:
 
-| Key | Action |
-|-----|--------|
-| `\rr` | Reload every namespace whose file changed |
-| `\ra` | Reload all namespaces, changed or not |
-| `\rc` | Clear the refresh cache, when a refresh gets confused |
+| Key | Command | Action |
+|-----|---------|--------|
+| `\rr` | `:ConjureCljRefreshChanged` | Reload every namespace whose file changed |
+| `\ra` | `:ConjureCljRefreshAll` | Reload all namespaces, changed or not |
+| `\rc` | `:ConjureCljRefreshClear` | Clear the refresh cache, when a refresh gets confused |
 
 Refresh often; treat a fresh JVM (and CI) as the source of truth.
 
 ## Inspecting
 
-| Key | Action |
-|-----|--------|
-| `\vt` | View and drain everything sent to `tap>` - sprinkle `(tap> x)` in code instead of print statements, collect the values here |
-| `\ve` | View the last exception as structured data instead of a stack-trace wall |
-| `\v1` / `\v2` / `\v3` | Recall the three most recent evaluation results |
-| `\vs` | View the source of the symbol under the cursor |
+| Key | Command | Action |
+|-----|---------|--------|
+| `\vt` | `:ConjureCljViewTap` | View and drain everything sent to `tap>` - sprinkle `(tap> x)` in code instead of print statements, collect the values here |
+| `\ve` | `:ConjureCljLastException` | View the last exception as structured data instead of a stack-trace wall |
+| `\v1` / `\v2` / `\v3` | - | Recall the three most recent evaluation results (keys only, no command form) |
+| `\vs` | `:ConjureCljViewSource` | View the source of the symbol under the cursor |
 
 ## Connection
 
-| Key | Action |
-|-----|--------|
-| `\cf` | Connect to the server from the `.nrepl-port` file (what auto-connect does; use it after starting the REPL with Neovim already open) |
-| `\cd` | Disconnect |
+| Key | Command | Action |
+|-----|---------|--------|
+| `\cf` | `:ConjureCljConnectPortFile` | Connect to the server from the `.nrepl-port` file (what auto-connect does; use it after starting the REPL with Neovim already open) |
+| `\cd` | `:ConjureCljDisconnect` | Disconnect |
 
 Conjure also manages multiple nREPL sessions under `\s*`; that is rarely needed day one - `:help conjure-client-clojure-nrepl` has the full list.
 
