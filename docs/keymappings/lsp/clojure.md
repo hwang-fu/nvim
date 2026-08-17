@@ -4,7 +4,7 @@
 
 Two engines share the work. clojure-lsp reads the code statically: completion, `gd`-style navigation, `<leader>rn` rename, `grr` references, format on save (cljfmt). Conjure talks to a **live REPL**: everything below with a `\` prefix evaluates real code in your running program. The localleader is backslash, so `\ee` means: press backslash, then `e`, then `e`.
 
-All common [LSP keys](lsp.md) apply. Conjure shadows two of them in Clojure buffers: `gd` and `K` go through conjure first (definition and docs from the live REPL, falling back to the LSP).
+All common [LSP keys](lsp.md) apply. Conjure shadows two of them in Clojure files: `gd` and `K` go through conjure first (definition and docs from the live REPL, falling back to the LSP). Throughout this page, "a Clojure file" means anything Neovim detects as the clojure filetype: `.clj`, `.cljs`, `.cljc`, and `.edn`.
 
 ## Starting the REPL
 
@@ -14,7 +14,7 @@ Conjure does not start the REPL - you do, once per project, in a terminal at the
 clj -M:nrepl:portal
 ```
 
-The server writes a `.nrepl-port` file and conjure connects through it automatically when you open a Clojure buffer - if the REPL started after the buffer was already open, `\cf` connects on demand.
+The server writes a `.nrepl-port` file and conjure connects through it automatically when you open a Clojure file - if the REPL started after the file was already open, `\cf` connects on demand.
 
 The `:portal` half only puts the Portal data inspector on the classpath; it costs nothing until opened from the REPL, which is why the chained form is the recommended habit. Plain `clj -M:nrepl` works whenever Portal is not wanted. Everything in the tables below needs that connection; without it, evaluations report no connected server.
 
@@ -36,9 +36,9 @@ Aliases compose by chaining colons, as the `:portal` row shows - with one caveat
 |-----|--------|
 | `\ee` | Evaluate the expression under the cursor |
 | `\er` | Evaluate the top-level form under the cursor - the workhorse: edit a function, `\er`, it is live |
-| `\eb` | Evaluate the whole buffer |
+| `\eb` | Evaluate the whole file as currently shown in the editor, saved or not |
 | `\ew` | Evaluate the word under the cursor - inspect what a symbol currently holds |
-| `\e!` | Evaluate the form and replace it in the buffer with its result |
+| `\e!` | Evaluate the form and replace its text with the result, right in the file |
 | `\E` | Evaluate the visual selection |
 | `\ei` | Interrupt the oldest running evaluation - the escape hatch for an accidental infinite loop |
 | `\xr` | Show the macroexpansion of the current form (`\x1` expands one step, `\xa` expands everything) |
