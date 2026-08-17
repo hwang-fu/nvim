@@ -93,6 +93,74 @@ return {
 				"racket",
 				"scheme",
 			}
+
+			-- --- nREPL forgot-to-start reminder (2026-08-17, user request) ---
+			--
+			-- Conjure never starts the Clojure REPL (deliberate: the REPL is
+			-- a long-lived process the user owns in a terminal), so the
+			-- classic slip is opening a project and evaluating into nothing.
+			-- This check runs once per PROJECT per session, on the first
+			-- clojure FileType event for that project, deferred so it never
+			-- slows the file open:
+			--   * no deps.edn / project.clj up-tree -> not a project, stay
+			--     silent (lone .edn scratch files deserve no nagging);
+			--   * no .nrepl-port file found          -> warn: forgot to start;
+			--   * port file found                   -> TCP-probe it. nREPL
+			--     deletes the file on clean shutdown but crashes leave it
+			--     behind, so existence alone proves nothing. A refused
+			--     connection means stale -> warn; an accepted one means the
+			--     server is up -> total silence.
+			-- Both notices are single lines (no hit-enter prompt) and name
+			-- the exact command plus \cf, since conjure will not retro-
+			-- connect on its own once the buffer is already open. ERROR
+			-- level, not WARN (user preference 2026-08-17: "I wanna be
+			-- explicitly reminded") - red is the point. Registered
+			-- from `init`, not `config`: config runs on the plugin's lazy
+			-- ft load, AFTER the first FileType event has already fired.
+			local checked_roots = {}
+			vim.api.nvim_create_autocmd("FileType", {
+				pattern = "clojure",
+				group = vim.api.nvim_create_augroup("HwangfuNreplReminder", { clear = true }),
+				callback = function(args)
+					vim.defer_fn(function()
+						if not vim.api.nvim_buf_is_valid(args.buf) then
+							return
+						end
+						local root = vim.fs.root(args.buf, { "deps.edn", "project.clj" })
+						if not root or checked_roots[root] then
+							return
+						end
+						checked_roots[root] = true
+						local file_dir = vim.fs.dirname(vim.api.nvim_buf_get_name(args.buf))
+						local port_file = vim.fs.find(".nrepl-port", { upward = true, path = file_dir })[1]
+						if not port_file then
+							vim.notify(
+								"Clojure: no nREPL server; run 'clj -M:nrepl:portal' at "
+									.. vim.fn.fnamemodify(root, ":~")
+									.. ", then \\cf",
+								vim.log.levels.ERROR
+							)
+							return
+						end
+						local port = tonumber(((vim.fn.readfile(port_file)[1] or ""):match("%d+")) or "")
+						if not port then
+							return
+						end
+						local tcp = vim.uv.new_tcp()
+						tcp:connect("127.0.0.1", port, function(err)
+							tcp:close()
+							if err then
+								vim.schedule(function()
+									vim.notify(
+										"Clojure: stale .nrepl-port (port " .. port .. " not answering); restart 'clj -M:nrepl:portal', then \\cf",
+										vim.log.levels.ERROR
+									)
+								end)
+							end
+						end)
+					end, 1000)
+				end,
+			})
 		end,
 	},
 

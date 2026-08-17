@@ -16,7 +16,9 @@ clj -M:nrepl:portal
 
 The server writes a `.nrepl-port` file and conjure connects through it automatically when you open a Clojure file - if the REPL started after the file was already open, `\cf` connects on demand.
 
-The `:portal` half only puts the Portal data inspector on the classpath; it costs nothing until opened from the REPL, which is why the chained form is the recommended habit. Plain `clj -M:nrepl` works whenever Portal is not wanted. Everything in the tables below needs that connection; without it, evaluations report no connected server.
+The `:portal` half only puts the Portal data inspector on the classpath; it costs nothing until opened from the REPL, which is why the chained form is the recommended habit. Plain `clj -M:nrepl` works whenever Portal is not wanted.
+
+Forgetting is covered: opening a Clojure file inside a project with no live nREPL server prints a one-line error naming the command (once per project per session; error-level so it stands out in red). A leftover `.nrepl-port` file from a crashed server is detected too - the check actually probes the port instead of trusting the file. Everything in the tables below needs that connection; without it, evaluations report no connected server.
 
 The `:nrepl` alias is defined once in the user-level `~/.clojure/deps.edn` (set up 2026-08-17), so every project on the machine has it. That file carries four more aliases, each documented by its own comments there:
 
