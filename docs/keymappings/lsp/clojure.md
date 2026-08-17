@@ -11,10 +11,12 @@ All common [LSP keys](lsp.md) apply. Conjure shadows two of them in Clojure buff
 Conjure does not start the REPL - you do, once per project, in a terminal at the project root:
 
 ```
-clj -M:nrepl
+clj -M:nrepl:portal
 ```
 
-The server writes a `.nrepl-port` file and conjure connects through it automatically when you open a Clojure buffer. Everything in the tables below needs that connection; without it, evaluations report no connected server.
+The server writes a `.nrepl-port` file and conjure connects through it automatically when you open a Clojure buffer - if the REPL started after the buffer was already open, `\cf` connects on demand.
+
+The `:portal` half only puts the Portal data inspector on the classpath; it costs nothing until opened from the REPL, which is why the chained form is the recommended habit. Plain `clj -M:nrepl` works whenever Portal is not wanted. Everything in the tables below needs that connection; without it, evaluations report no connected server.
 
 The `:nrepl` alias is defined once in the user-level `~/.clojure/deps.edn` (set up 2026-08-17), so every project on the machine has it. That file carries four more aliases, each documented by its own comments there:
 
