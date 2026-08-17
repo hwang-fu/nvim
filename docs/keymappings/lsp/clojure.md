@@ -16,15 +16,17 @@ clj -M:nrepl
 
 The server writes a `.nrepl-port` file and conjure connects through it automatically when you open a Clojure buffer. Everything in the tables below needs that connection; without it, evaluations report no connected server.
 
-The `:nrepl` alias goes in the user-level `~/.clojure/deps.edn` once, and every project on the machine has it:
+The `:nrepl` alias is defined once in the user-level `~/.clojure/deps.edn` (set up 2026-08-17), so every project on the machine has it. That file carries four more aliases, each documented by its own comments there:
 
-```clojure
-{:aliases {:nrepl {:extra-deps {nrepl/nrepl {:mvn/version "1.3.1"}
-                                org.clojure/tools.namespace {:mvn/version "1.5.0"}}
-                   :main-opts ["-m" "nrepl.cmdline"]}}}
-```
+| Alias | Invocation | Purpose |
+|-------|------------|---------|
+| `:nrepl` | `clj -M:nrepl` | The REPL server conjure connects to, with tools.namespace bundled for the refresh keys below |
+| `:outdated` | `clj -M:outdated` | Report every dependency with a newer release (antq) |
+| `:portal` | `clj -M:nrepl:portal` | Add the Portal GUI data inspector to the REPL classpath |
+| `:rebel` | `clj -M:rebel` | A pleasant standalone terminal REPL, for poking without Neovim |
+| `:test` | `clj -X:test` | Run the project's tests from the CLI or a Makefile (Cognitect test-runner) |
 
-(tools.namespace is what the refresh keys below drive.)
+Aliases compose by chaining colons, as the `:portal` row shows - with one caveat noted in the file: when several chained aliases define a main entry, only the last one wins.
 
 ## Evaluating
 
