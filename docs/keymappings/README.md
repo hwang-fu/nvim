@@ -43,6 +43,7 @@ These are defined in `lua/hwangfu/keymappings/`, one file per page:
 - [haskell](lsp/haskell.md) - HLS subcommands and Hoogle hover
 - [elixir](lsp/elixir.md) - Mix tasks and pipe rewriting
 - [clojure](lsp/clojure.md) - the REPL-driven workflow: evaluate, test, refresh, inspect
+- [fennel](lsp/fennel.md) - evaluation inside Neovim's own runtime, no REPL process at all
 - [lisp](lsp/lisp.md) - evaluating Lisp code from the buffer
 - [crates](crates.md) - Cargo.toml dependency commands
 - [fhir](fhir.md) - FHIR resource tooling

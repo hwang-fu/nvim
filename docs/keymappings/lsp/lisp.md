@@ -22,7 +22,7 @@ Active in Clojure, Fennel, Racket, and Scheme buffers. Results appear inline as 
 
 Clojure evaluation needs an nREPL server running in the project; conjure connects on its own through the `.nrepl-port` file. Fennel evaluates inside Neovim with no external process, and Racket and Scheme use REPL processes conjure manages itself.
 
-Clojure gets much more than the table above - tests, namespace refreshing, tap inspection, exception views - all documented on its own page: [clojure](clojure.md).
+Clojure gets much more than the table above - tests, namespace refreshing, tap inspection, exception views - all documented on its own page: [clojure](clojure.md). Fennel also has its own page, [fennel](fennel.md), covering the full key set and its no-process evaluation model.
 
 ## Slimv - SLIME for Common Lisp
 
