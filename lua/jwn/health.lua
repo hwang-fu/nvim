@@ -45,6 +45,17 @@ function M.check()
     probe("lazygit", "warn", "<leader>gg opens it; the git float is dead without it")
 
     -- ------------------------------------------------------------------
+    health.start("Phantom EOF line / gitsigns integration")
+    local shim = require("jwn").phantom_shim_state()
+    if shim == "ok" then
+        health.ok("gitsigns shim installed - signs, counts, and staging ignore the phantom line")
+    elseif shim == "pending" then
+        health.info("gitsigns not loaded yet - the shim installs the moment it loads")
+    else
+        health.error("gitsigns.util.buf_lines is gone (plugin update?) - phantom EOF lines are disabled to protect the git index; update the shim in lua/jwn/init.lua")
+    end
+
+    -- ------------------------------------------------------------------
     health.start("Build prerequisites (plugin installs and parser compiles)")
     probe("git", "warn", "lazy.nvim installs and updates plugins with it")
     probe("cargo", "warn", "parinfer-rust compiles itself with cargo on install")

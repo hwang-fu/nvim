@@ -243,8 +243,62 @@ function M.setup()
 	end
 	phantom_hl()
 
+	-- --- gitsigns shim (2026-08-19, same-day fix) -------------------------
+	-- gitsigns treats the buffer as truth: with a real phantom line it
+	-- showed every clean file as +1 - and, far worse, stage_buffer WROTE
+	-- the phantom into the git index (verified: staged blob ended 0a 0a,
+	-- a non-POSIX trailing blank line headed for a commit). Both the sign
+	-- diff (manager.lua) and the staging path (cache.lua) read the buffer
+	-- through ONE choke point, gitsigns.util.buf_lines(); the wrapper
+	-- below drops the managed trailing line from what gitsigns sees, so
+	-- signs, counts, and staging all describe the file as it exists on
+	-- disk. Hunk line numbers are unaffected: the phantom is strictly
+	-- trailing, so removing it shifts nothing above it.
+	--
+	-- This IS a reach into plugin internals - accepted deliberately, with
+	-- two guards: lazy-lock.json pins the gitsigns revision between
+	-- deliberate updates, and if an update ever removes buf_lines the
+	-- shim REFUSES: it screams at ERROR level and phantom lines are
+	-- disabled entirely (phantom_eligible below checks shim_failed),
+	-- because a cosmetic feature must never be allowed to corrupt the
+	-- index again. :checkhealth jwn reports the shim state.
+	--
+	-- Install timing: at the User LazyLoad event for gitsigns.nvim (fires
+	-- right after the plugin loads, before its scheduled buffer attach
+	-- ever diffs), plus one immediate attempt for reload scenarios.
+	local phantom_shim_state = "pending"
+	local function install_gitsigns_shim()
+		if phantom_shim_state ~= "pending" or not package.loaded["gitsigns.util"] then
+			return
+		end
+		local util = package.loaded["gitsigns.util"]
+		if type(util.buf_lines) ~= "function" then
+			phantom_shim_state = "failed"
+			vim.schedule(function()
+				vim.notify(
+					"PhantomEol: gitsigns.util.buf_lines is gone (gitsigns update?) - phantom EOF lines disabled to protect the git index",
+					vim.log.levels.ERROR
+				)
+			end)
+			return
+		end
+		local orig = util.buf_lines
+		util.buf_lines = function(bufnr, ...)
+			local lines = orig(bufnr, ...)
+			if vim.b[bufnr].jwn_phantom and #lines > 1 and lines[#lines] == "" then
+				lines[#lines] = nil
+			end
+			return lines
+		end
+		phantom_shim_state = "ok"
+	end
+	M.phantom_shim_state = function()
+		return phantom_shim_state
+	end
+
 	local function phantom_eligible(buf)
-		return vim.bo[buf].buftype == ""
+		return phantom_shim_state ~= "failed"
+			and vim.bo[buf].buftype == ""
 			and not vim.bo[buf].binary
 			and (vim.bo[buf].endofline or vim.bo[buf].fixendofline)
 			and not vim.wo.diff
@@ -360,6 +414,47 @@ function M.setup()
 		group = phantom_group,
 		pattern = "*",
 		callback = phantom_hl,
+	})
+	-- Shim install: on gitsigns' lazy load (fires before its scheduled
+	-- attach can diff anything), plus one immediate attempt so a config
+	-- reload with gitsigns already resident is covered too.
+	vim.api.nvim_create_autocmd("User", {
+		group = phantom_group,
+		pattern = "LazyLoad",
+		callback = function(ev)
+			if ev.data == "gitsigns.nvim" then
+				install_gitsigns_shim()
+			end
+		end,
+	})
+	install_gitsigns_shim()
+	-- Diff mode: a phantom would render as a fake extra-line difference
+	-- in diffview / :Gitsigns diffthis, so it is pulled out (quietly,
+	-- preserving the modified flag) when a window enters diff mode and
+	-- restored when diff mode ends.
+	vim.api.nvim_create_autocmd("OptionSet", {
+		group = phantom_group,
+		pattern = "diff",
+		callback = function()
+			local buf = vim.api.nvim_get_current_buf()
+			if vim.v.option_new == true then
+				if not vim.b[buf].jwn_phantom then
+					return
+				end
+				local last = vim.api.nvim_buf_line_count(buf)
+				if last > 1 and vim.api.nvim_buf_get_lines(buf, last - 1, last, false)[1] == "" then
+					local mod = vim.bo[buf].modified
+					local ul = vim.bo[buf].undolevels
+					vim.bo[buf].undolevels = -1
+					vim.api.nvim_buf_set_lines(buf, last - 1, last, false, {})
+					vim.bo[buf].undolevels = ul
+					vim.bo[buf].modified = mod
+				end
+				vim.b[buf].jwn_phantom = false
+			else
+				ensure_phantom(buf, vim.bo[buf].modified == false)
+			end
+		end,
 	})
 
 	-- Re-arm filetype + syntax (Neovim usually has these on by default; setting

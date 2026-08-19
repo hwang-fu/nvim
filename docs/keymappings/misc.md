@@ -39,6 +39,9 @@ Keys behave specially on it (Helix semantics):
 
 Terminals, pickers, diff views, and the file sidebar do not have the line.
 
+> [!NOTE]
+> Git does not see it either: gitsigns reads the buffer through a small shim that drops the phantom, so a clean file shows no `+1`, and staging a hunk or the whole buffer never writes the phantom into the index. `:checkhealth jwn` reports the shim's state; if a gitsigns update ever breaks it, phantom lines disable themselves rather than risk the index.
+
 ## Automatic colorschemes
 
 Colorschemes switch by filetype with no keybinding (`lua/jwn/colors.lua`): web and markup files get 256_noir, everything else gets dracula on a dark-green background.
