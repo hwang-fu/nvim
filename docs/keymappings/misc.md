@@ -22,6 +22,10 @@ vim-surround runs with its stock keys; `{char}` is the pair character (`"`, `'`,
 | `:TSInstall <lang>` | Install a treesitter parser |
 | `:TSUpdate` | Update the installed treesitter parsers |
 
+## The phantom final-newline line
+
+File buffers show one blank line below their last line, before the `~` filler begins: that is the file's final newline made visible - the `\n` POSIX requires at the end of every text file, which Vim normally keeps implicit. It is display only: not part of the buffer, impossible to move the cursor into, and it adds nothing on save. Terminals, pickers, and the file sidebar do not show it.
+
 ## Automatic colorschemes
 
 Colorschemes switch by filetype with no keybinding (`lua/hwangfu/colors.lua`): web and markup files get 256_noir, everything else gets dracula on a dark-green background.

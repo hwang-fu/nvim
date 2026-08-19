@@ -195,6 +195,52 @@ function M.setup()
 		end,
 	})
 
+	-- ------------------------------------------------------------------------
+	-- Phantom final-newline line (2026-08-19, user request)
+	-- ------------------------------------------------------------------------
+	-- Vim never shows the file's final `\n` - the buffer simply ends at the
+	-- last content line and the `~` filler begins. VSCode renders that
+	-- newline as one empty line at the bottom, and the user wants the same
+	-- visual: it makes "this file ends with exactly one newline" visible
+	-- instead of implicit.
+	--
+	-- Mechanics: one extmark on the last buffer line carrying a single
+	-- empty virt_line - a display-only row below the content, before the
+	-- first `~`. It is never part of the buffer, cannot be edited into,
+	-- and adds nothing on write; TrimOnSave above is unaffected.
+	--
+	-- Shown only where a final newline will actually be on disk: normal
+	-- file buffers (buftype == "") where 'endofline' is set or 'fixeol'
+	-- will add the newline on save - i.e. it displays the file's future
+	-- truth, matching what every save in this config produces. Terminals,
+	-- pickers, oil listings (buftype ~= ""), and binary buffers are left
+	-- alone.
+	local phantom_ns = vim.api.nvim_create_namespace("hwangfu_phantom_eol")
+	local function update_phantom(buf)
+		if not vim.api.nvim_buf_is_valid(buf) then
+			return
+		end
+		vim.api.nvim_buf_clear_namespace(buf, phantom_ns, 0, -1)
+		if vim.bo[buf].buftype ~= "" or vim.bo[buf].binary then
+			return
+		end
+		if not (vim.bo[buf].endofline or vim.bo[buf].fixendofline) then
+			return
+		end
+		local last = vim.api.nvim_buf_line_count(buf)
+		vim.api.nvim_buf_set_extmark(buf, phantom_ns, last - 1, 0, {
+			virt_lines = { { { "", "NonText" } } },
+		})
+	end
+	vim.api.nvim_create_augroup("PhantomEol", { clear = true })
+	vim.api.nvim_create_autocmd({ "BufWinEnter", "TextChanged", "TextChangedI" }, {
+		group = "PhantomEol",
+		pattern = "*",
+		callback = function(args)
+			update_phantom(args.buf)
+		end,
+	})
+
 	-- Re-arm filetype + syntax (Neovim usually has these on by default; setting
 	-- them explicitly is harmless and makes the config self-contained).
 	vim.api.nvim_command("filetype on")
