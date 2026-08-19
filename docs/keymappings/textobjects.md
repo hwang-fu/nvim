@@ -1,6 +1,6 @@
 # Structural editing
 
-*Defined in `lua/hwangfu/plugins/spec/textobjects.lua` (nvim-treesitter-textobjects).*
+*Defined in `lua/jwn/plugins/spec/textobjects.lua` (nvim-treesitter-textobjects).*
 
 ## Text objects
 

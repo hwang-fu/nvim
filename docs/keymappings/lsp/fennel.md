@@ -1,6 +1,6 @@
 # Fennel
 
-*REPL keys from conjure and structural editing from parinfer (`lua/hwangfu/plugins/spec/lisp.lua`); static analysis from fennel-ls (`lua/hwangfu/lsp/servers/fennel_ls.lua`).*
+*REPL keys from conjure and structural editing from parinfer (`lua/jwn/plugins/spec/lisp.lua`); static analysis from fennel-ls (`lua/jwn/lsp/servers/fennel_ls.lua`).*
 
 The same two-engine split as [clojure](clojure.md): fennel-ls reads the code statically (diagnostics, completion), conjure evaluates it live. The localleader is backslash, so `\ee` means: press backslash, then `e`, then `e`. Throughout this page, "a Fennel file" means anything Neovim detects as the fennel filetype - `.fnl`.
 

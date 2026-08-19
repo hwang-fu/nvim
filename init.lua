@@ -3,7 +3,7 @@
 --
 -- Loaded by Neovim on startup. Two responsibilities, in order:
 --   1. Set <leader> early - before any plugin or keymap code runs.
---   2. Wire up the config modules under lua/hwangfu/*:
+--   2. Wire up the config modules under lua/jwn/*:
 --        plugins   - installs lazy.nvim and the plugin set
 --        completion - completion engine (blink.cmp)
 --        lsp       - language servers, format-on-save, linters
@@ -17,9 +17,9 @@
 --        colors    - per-filetype colorscheme switching
 --        (init)    - editor options and general autocmds
 --
--- Add a new plugin -> add a spec file under lua/hwangfu/plugins/spec/, then restart
+-- Add a new plugin -> add a spec file under lua/jwn/plugins/spec/, then restart
 -- Neovim (lazy.nvim installs it automatically) or run `:Lazy sync`. Add new
--- behavior -> put it in one of the other lua/hwangfu/ modules.
+-- behavior -> put it in one of the other lua/jwn/ modules.
 -- ============================================================================
 
 -- ----------------------------------------------------------------------------
@@ -32,7 +32,7 @@
 -- loads; live-preview's <leader>m* keys are defined that way). Setting
 -- mapleader here guarantees those mappings see the intended leader.
 --
--- It is also set in lua/hwangfu/init.lua's options block, alongside the rest
+-- It is also set in lua/jwn/init.lua's options block, alongside the rest
 -- of the editor options. Assigning the same value twice is harmless, and
 -- keeping it there preserves that file as the place to look for UX options.
 -- ----------------------------------------------------------------------------
@@ -57,16 +57,16 @@ vim.g.maplocalleader = "\\"
 --     servers come up without blink-augmented completion bits.
 --   * lsp before colors so server-attached buffers exist when colors.lua's
 --     filetype autocmds run on first FileType event.
---   * keymap and the catch-all hwangfu setup last (no LSP dependency).
+--   * keymap and the catch-all jwn setup last (no LSP dependency).
 -- ----------------------------------------------------------------------------
-require("hwangfu.plugins").setup()
+require("jwn.plugins").setup()
 
-require("hwangfu.completion").setup()
-require("hwangfu.lsp").setup()
-require("hwangfu.telescope").setup()
+require("jwn.completion").setup()
+require("jwn.lsp").setup()
+require("jwn.telescope").setup()
 
-require("hwangfu.keymappings").setup()
-require("hwangfu.git").setup()
-require("hwangfu.repl").setup()
-require("hwangfu.colors").setup()
-require("hwangfu").setup()
+require("jwn.keymappings").setup()
+require("jwn.git").setup()
+require("jwn.repl").setup()
+require("jwn.colors").setup()
+require("jwn").setup()

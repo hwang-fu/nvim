@@ -1,6 +1,6 @@
 # OCaml
 
-*Editing commands defined in `lua/hwangfu/plugins/spec/ocaml.lua` (ocaml.nvim); the REPL in `lua/hwangfu/repl.lua`.*
+*Editing commands defined in `lua/jwn/plugins/spec/ocaml.lua` (ocaml.nvim); the REPL in `lua/jwn/repl.lua`.*
 
 All common [LSP keys](lsp.md) apply. These keys exist only in OCaml buffers. The local leader is backslash, so `\c` means: press backslash, then `c`.
 

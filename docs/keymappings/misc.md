@@ -15,8 +15,8 @@ vim-surround runs with its stock keys; `{char}` is the pair character (`"`, `'`,
 
 | Command | Action |
 |---------|--------|
-| `:ToggleWS` | Toggle whitespace visualization for the current window (defined in `lua/hwangfu/init.lua`) |
-| `:checkhealth hwangfu` | The fresh-machine report: everything this config wants that the machine lacks - editor tools, build prerequisites, formatters, linters, language servers |
+| `:ToggleWS` | Toggle whitespace visualization for the current window (defined in `lua/jwn/init.lua`) |
+| `:checkhealth jwn` | The fresh-machine report: everything this config wants that the machine lacks - editor tools, build prerequisites, formatters, linters, language servers |
 | `:Lazy` | Open the plugin manager |
 | `:Lazy sync` | Install and update plugins |
 | `:TSInstall <lang>` | Install a treesitter parser |
@@ -28,4 +28,4 @@ File buffers show one blank line below their last line, before the `~` filler be
 
 ## Automatic colorschemes
 
-Colorschemes switch by filetype with no keybinding (`lua/hwangfu/colors.lua`): web and markup files get 256_noir, everything else gets dracula on a dark-green background.
+Colorschemes switch by filetype with no keybinding (`lua/jwn/colors.lua`): web and markup files get 256_noir, everything else gets dracula on a dark-green background.

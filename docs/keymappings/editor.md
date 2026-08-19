@@ -1,6 +1,6 @@
 # Editor keys
 
-*Defined in `lua/hwangfu/keymappings/editor.lua`.*
+*Defined in `lua/jwn/keymappings/editor.lua`.*
 
 Familiar shortcuts from mainstream editors, layered on top of Vim without touching its core motions.
 

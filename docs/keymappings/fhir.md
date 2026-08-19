@@ -1,6 +1,6 @@
 # FHIR
 
-*Defined in `lua/hwangfu/plugins/spec/fhir.lua` (fhir.nvim); active only in FHIR resource buffers.*
+*Defined in `lua/jwn/plugins/spec/fhir.lua` (fhir.nvim); active only in FHIR resource buffers.*
 
 | Key | Action |
 |-----|--------|

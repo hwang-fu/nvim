@@ -1,6 +1,6 @@
 # File explorer
 
-*Defined in `lua/hwangfu/plugins/spec/oil.lua`, with the sidebar logic in `lua/hwangfu/explorer.lua`.*
+*Defined in `lua/jwn/plugins/spec/oil.lua`, with the sidebar logic in `lua/jwn/explorer.lua`.*
 
 `Ctrl-T` (see [navigation](navigation.md)) toggles a 35-column sidebar listing the current buffer's directory. Pressing `Enter` on a folder replaces the listing in place - oil shows one directory per buffer and cannot expand a tree inline. Pressing `Enter` on a file opens it in the main window and closes the sidebar.
 

@@ -1,6 +1,6 @@
 # Keymap discovery
 
-*Defined in `lua/hwangfu/plugins/spec/which_key.lua` (which-key.nvim).*
+*Defined in `lua/jwn/plugins/spec/which_key.lua` (which-key.nvim).*
 
 Press any mapped prefix - Space, backslash, `]`, `[`, `g`, `z` - and pause. A popup lists every continuation with its description, so the config's key namespaces explain themselves as you type. Leader groups carry labels such as "+git hunks" and "+find / telescope".
 

@@ -1,6 +1,6 @@
 # Rust
 
-*LSP owned by rustaceanvim (`lua/hwangfu/plugins/spec/rustaceanvim.lua`); server settings in `lua/hwangfu/lsp/servers/rust_analyzer.lua`.*
+*LSP owned by rustaceanvim (`lua/jwn/plugins/spec/rustaceanvim.lua`); server settings in `lua/jwn/lsp/servers/rust_analyzer.lua`.*
 
 All common [LSP keys](lsp.md) apply, plus:
 

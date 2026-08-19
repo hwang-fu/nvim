@@ -4,7 +4,7 @@
 
 **Goal:** Replace unmaintained markdown-preview.nvim with the already-installed live-preview.nvim, and replace nerdtree with oil.nvim, per the approved spec at `docs/superpowers/specs/2026-08-01-preview-and-explorer-migration-design.md`.
 
-**Architecture:** All plugin specs live in `lua/hwangfu/plugins.lua`; global keymaps in `lua/hwangfu/keymap.lua`; editor options in `lua/hwangfu/init.lua`; per-filetype colorschemes in `lua/hwangfu/colors.lua`. Buffer-local plugin keymaps stay in the plugin's spec (gitsigns pattern). Behavior config for the two new/changed plugins is small enough to stay inline in their specs.
+**Architecture:** All plugin specs live in `lua/jwn/plugins.lua`; global keymaps in `lua/jwn/keymap.lua`; editor options in `lua/jwn/init.lua`; per-filetype colorschemes in `lua/jwn/colors.lua`. Buffer-local plugin keymaps stay in the plugin's spec (gitsigns pattern). Behavior config for the two new/changed plugins is small enough to stay inline in their specs.
 
 **Tech Stack:** Neovim >= 0.10, lazy.nvim, live-preview.nvim (brianhuster), oil.nvim (stevearc).
 
@@ -23,7 +23,7 @@
 ### Task 1: plugins.lua - retire markdown-preview.nvim, expand live-preview.nvim
 
 **Files:**
-- Modify: `lua/hwangfu/plugins.lua` (mkdp spec block; live-preview stanza; two comment lines in the render-markdown spec)
+- Modify: `lua/jwn/plugins.lua` (mkdp spec block; live-preview stanza; two comment lines in the render-markdown spec)
 
 **Interfaces:**
 - Produces: `<leader>mp` / `<leader>ms` / `<leader>mt` mapped to `:LivePreview start|close|pick` via lazy `keys`. Task 3 updates keymap.lua's header to reference these.
@@ -137,13 +137,13 @@ with:
 
 - [ ] **Step 4: Verify**
 
-Run: `nvim --clean --headless -c "lua assert(loadfile('/home/hwangfu/.config/nvim/lua/hwangfu/plugins.lua'))" -c q`
+Run: `nvim --clean --headless -c "lua assert(loadfile('/home/hwangfu/.config/nvim/lua/jwn/plugins.lua'))" -c q`
 Expected: no output (parse OK).
 
-Run: `grep -n "mkdp\|markdown-preview\|iamcco" /home/hwangfu/.config/nvim/lua/hwangfu/plugins.lua`
+Run: `grep -n "mkdp\|markdown-preview\|iamcco" /home/hwangfu/.config/nvim/lua/jwn/plugins.lua`
 Expected: matches ONLY inside the new live-preview comment (the archive note naming mkdp/newsprint.css and the "Replaced iamcco/markdown-preview.nvim" line). No `vim.g.mkdp_*` code lines.
 
-Run: `grep -nP '[^\x00-\x7F]' /home/hwangfu/.config/nvim/lua/hwangfu/plugins.lua`
+Run: `grep -nP '[^\x00-\x7F]' /home/hwangfu/.config/nvim/lua/jwn/plugins.lua`
 Expected: no output (ASCII only).
 
 ---
@@ -151,7 +151,7 @@ Expected: no output (ASCII only).
 ### Task 2: plugins.lua - replace nerdtree with oil.nvim
 
 **Files:**
-- Modify: `lua/hwangfu/plugins.lua` (the `-- File explorer.` + `"preservim/nerdtree",` lines)
+- Modify: `lua/jwn/plugins.lua` (the `-- File explorer.` + `"preservim/nerdtree",` lines)
 
 **Interfaces:**
 - Produces: `require("oil").open()` / `require("oil").close()` available from startup (`lazy = false`), oil buffers with filetype `oil`. Task 3's `<C-t>` map and Task 4's colors.lua pattern depend on these.
@@ -195,7 +195,7 @@ with (TAB-indented):
 	--   g?     help listing every oil binding
 	--
 	-- The global <C-t> toggle (open oil at the current buffer's directory
-	-- / close it) lives in lua/hwangfu/keymap.lua with the other global
+	-- / close it) lives in lua/jwn/keymap.lua with the other global
 	-- maps; the keys above are buffer-local to oil listings and belong
 	-- here with the plugin, same split as the gitsigns hunk maps.
 	--
@@ -223,13 +223,13 @@ with (TAB-indented):
 
 - [ ] **Step 2: Verify**
 
-Run: `nvim --clean --headless -c "lua assert(loadfile('/home/hwangfu/.config/nvim/lua/hwangfu/plugins.lua'))" -c q`
+Run: `nvim --clean --headless -c "lua assert(loadfile('/home/hwangfu/.config/nvim/lua/jwn/plugins.lua'))" -c q`
 Expected: no output.
 
-Run: `grep -n "nerdtree\|NERDTree" /home/hwangfu/.config/nvim/lua/hwangfu/plugins.lua`
+Run: `grep -n "nerdtree\|NERDTree" /home/hwangfu/.config/nvim/lua/jwn/plugins.lua`
 Expected: matches only inside the new oil comment (the removal note and NERDTreeShowHidden reference).
 
-Run: `grep -nP '[^\x00-\x7F]' /home/hwangfu/.config/nvim/lua/hwangfu/plugins.lua`
+Run: `grep -nP '[^\x00-\x7F]' /home/hwangfu/.config/nvim/lua/jwn/plugins.lua`
 Expected: no output.
 
 ---
@@ -237,7 +237,7 @@ Expected: no output.
 ### Task 3: keymap.lua - oil toggle replaces the NERDTree block
 
 **Files:**
-- Modify: `lua/hwangfu/keymap.lua` (header lines ~22 and ~30-31; the NERDTree section ~lines 408-483)
+- Modify: `lua/jwn/keymap.lua` (header lines ~22 and ~30-31; the NERDTree section ~lines 408-483)
 
 **Interfaces:**
 - Consumes: `require("oil").open()` / `require("oil").close()` and filetype `oil` from Task 2.
@@ -272,7 +272,7 @@ with:
 
 - [ ] **Step 2: Replace the NERDTree section**
 
-Replace the entire block from `-- --- NERDTree -------------------------------------------------------` through the end of the `HwangfuNerdtree` autocmd (the line `    })` that closes `vim.api.nvim_create_autocmd("FileType", {...})`, just before the `-- --- Buffers` section) with (4-SPACE indented):
+Replace the entire block from `-- --- NERDTree -------------------------------------------------------` through the end of the `JwnNerdtree` autocmd (the line `    })` that closes `vim.api.nvim_create_autocmd("FileType", {...})`, just before the `-- --- Buffers` section) with (4-SPACE indented):
 
 ```lua
     -- --- Oil (file explorer) --------------------------------------------
@@ -294,7 +294,7 @@ Replace the entire block from `-- --- NERDTree ---------------------------------
     --
     -- Buffer-local keys inside oil listings (`..` up-dir alias, <C-t>
     -- close override, <C-s> passthrough to save) are configured in oil's
-    -- spec in lua/hwangfu/plugins.lua, next to the plugin they belong to
+    -- spec in lua/jwn/plugins.lua, next to the plugin they belong to
     -- -- the same split used for the gitsigns hunk maps.
     map("n", "<C-t>", function()
         if vim.bo.filetype == "oil" then
@@ -310,13 +310,13 @@ Replace the entire block from `-- --- NERDTree ---------------------------------
 
 - [ ] **Step 3: Verify**
 
-Run: `nvim --clean --headless -c "lua assert(loadfile('/home/hwangfu/.config/nvim/lua/hwangfu/keymap.lua'))" -c q`
+Run: `nvim --clean --headless -c "lua assert(loadfile('/home/hwangfu/.config/nvim/lua/jwn/keymap.lua'))" -c q`
 Expected: no output.
 
-Run: `grep -n "nerdtree\|NERDTree" /home/hwangfu/.config/nvim/lua/hwangfu/keymap.lua`
+Run: `grep -n "nerdtree\|NERDTree" /home/hwangfu/.config/nvim/lua/jwn/keymap.lua`
 Expected: at most the single historical mention inside the new oil comment ("the old NERDTree wrapper"). No live code references.
 
-Run: `grep -nP '[^\x00-\x7F]' /home/hwangfu/.config/nvim/lua/hwangfu/keymap.lua`
+Run: `grep -nP '[^\x00-\x7F]' /home/hwangfu/.config/nvim/lua/jwn/keymap.lua`
 Expected: no output.
 
 ---
@@ -324,9 +324,9 @@ Expected: no output.
 ### Task 4: init.lua, colors.lua, telescope.lua - remaining touchpoints
 
 **Files:**
-- Modify: `lua/hwangfu/init.lua` (header line ~14, ToggleWS comment ~106, section 5 ~130-133) - TABS
-- Modify: `lua/hwangfu/colors.lua` (group (b) pattern entry "nerdtree") - TABS
-- Modify: `lua/hwangfu/telescope.lua` (header comment lines 6-7) - 4 SPACES (comment at column 0)
+- Modify: `lua/jwn/init.lua` (header line ~14, ToggleWS comment ~106, section 5 ~130-133) - TABS
+- Modify: `lua/jwn/colors.lua` (group (b) pattern entry "nerdtree") - TABS
+- Modify: `lua/jwn/telescope.lua` (header comment lines 6-7) - 4 SPACES (comment at column 0)
 
 **Interfaces:**
 - Consumes: filetype `oil` from Task 2.
@@ -383,7 +383,7 @@ with:
 	-- (Empty since 2026-08. vim.g.NERDTreeWinSize lived here until nerdtree
 	-- was replaced by oil.nvim; oil uses the full window, so there is no
 	-- pane-width knob. Plugin behavior is configured in each plugin's spec
-	-- in lua/hwangfu/plugins.lua; the section is kept for future vim.g.*
+	-- in lua/jwn/plugins.lua; the section is kept for future vim.g.*
 	-- knobs that must be set before a plugin loads.)
 ```
 
@@ -419,7 +419,7 @@ with:
 
 - [ ] **Step 6: Verify**
 
-Run: `nvim --clean --headless -c "lua assert(loadfile('/home/hwangfu/.config/nvim/lua/hwangfu/init.lua')); assert(loadfile('/home/hwangfu/.config/nvim/lua/hwangfu/colors.lua')); assert(loadfile('/home/hwangfu/.config/nvim/lua/hwangfu/telescope.lua'))" -c q`
+Run: `nvim --clean --headless -c "lua assert(loadfile('/home/hwangfu/.config/nvim/lua/jwn/init.lua')); assert(loadfile('/home/hwangfu/.config/nvim/lua/jwn/colors.lua')); assert(loadfile('/home/hwangfu/.config/nvim/lua/jwn/telescope.lua'))" -c q`
 Expected: no output.
 
 Run: `grep -rn "nerdtree\|NERDTree" /home/hwangfu/.config/nvim/lua/ /home/hwangfu/.config/nvim/init.lua`

@@ -1,6 +1,6 @@
 # Telescope
 
-*Defined in `lua/hwangfu/telescope.lua`.*
+*Defined in `lua/jwn/telescope.lua`.*
 
 | Key | Picker |
 |-----|--------|

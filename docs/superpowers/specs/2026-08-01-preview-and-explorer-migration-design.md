@@ -81,7 +81,7 @@ plugins.lua changes:
 
 keymap.lua changes:
 
-* Replace the NERDTree block (nerdtree_at_buffer helper, HwangfuNerdtree
+* Replace the NERDTree block (nerdtree_at_buffer helper, JwnNerdtree
   augroup with the buffer-local ".." map) with:
   - <C-t> global map: if current buffer filetype is "oil" then
     require("oil").close() else require("oil").open() - open() with no

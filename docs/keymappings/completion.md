@@ -1,6 +1,6 @@
 # Completion
 
-*Defined in `lua/hwangfu/completion.lua` (blink.cmp).*
+*Defined in `lua/jwn/completion.lua` (blink.cmp).*
 
 The completion menu opens as you type. Documentation for the highlighted item appears in a float after a moment. The first item is preselected but nothing is inserted until you accept it.
 

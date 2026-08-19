@@ -1,6 +1,6 @@
 # Elixir
 
-*LSP owned by elixir-tools (`lua/hwangfu/plugins/spec/elixir_tools.lua`); settings in `lua/hwangfu/lsp/servers/elixirls.lua`.*
+*LSP owned by elixir-tools (`lua/jwn/plugins/spec/elixir_tools.lua`); settings in `lua/jwn/lsp/servers/elixirls.lua`.*
 
 All common [LSP keys](lsp.md) apply. Everything plugin-specific is a command; there are no extra keys.
 

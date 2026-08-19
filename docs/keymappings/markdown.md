@@ -1,6 +1,6 @@
 # Markdown and preview
 
-*Preview defined in `lua/hwangfu/plugins/spec/live_preview.lua`; in-buffer rendering in `lua/hwangfu/plugins/spec/render_markdown.lua`.*
+*Preview defined in `lua/jwn/plugins/spec/live_preview.lua`; in-buffer rendering in `lua/jwn/plugins/spec/render_markdown.lua`.*
 
 Both tools are command-driven:
 

@@ -4,7 +4,7 @@ Three tools split the work: gitsigns edits hunks inside the buffer, lazygit oper
 
 ## Hunks - gitsigns
 
-*Defined in `lua/hwangfu/plugins/spec/gitsigns.lua`; the keys exist only in git-tracked buffers.*
+*Defined in `lua/jwn/plugins/spec/gitsigns.lua`; the keys exist only in git-tracked buffers.*
 
 A hunk is one contiguous block of changed lines. Lowercase keys act on the hunk under the cursor, uppercase on the whole buffer.
 
@@ -29,7 +29,7 @@ Every action is also available as `:Gitsigns <subcommand>` with tab completion, 
 
 ## Repository - lazygit
 
-*Defined in `lua/hwangfu/git.lua`.*
+*Defined in `lua/jwn/git.lua`.*
 
 | Key | Action |
 |-----|--------|
@@ -39,7 +39,7 @@ Inside the float you are talking to lazygit itself; press `?` there for its key 
 
 ## Diffs and history - diffview
 
-*Defined in `lua/hwangfu/plugins/spec/diffview.lua`.*
+*Defined in `lua/jwn/plugins/spec/diffview.lua`.*
 
 | Key | Action |
 |-----|--------|

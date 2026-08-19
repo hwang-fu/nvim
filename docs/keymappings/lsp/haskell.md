@@ -1,6 +1,6 @@
 # Haskell
 
-*LSP owned by haskell-tools (`lua/hwangfu/plugins/spec/haskell_tools.lua`); settings in `lua/hwangfu/lsp/servers/hls.lua`.*
+*LSP owned by haskell-tools (`lua/jwn/plugins/spec/haskell_tools.lua`); settings in `lua/jwn/lsp/servers/hls.lua`.*
 
 All common [LSP keys](lsp.md) apply, plus:
 
