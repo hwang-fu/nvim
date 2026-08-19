@@ -140,3 +140,11 @@ Then:
 1. Clone this repository to `~/.config/nvim`.
 2. Start `nvim`. lazy.nvim bootstraps itself, installs every plugin at the exact versions pinned in `lazy-lock.json`, and the treesitter parsers for every supported language download and compile in the background. Expect the first launch to take a minute or two.
 3. Install the language toolchains you actually write with (rustup, opam, ghcup, ...). Language servers and formatters come from the toolchains, never from the editor, so they always match your compilers - each language starts working as its toolchain arrives, with nothing to configure. The startup warning names any formatter binaries still missing.
+
+### What the clone does not carry
+
+The repository replays the editor; three things live outside it on purpose:
+
+- **Language toolchains.** Servers, formatters, and REPLs come from rustup / opam / ghcup / the Clojure CLI per machine, never from this repo. Missing pieces fail loudly, not silently: the startup warning lists absent formatter binaries, Elixir saves outside a Mix project warn instead of no-oping, and Clojure projects without a running nREPL error with the exact command to run.
+- **`~/.clojure/deps.edn`.** The user-level aliases the Clojure workflow leans on (`:nrepl`, `:portal`, ...) are a per-machine file; [docs/keymappings/lsp/clojure.md](docs/keymappings/lsp/clojure.md) documents each alias so the file can be recreated.
+- **The terminal.** Font (Nerd Font), colors, and the terminal emulator's own config are not this repository's business.
