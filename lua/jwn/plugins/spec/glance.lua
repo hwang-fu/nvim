@@ -33,6 +33,65 @@ return {
 	"dnlhc/glance.nvim",
 	cmd = { "Glance" },
 	config = function()
+		-- --- <C-w>w window cycling through the panel (2026-08-19) --------
+		-- Neovim's CTRL-W w cycle NEVER includes floating windows - even
+		-- focusable ones (verified: from the list it drops to the main
+		-- buffer and cycles there forever; the mouse works because
+		-- focusability governs clicks, not the cycle). Glance's own
+		-- answer is <leader>l to hop between its two windows, but the
+		-- user's muscle memory is <C-w>w. So while a glance panel is
+		-- open, <C-w>w walks the full triangle deterministically:
+		-- main -> list -> preview -> main. Everywhere else (and whenever
+		-- glance is not even loaded) it falls through to the native
+		-- wincmd w.
+		-- Glance's two windows are told apart from unrelated floats (LSP
+		-- hover popups, ...) by its zindex, 45 - the plugin default, kept
+		-- in the setup below. The list is the one with the Glance
+		-- filetype; the other 45-float is the preview.
+		local function glance_wins()
+			local list, preview
+			for _, w in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+				local cfg = vim.api.nvim_win_get_config(w)
+				if cfg.relative ~= "" and cfg.zindex == 45 then
+					if vim.bo[vim.api.nvim_win_get_buf(w)].filetype == "Glance" then
+						list = w
+					else
+						preview = w
+					end
+				end
+			end
+			return list, preview
+		end
+		local function cycle_with_glance()
+			local glance = package.loaded["glance"]
+			if not (glance and glance.is_open()) then
+				vim.cmd("wincmd w")
+				return
+			end
+			local list, preview = glance_wins()
+			local cur = vim.api.nvim_get_current_win()
+			if cur == list and preview then
+				vim.api.nvim_set_current_win(preview)
+			elseif cur == preview then
+				-- Back to the main buffer: the first non-floating window.
+				-- (Native wincmd w from a float lands on an arbitrary
+				-- neighbor - from the preview it bounced back to the
+				-- list, verified - so the target is picked explicitly.)
+				for _, w in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+					if vim.api.nvim_win_get_config(w).relative == "" then
+						vim.api.nvim_set_current_win(w)
+						return
+					end
+				end
+			elseif list then
+				vim.api.nvim_set_current_win(list)
+			else
+				vim.cmd("wincmd w")
+			end
+		end
+		vim.keymap.set("n", "<C-w>w", cycle_with_glance, { desc = "Next window (cycles through the glance panel)" })
+		vim.keymap.set("n", "<C-w><C-w>", cycle_with_glance, { desc = "Next window (cycles through the glance panel)" })
+
 		require("glance").setup({
 			border = {
 				enable = true,

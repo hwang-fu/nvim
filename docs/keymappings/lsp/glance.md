@@ -26,3 +26,4 @@ In LSP buffers, `grr` opens the references peek. The commands:
 | `Ctrl-U` / `Ctrl-D` | Scroll the preview |
 | `q` (or `Esc`) | Close the panel |
 | `Ctrl-Q` | Send all locations to the quickfix list and close |
+| `Ctrl-W` `w` | Cycle: list, then the preview window, then back to the code (leaving the panel closes it) |
