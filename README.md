@@ -139,7 +139,8 @@ Then:
 
 1. Clone this repository to `~/.config/nvim`.
 2. Start `nvim`. lazy.nvim bootstraps itself, installs every plugin at the exact versions pinned in `lazy-lock.json`, and the treesitter parsers for every supported language download and compile in the background. Expect the first launch to take a minute or two.
-3. Install the language toolchains you actually write with (rustup, opam, ghcup, ...). Language servers and formatters come from the toolchains, never from the editor, so they always match your compilers - each language starts working as its toolchain arrives, with nothing to configure. The startup warning names any formatter binaries still missing.
+3. Install the language toolchains you actually write with (rustup, opam, ghcup, ...). Language servers and formatters come from the toolchains, never from the editor, so they always match your compilers - each language starts working as its toolchain arrives, with nothing to configure.
+4. Run `:checkhealth hwangfu` any time for the full report of what the machine still lacks - editor tools, build prerequisites, formatters, linters, and language servers, each with an installation hint.
 
 ### What the clone does not carry
 

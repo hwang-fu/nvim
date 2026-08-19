@@ -465,48 +465,65 @@ end
 -- that visibility here would be noise.
 -- ============================================================================
 
-local function check_formatter_binaries()
-    -- Each entry pairs the binary the autocmd shells out to with a short
-    -- human-readable label for the warning message. Order matches the
-    -- order of the formatter blocks inside setup_format_on_save() so this
-    -- list is easy to keep in sync if a new formatter is added.
-    local formatters = {
-        { cmd = "fprettify", label = "Fortran" },
-        { cmd = "dune", label = "dune build files" },
-        { cmd = "prettier", label = "nginx (via prettier-plugin-nginx)" },
-        { cmd = "ruff", label = "Python" },
-        { cmd = "stylua", label = "Lua" },
-        -- Binary-level probe only: cannot see whether the `fmt` package
-        -- is installed for the CURRENT Racket version (see the comment
-        -- on the Racket autocmd above).
-        { cmd = "raco", label = "Racket" },
-        { cmd = "verible-verilog-format", label = "Verilog / SystemVerilog" },
-        { cmd = "shfmt", label = "shell (sh, bash)" },
-        { cmd = "erlfmt", label = "Erlang (erl, hrl, app.src, rebar.config)" },
-        { cmd = "ocamlformat", label = "OCaml (fallback when no .ocamlformat)" },
-    }
+-- Each entry pairs the binary the autocmd shells out to with a short
+-- human-readable label. Order matches the order of the formatter blocks
+-- inside setup_format_on_save() so this list is easy to keep in sync if
+-- a new formatter is added. MODULE-LEVEL (2026-08-19) because the
+-- :checkhealth hwangfu report (lua/hwangfu/health.lua) reads the same
+-- list - one list, two consumers, no drift.
+M.FORMATTER_BINARIES = {
+    { cmd = "fprettify", label = "Fortran" },
+    { cmd = "dune", label = "dune build files" },
+    { cmd = "prettier", label = "nginx (via prettier-plugin-nginx)" },
+    { cmd = "ruff", label = "Python" },
+    { cmd = "stylua", label = "Lua" },
+    -- Binary-level probe only: cannot see whether the `fmt` package
+    -- is installed for the CURRENT Racket version (see the comment
+    -- on the Racket autocmd above).
+    { cmd = "raco", label = "Racket" },
+    { cmd = "verible-verilog-format", label = "Verilog / SystemVerilog" },
+    { cmd = "shfmt", label = "shell (sh, bash)" },
+    { cmd = "erlfmt", label = "Erlang (erl, hrl, app.src, rebar.config)" },
+    { cmd = "ocamlformat", label = "OCaml (fallback when no .ocamlformat)" },
+}
 
+local function check_formatter_binaries()
     -- vim.fn.executable() returns 1 when the named command is on $PATH,
     -- 0 otherwise. This is the same probe Vim uses internally for things
     -- like `:!cmd` resolution; no subshell is spawned.
     local missing = {}
-    for _, f in ipairs(formatters) do
+    for _, f in ipairs(M.FORMATTER_BINARIES) do
         if vim.fn.executable(f.cmd) == 0 then
             table.insert(missing, string.format("  - %s (%s)", f.cmd, f.label))
         end
     end
 
-    if #missing == 0 then
+    -- ripgrep (2026-08-19, the one editor-runtime binary loud enough for
+    -- startup; the rest live in :checkhealth hwangfu): every content
+    -- search - <leader>fg / fG / fs, Ctrl-RightClick, telescope grep -
+    -- shells out to rg, and its absence looks like "search finds
+    -- nothing", not like an error. ERROR level, single line.
+    local rg_missing = vim.fn.executable("rg") == 0
+
+    if #missing == 0 and not rg_missing then
         return
     end
 
     vim.api.nvim_create_autocmd("VimEnter", {
         once = true,
         callback = function()
-            local message = "Format-on-save binaries not found on $PATH:\n"
-                .. table.concat(missing, "\n")
-                .. "\nFiles in these languages will not be auto-formatted on save."
-            vim.notify(message, vim.log.levels.WARN)
+            if rg_missing then
+                vim.notify(
+                    "ripgrep (rg) not found: <leader>fg, Ctrl-RightClick, and every grep picker will fail",
+                    vim.log.levels.ERROR
+                )
+            end
+            if #missing > 0 then
+                local message = "Format-on-save binaries not found on $PATH:\n"
+                    .. table.concat(missing, "\n")
+                    .. "\nFiles in these languages will not be auto-formatted on save."
+                vim.notify(message, vim.log.levels.WARN)
+            end
         end,
     })
 end

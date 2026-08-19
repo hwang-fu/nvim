@@ -119,6 +119,10 @@ local SERVERS = {
     "verible",
 }
 
+-- Exported for the :checkhealth hwangfu report (lua/hwangfu/health.lua),
+-- which probes each server's binary. Same table, not a copy.
+M.SERVERS = SERVERS
+
 -- ----------------------------------------------------------------------------
 -- Filetype detection augmentations for files Neovim does not ship rules for.
 -- ----------------------------------------------------------------------------

@@ -16,6 +16,7 @@ vim-surround runs with its stock keys; `{char}` is the pair character (`"`, `'`,
 | Command | Action |
 |---------|--------|
 | `:ToggleWS` | Toggle whitespace visualization for the current window (defined in `lua/hwangfu/init.lua`) |
+| `:checkhealth hwangfu` | The fresh-machine report: everything this config wants that the machine lacks - editor tools, build prerequisites, formatters, linters, language servers |
 | `:Lazy` | Open the plugin manager |
 | `:Lazy sync` | Install and update plugins |
 | `:TSInstall <lang>` | Install a treesitter parser |
