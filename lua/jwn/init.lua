@@ -196,68 +196,168 @@ function M.setup()
 	})
 
 	-- ------------------------------------------------------------------------
-	-- Phantom final-newline line (2026-08-19, user request)
+	-- Phantom final-newline line (third revision 2026-08-19: REACHABLE)
 	-- ------------------------------------------------------------------------
-	-- Vim never shows the file's final `\n` - the buffer simply ends at the
-	-- last content line and the `~` filler begins. VSCode renders that
-	-- newline as one empty line at the bottom, and the user wants the same
-	-- visual: it makes "this file ends with exactly one newline" visible
-	-- instead of implicit.
+	-- The file's final `\n`, rendered as a `~` line the cursor can LAND
+	-- ON, Helix-style. Two earlier revisions drew it as a virtual line
+	-- (first empty and invisible under dracula's hidden tildes, then a
+	-- visible `~`) - but virtual lines are pure decoration and can never
+	-- host the cursor, so this revision makes it a REAL managed buffer
+	-- line, fully approved by the user with the costs on the table.
 	--
-	-- Mechanics: one extmark on the last buffer line carrying a single
-	-- virt_line - a display-only row below the content, before the
-	-- first filler `~`. It is never part of the buffer, cannot be moved
-	-- into (virtual lines are decoration; Helix-style navigation onto
-	-- the final newline would need a REAL managed buffer line - assessed
-	-- and declined 2026-08-19), and adds nothing on write; TrimOnSave
-	-- above is unaffected.
+	-- The contract:
+	--   * On load, a real empty line is appended (not undoable, buffer
+	--     stays unmodified). It renders as a comment-colored `~` with no
+	--     line number via a custom statuscolumn.
+	--   * On disk, NOTHING changes: TrimOnSave (above) strips trailing
+	--     blank lines on every write, so files keep their single POSIX
+	--     final newline; the phantom is re-appended after the write.
+	--   * SELF-HEALING: whenever an edit leaves the last line non-empty
+	--     (typing on the phantom, pasting, dd'ing it), a fresh phantom is
+	--     appended, undojoin'd into the user's change so `u` sees one
+	--     step. dd on the phantom is therefore a natural no-op.
+	--   * Keys ON the phantom (user spec, Helix semantics): `a` and `i`
+	--     both append at the END of the last content line; `o` and `O`
+	--     open a new content line at end of file. `G` lands on the
+	--     phantom - intended: it IS end of file.
+	--   * Accepted cost: every consumer of the buffer (LSP, formatters,
+	--     buffer grep, \eb-style whole-buffer evals) sees one trailing
+	--     empty line. Content positions are unaffected.
 	--
-	-- Rendering (second revision, 2026-08-19): the row shows a `~` in its
-	-- own PhantomEol group, linked to Comment. The first version drew an
-	-- EMPTY row, which was invisible in practice: dracula hides the
-	-- EndOfBuffer tildes by painting them in its own background color, so
-	-- a blank phantom above blanked fillers displayed as nothing. Comment
-	-- is legible in every scheme this config uses. The link is re-applied
-	-- on ColorScheme because colors.lua switches schemes per filetype,
-	-- and :colorscheme wipes user groups.
+	-- statuscolumn note: setting it takes over the ENTIRE gutter, so
+	-- every branch below must start with %C%s (fold + sign segments) or
+	-- gitsigns / diagnostic signs would silently vanish. The column is
+	-- set per-window and only for participating buffers; plugin windows
+	-- (oil, telescope, ...) keep the stock gutter.
 	--
-	-- Shown only where a final newline will actually be on disk: normal
-	-- file buffers (buftype == "") where 'endofline' is set or 'fixeol'
-	-- will add the newline on save - i.e. it displays the file's future
-	-- truth, matching what every save in this config produces. Terminals,
-	-- pickers, oil listings (buftype ~= ""), and binary buffers are left
-	-- alone.
-	local phantom_ns = vim.api.nvim_create_namespace("jwn_phantom_eol")
+	-- Participation: normal file buffers (buftype == "") that are not
+	-- binary, where 'endofline'/'fixeol' put a real newline on disk, and
+	-- not in diff mode (a phantom would render as a fake extra-line
+	-- diff). PhantomEol links to Comment, re-applied on ColorScheme
+	-- because colors.lua switches schemes per filetype and :colorscheme
+	-- wipes user groups.
+	local phantom_group = vim.api.nvim_create_augroup("PhantomEol", { clear = true })
+
 	local function phantom_hl()
 		vim.api.nvim_set_hl(0, "PhantomEol", { link = "Comment" })
 	end
 	phantom_hl()
-	local function update_phantom(buf)
-		if not vim.api.nvim_buf_is_valid(buf) then
-			return
+
+	local function phantom_eligible(buf)
+		return vim.bo[buf].buftype == ""
+			and not vim.bo[buf].binary
+			and (vim.bo[buf].endofline or vim.bo[buf].fixendofline)
+			and not vim.wo.diff
+	end
+
+	-- True when the cursor sits on the managed trailing line and there is
+	-- content above it for the a / i redirects to target.
+	local function on_phantom()
+		local buf = vim.api.nvim_get_current_buf()
+		if not vim.b[buf].jwn_phantom then
+			return false
 		end
-		vim.api.nvim_buf_clear_namespace(buf, phantom_ns, 0, -1)
-		if vim.bo[buf].buftype ~= "" or vim.bo[buf].binary then
-			return
-		end
-		if not (vim.bo[buf].endofline or vim.bo[buf].fixendofline) then
+		local row = vim.api.nvim_win_get_cursor(0)[1]
+		local last = vim.api.nvim_buf_line_count(buf)
+		return row == last
+			and last > 1
+			and vim.api.nvim_buf_get_lines(buf, last - 1, last, false)[1] == ""
+	end
+
+	-- Append the managed trailing line when missing. quiet = true (load,
+	-- post-write): not undoable and the buffer stays unmodified. quiet =
+	-- false (mid-session self-heal): undojoin'd into the user's change,
+	-- so undo treats edit + heal as one step; falls back to a plain
+	-- append when undojoin is not permitted (e.g. right after undo).
+	local function ensure_phantom(buf, quiet)
+		if not (vim.api.nvim_buf_is_valid(buf) and phantom_eligible(buf)) then
 			return
 		end
 		local last = vim.api.nvim_buf_line_count(buf)
-		vim.api.nvim_buf_set_extmark(buf, phantom_ns, last - 1, 0, {
-			virt_lines = { { { "~", "PhantomEol" } } },
-		})
+		if vim.api.nvim_buf_get_lines(buf, last - 1, last, false)[1] == "" then
+			vim.b[buf].jwn_phantom = true
+			return
+		end
+		if quiet then
+			local ul = vim.bo[buf].undolevels
+			vim.bo[buf].undolevels = -1
+			vim.api.nvim_buf_set_lines(buf, -1, -1, false, { "" })
+			vim.bo[buf].undolevels = ul
+			vim.bo[buf].modified = false
+		else
+			pcall(vim.cmd, "undojoin")
+			vim.api.nvim_buf_set_lines(buf, -1, -1, false, { "" })
+		end
+		vim.b[buf].jwn_phantom = true
 	end
-	vim.api.nvim_create_augroup("PhantomEol", { clear = true })
-	vim.api.nvim_create_autocmd({ "BufWinEnter", "TextChanged", "TextChangedI" }, {
-		group = "PhantomEol",
+
+	-- The gutter: `~` (no number) for the phantom line, the stock
+	-- number / relativenumber look everywhere else, signs preserved.
+	function _G.JwnPhantomStatuscol()
+		if vim.v.virtnum ~= 0 then
+			return "%C%s"
+		end
+		local buf = vim.api.nvim_get_current_buf()
+		local lnum = vim.v.lnum
+		if
+			vim.b[buf].jwn_phantom
+			and lnum == vim.api.nvim_buf_line_count(buf)
+			and vim.api.nvim_buf_get_lines(buf, lnum - 1, lnum, false)[1] == ""
+		then
+			return "%C%s%=%#PhantomEol#~ "
+		end
+		if vim.v.relnum == 0 then
+			return "%C%s%=%#CursorLineNr#" .. lnum .. " "
+		end
+		return "%C%s%=%#LineNr#" .. vim.v.relnum .. " "
+	end
+
+	-- a / i / o / O redirects, active ONLY on the phantom line (expr
+	-- maps; everywhere else the key falls through untouched). Helix
+	-- semantics per the user: both a and i append at the end of the
+	-- last content line; o / O open a new content line at end of file
+	-- (O on the phantom already does exactly that, so both map to it).
+	local function phantom_key(fallback, redirect)
+		return function()
+			if on_phantom() then
+				return redirect
+			end
+			return fallback
+		end
+	end
+	vim.keymap.set("n", "a", phantom_key("a", "kA"), { expr = true, desc = "Append (end of file on the phantom line)" })
+	vim.keymap.set("n", "i", phantom_key("i", "kA"), { expr = true, desc = "Insert (end of file on the phantom line)" })
+	vim.keymap.set("n", "o", phantom_key("o", "O"), { expr = true, desc = "Open line (at end of file on the phantom line)" })
+	vim.keymap.set("n", "O", phantom_key("O", "O"), { expr = true, desc = "Open line (at end of file on the phantom line)" })
+
+	vim.api.nvim_create_autocmd({ "BufReadPost", "BufWritePost" }, {
+		group = phantom_group,
 		pattern = "*",
 		callback = function(args)
-			update_phantom(args.buf)
+			ensure_phantom(args.buf, true)
+		end,
+	})
+	vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
+		group = phantom_group,
+		pattern = "*",
+		callback = function(args)
+			ensure_phantom(args.buf, false)
+		end,
+	})
+	vim.api.nvim_create_autocmd("BufWinEnter", {
+		group = phantom_group,
+		pattern = "*",
+		callback = function(args)
+			if phantom_eligible(args.buf) then
+				ensure_phantom(args.buf, vim.bo[args.buf].modified == false)
+				vim.wo.statuscolumn = "%{%v:lua.JwnPhantomStatuscol()%}"
+			elseif vim.wo.statuscolumn:find("JwnPhantomStatuscol", 1, true) then
+				vim.wo.statuscolumn = ""
+			end
 		end,
 	})
 	vim.api.nvim_create_autocmd("ColorScheme", {
-		group = "PhantomEol",
+		group = phantom_group,
 		pattern = "*",
 		callback = phantom_hl,
 	})

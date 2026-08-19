@@ -72,6 +72,12 @@
 --                         namespace belongs to slimv (its spec).
 --                         parinfer-rust and rainbow-delimiters add no
 --                         keys at all.
+--   * Phantom EOF line  - a / i / o / O gain conditional behavior ON the
+--                         reachable trailing `~` line only (a / i append
+--                         at the end of the last content line, o / O
+--                         open a new content line at EOF); defined with
+--                         the phantom machinery in lua/jwn/init.lua,
+--                         documented in docs/keymappings/misc.md.
 -- ============================================================================
 
 local M = {}

@@ -24,7 +24,20 @@ vim-surround runs with its stock keys; `{char}` is the pair character (`"`, `'`,
 
 ## The phantom final-newline line
 
-File buffers show one extra `~` line below their last line, with no line number and colored like a comment: that is the file's final newline made visible - the `\n` POSIX requires at the end of every text file, which Vim normally keeps implicit. It is display only: not part of the buffer, impossible to move the cursor into, and it adds nothing on save. Terminals, pickers, and the file sidebar do not show it.
+File buffers show one extra `~` line below their last line, with no line number and colored like a comment: that is the file's final newline made visible - the `\n` POSIX requires at the end of every text file, which Vim normally keeps implicit.
+
+The line is real and reachable: `j` onto it, and `G` deliberately lands on it - it is the end of the file. On disk nothing changes: the save pipeline strips it before every write, so files keep exactly one final newline, and deleting it in the buffer just grows it back.
+
+Keys behave specially on it (Helix semantics):
+
+| Key on the `~` line | Action |
+|---------------------|--------|
+| `a` or `i` | Insert at the end of the last content line |
+| `o` or `O` | Open a new content line at the end of the file |
+| `dd`, `x` | Effectively nothing - the final newline is mandatory, so the line restores itself |
+| `p` | Pasted text becomes real content at the end of the file; a fresh `~` line grows below |
+
+Terminals, pickers, diff views, and the file sidebar do not have the line.
 
 ## Automatic colorschemes
 
