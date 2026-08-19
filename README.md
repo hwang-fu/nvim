@@ -122,6 +122,21 @@ Servers and formatters come from each language's own toolchain - rustup, opam, g
 
 ## Setup on a new machine
 
+What the editor itself needs, before the first start:
+
+| Requirement | Why |
+|-------------|-----|
+| Neovim 0.12 or newer | The config drives the native LSP APIs of 0.12 |
+| git | Cloning this repo; lazy.nvim also installs every plugin with it |
+| cargo | parinfer-rust compiles itself during install |
+| make and a C compiler | Telescope's fzf sorter and all treesitter parsers compile with them |
+| ripgrep | Every content search: `<leader>fg`, `Ctrl-RightClick`, the grep pickers |
+| lazygit | The `<leader>gg` repository UI |
+| A terminal with a Nerd Font | The icons in oil, lualine, and telescope |
+| python3 with pynvim | Only for slimv (Common Lisp); everything else runs without it |
+
+Then:
+
 1. Clone this repository to `~/.config/nvim`.
-2. Start `nvim`. lazy.nvim bootstraps itself and installs every plugin; parinfer-rust compiles with cargo and telescope's sorter with make, so expect the first launch to take a minute.
-3. Install the language toolchains you need. The startup warning will name any formatter binaries still missing.
+2. Start `nvim`. lazy.nvim bootstraps itself, installs every plugin at the exact versions pinned in `lazy-lock.json`, and the treesitter parsers for every supported language download and compile in the background. Expect the first launch to take a minute or two.
+3. Install the language toolchains you actually write with (rustup, opam, ghcup, ...). Language servers and formatters come from the toolchains, never from the editor, so they always match your compilers - each language starts working as its toolchain arrives, with nothing to configure. The startup warning names any formatter binaries still missing.
