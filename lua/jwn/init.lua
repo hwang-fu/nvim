@@ -205,9 +205,21 @@ function M.setup()
 	-- instead of implicit.
 	--
 	-- Mechanics: one extmark on the last buffer line carrying a single
-	-- empty virt_line - a display-only row below the content, before the
-	-- first `~`. It is never part of the buffer, cannot be edited into,
-	-- and adds nothing on write; TrimOnSave above is unaffected.
+	-- virt_line - a display-only row below the content, before the
+	-- first filler `~`. It is never part of the buffer, cannot be moved
+	-- into (virtual lines are decoration; Helix-style navigation onto
+	-- the final newline would need a REAL managed buffer line - assessed
+	-- and declined 2026-08-19), and adds nothing on write; TrimOnSave
+	-- above is unaffected.
+	--
+	-- Rendering (second revision, 2026-08-19): the row shows a `~` in its
+	-- own PhantomEol group, linked to Comment. The first version drew an
+	-- EMPTY row, which was invisible in practice: dracula hides the
+	-- EndOfBuffer tildes by painting them in its own background color, so
+	-- a blank phantom above blanked fillers displayed as nothing. Comment
+	-- is legible in every scheme this config uses. The link is re-applied
+	-- on ColorScheme because colors.lua switches schemes per filetype,
+	-- and :colorscheme wipes user groups.
 	--
 	-- Shown only where a final newline will actually be on disk: normal
 	-- file buffers (buftype == "") where 'endofline' is set or 'fixeol'
@@ -216,6 +228,10 @@ function M.setup()
 	-- pickers, oil listings (buftype ~= ""), and binary buffers are left
 	-- alone.
 	local phantom_ns = vim.api.nvim_create_namespace("jwn_phantom_eol")
+	local function phantom_hl()
+		vim.api.nvim_set_hl(0, "PhantomEol", { link = "Comment" })
+	end
+	phantom_hl()
 	local function update_phantom(buf)
 		if not vim.api.nvim_buf_is_valid(buf) then
 			return
@@ -229,7 +245,7 @@ function M.setup()
 		end
 		local last = vim.api.nvim_buf_line_count(buf)
 		vim.api.nvim_buf_set_extmark(buf, phantom_ns, last - 1, 0, {
-			virt_lines = { { { "", "NonText" } } },
+			virt_lines = { { { "~", "PhantomEol" } } },
 		})
 	end
 	vim.api.nvim_create_augroup("PhantomEol", { clear = true })
@@ -239,6 +255,11 @@ function M.setup()
 		callback = function(args)
 			update_phantom(args.buf)
 		end,
+	})
+	vim.api.nvim_create_autocmd("ColorScheme", {
+		group = "PhantomEol",
+		pattern = "*",
+		callback = phantom_hl,
 	})
 
 	-- Re-arm filetype + syntax (Neovim usually has these on by default; setting
