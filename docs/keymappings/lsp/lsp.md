@@ -24,6 +24,18 @@ Formatting runs automatically on save, per language; `lua/jwa/lsp/format.lua` de
 
 Peeking locations in an embedded panel - references, definitions, implementations - has its own page: [glance](glance.md).
 
+## Schema checking for config files
+
+JSON, YAML, and TOML files that are known by name get validated against their official schema: wrong types and misspelled keys become diagnostics, completion offers the legal keys and values, and `K` on a key shows its documentation.
+
+| Filetype | Covered files | How |
+|----------|---------------|-----|
+| JSON | `package.json`, `tsconfig.json`, `.eslintrc`, and everything else the [schemastore.org](https://www.schemastore.org) catalog knows by name | jsonls + the SchemaStore.nvim plugin |
+| YAML | GitHub workflows, docker-compose, and the rest of the same catalog | yamlls fetches the catalog itself |
+| TOML | `Cargo.toml`, `pyproject.toml`, `.taplo.toml` only | taplo, with the schemas pinned one by one - taplo 0.10 can no longer parse the catalog (details in `lua/jwa/lsp/servers/taplo.lua`) |
+
+A YAML file the catalog does not recognize can name its own schema in a first-line comment: `# yaml-language-server: $schema=<url>`. JSON files do the same with a top-level `"$schema"` key.
+
 ## Per-language pages
 
 Languages with tooling beyond the common keys have their own page:
