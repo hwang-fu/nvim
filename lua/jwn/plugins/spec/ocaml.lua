@@ -22,8 +22,8 @@
 --   :OCamlJumpPrevHole             \p   jump to the previous hole
 --   :OCamlJump [expr]              \j   syntax-aware jump (fun / let /
 --                                       match / module targets)
---   :OCamlPhraseNext               \pn  next phrase (top-level item)
---   :OCamlPhrasePrev               \pp  previous phrase
+--   :OCamlPhraseNext               \N   next phrase (top-level item)
+--   :OCamlPhrasePrev               \P   previous phrase
 --   :OCamlSwitchIntfImpl           \s   switch between .ml and .mli
 --   :OCamlInferIntf                \i   infer the interface for the
 --                                       matching .ml (run from the
@@ -43,20 +43,44 @@
 --                                       functions by signature, e.g.
 --                                       "int -> string")
 --
--- Note the \p / \pp / \pn prefix overlap: \p waits timeoutlen before
--- firing. Upstream's default; left as-is to keep docs muscle-memory
--- valid.
+-- Phrase keys are the ONE deviation from upstream defaults (2026-08-21,
+-- user request). Upstream's \pp / \pn made \p (previous hole) their
+-- PREFIX, so every \p stalled a full timeoutlen before firing - real
+-- daily friction. The phrase motions now live on \P / \N, the capital
+-- siblings of the \p / \n hole motions (shift = the bigger jump), and
+-- \p fires instantly.
+--
+-- GOTCHA that shaped the setup() call below: ocaml.nvim's config merge
+-- is TOP-LEVEL ONLY - a partial { keymaps = { phrase_next = ... } }
+-- would REPLACE the whole keymaps table and silently disable the other
+-- eleven bindings. The full table is therefore spelled out, defaults
+-- and all, with only the two phrase entries changed.
 --
 -- Loaded eagerly (no ft trigger) on purpose: the plugin registers
 -- treesitter parser mappings and filetype detection for .mlx and cram
 -- test files at setup time - gating that behind ft=ocaml would recreate
 -- the netrw chicken-and-egg problem oil.nvim's spec documents. Cost is
--- one small setup() at startup. Keymaps are left at upstream defaults
--- (the setup() table mirrors them; empty {} would disable them all).
+-- one small setup() at startup.
 return {
 	"tarides/ocaml.nvim",
 	lazy = false,
 	config = function()
-		require("ocaml").setup()
+		require("ocaml").setup({
+			keymaps = {
+				jump_next_hole = "<localleader>n",
+				jump_prev_hole = "<localleader>p",
+				construct = "<localleader>c",
+				jump = "<localleader>j",
+				phrase_prev = "<localleader>P",
+				phrase_next = "<localleader>N",
+				infer = "<localleader>i",
+				switch_ml_mli = "<localleader>s",
+				type_enclosing = "<localleader>t",
+				type_enclosing_grow = "<Up>",
+				type_enclosing_shrink = "<Down>",
+				type_enclosing_increase = "<Right>",
+				type_enclosing_decrease = "<Left>",
+			},
+		})
 	end,
 }

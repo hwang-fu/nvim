@@ -12,7 +12,7 @@ All common [LSP keys](lsp.md) apply. These keys exist only in OCaml buffers. The
 | `\i` | Infer the interface for the matching `.ml`; run it from the `.mli` buffer |
 | `\t` | Start a type-enclosing session: `Up` / `Down` grow and shrink the inspected expression, `Right` / `Left` adjust type verbosity |
 | `\j` | Jump to an enclosing target: fun, let, match, or module |
-| `\pn` / `\pp` | Jump to the next / previous top-level phrase |
+| `\N` / `\P` | Jump to the next / previous top-level phrase - the capital siblings of the `\n` / `\p` hole motions |
 | `\r` | Toggle the utop REPL float for this project |
 
 ## Commands
@@ -46,6 +46,7 @@ The files land in `_build` (`cctx.ocaml-index`, one per library or executable), 
 
 ## Notes
 
-- `\p` pauses briefly before firing because it is also the start of `\pn` and `\pp`.
+- The phrase motions deliberately deviate from the plugin's `\pp` / `\pn` defaults: those made `\p` their prefix, stalling every previous-hole jump for a timeout. On `\P` / `\N`, `\p` fires instantly.
+- Long signature codelenses arrive from the server as multiple lines; they are flattened onto the single lens line (they previously rendered stray `^@` glyphs).
 - Hints run near-maximal: signature codelenses appear above every `let` - top-level and nested alike - and inlay hints show parameter, let-binding, and pattern-variable types. `K` uses the extended hover, documentation and type together. If nested lenses ever read as noise, the flag is `codelens.forNestedBindings` in `lua/jwn/lsp/servers/ocamllsp.lua`.
 - Local opam switches are auto-detected: the nearest `_opam/` at or above the project root supplies `ocamllsp`, with its `bin` first on the server's PATH so dune and ocamlformat come from the same switch. This covers both a switch beside `dune-project` and one shared switch at the top of a multi-project repo. Without any `_opam` up-tree, the global `ocamllsp` runs.

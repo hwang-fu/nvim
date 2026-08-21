@@ -144,10 +144,54 @@ end
 -- can opt capabilities in or out; the pass then sees the flag set here.
 -- Guarded on the server actually advertising lenses so servers without
 -- them are unaffected.
+-- Codelens title sanitizer (2026-08-21, user report). ocamllsp can send
+-- MULTI-LINE lens titles - long type signatures with embedded newlines -
+-- and the lens virtual line renders each newline as a ^@ glyph
+-- ("year:int ->^@day:int -> ...").
+--
+-- Seam choice, learned the hard way twice the same day: on 0.12,
+-- vim.lsp.codelens.display/save/on_codelens are DEPRECATED STUBS that
+-- ignore their arguments - wrapping them intercepts nothing (a first
+-- version of this sanitizer did exactly that; its synthetic test only
+-- proved the wrapper mutated its own input). The framework's real path
+-- is Provider:request -> client:request('textDocument/codeLens', ...)
+-- with an explicit callback, bypassing client.handlers. So the wrap
+-- goes on the CLIENT's request method, narrowly: codeLens responses
+-- only, titles flattened before the framework stores them. The
+-- _jwn_lens_flatten_hits counter on the client exists so tests (and
+-- :checkhealth debugging) can PROVE the live path routes through the
+-- wrap - the capture(...) rust shim shipped without that proof and
+-- turned out dead on arrival.
+local function install_codelens_sanitizer(client)
+    if client._jwn_lens_flatten then
+        return
+    end
+    client._jwn_lens_flatten = true
+    client._jwn_lens_flatten_hits = 0
+
+    local orig_request = client.request
+    client.request = function(self, method, params, handler, bufnr)
+        if method ~= "textDocument/codeLens" or not handler then
+            return orig_request(self, method, params, handler, bufnr)
+        end
+        return orig_request(self, method, params, function(err, result, ctx)
+            self._jwn_lens_flatten_hits = self._jwn_lens_flatten_hits + 1
+            for _, lens in ipairs(result or {}) do
+                local cmd = lens.command
+                if cmd and cmd.title and cmd.title:find("\n", 1, true) then
+                    cmd.title = cmd.title:gsub("%s*\n%s*", " ")
+                end
+            end
+            return handler(err, result, ctx)
+        end, bufnr)
+    end
+end
+
 function M.enable_codelens(client, bufnr)
     if not client.server_capabilities.codeLensProvider then
         return
     end
+    install_codelens_sanitizer(client)
     vim.lsp.codelens.enable(true, { bufnr = bufnr })
 end
 
