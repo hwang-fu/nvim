@@ -178,7 +178,22 @@ function M.setup()
             -- (a) End-of-line whitespace
             vim.cmd([[silent! keeppatterns %s/\s\+$//e]])
 
-            -- (b) Trailing blank lines at EOF
+            -- (b) Trailing blank lines at EOF.
+            --
+            -- Phantom-aware (2026-08-22 undo fix): when the buffer
+            -- carries the managed phantom line (PhantomEol block below),
+            -- the trim keeps exactly ONE trailing blank - the phantom -
+            -- and the write is told to skip the final newline instead
+            -- ('endofline' / 'fixendofline' off for this write only).
+            -- The join then puts "\n" between the content and the empty
+            -- phantom line, so the bytes on disk end in exactly one
+            -- POSIX newline WITHOUT the buffer being edited around the
+            -- save. The old approach (strip the phantom here, re-append
+            -- it after the write under 'undolevels' = -1) ERASED THE
+            -- WHOLE UNDO TREE on every save - any change made while
+            -- undolevels is -1 clears existing undo history - which
+            -- surfaced as a permanent "Already at oldest change".
+            local phantom = vim.b.jwa_phantom == true
             local last = vim.api.nvim_buf_line_count(0)
             while last > 1 do
                 local line = vim.api.nvim_buf_get_lines(0, last - 1, last, true)[1]
@@ -187,8 +202,20 @@ function M.setup()
                 end
                 last = last - 1
             end
-            if last < vim.api.nvim_buf_line_count(0) then
-                vim.api.nvim_buf_set_lines(0, last, -1, true, {})
+            local keep = last
+            if phantom and last < vim.api.nvim_buf_line_count(0) then
+                keep = last + 1 -- retain the phantom blank
+            end
+            if keep < vim.api.nvim_buf_line_count(0) then
+                vim.api.nvim_buf_set_lines(0, keep, -1, true, {})
+            end
+            if keep == last + 1 then
+                -- Restored (with the modified flag) by the PhantomEol
+                -- BufWritePost handler; if the write fails, the next
+                -- successful write restores it instead.
+                vim.b.jwa_phantom_eol_restore = true
+                vim.bo.endofline = false
+                vim.bo.fixendofline = false
             end
 
             vim.fn.winrestview(view)
@@ -209,9 +236,12 @@ function M.setup()
     --   * On load, a real empty line is appended (not undoable, buffer
     --     stays unmodified). It renders as a comment-colored `~` with no
     --     line number via a custom statuscolumn.
-    --   * On disk, NOTHING changes: TrimOnSave (above) strips trailing
-    --     blank lines on every write, so files keep their single POSIX
-    --     final newline; the phantom is re-appended after the write.
+    --   * On disk, NOTHING changes: TrimOnSave (above) keeps the phantom
+    --     in the buffer and writes with 'endofline' off instead, so the
+    --     bytes end in exactly one POSIX newline while the buffer is
+    --     never edited around a save - the undo tree survives writes
+    --     intact (2026-08-22 fix; the old strip-then-reappend under
+    --     'undolevels' = -1 erased undo history on every save).
     --   * SELF-HEALING: whenever an edit leaves the last line non-empty
     --     (typing on the phantom, pasting, dd'ing it), a fresh phantom is
     --     appended, undojoin'd into the user's change so `u` sees one
@@ -318,11 +348,36 @@ function M.setup()
             and vim.api.nvim_buf_get_lines(buf, last - 1, last, false)[1] == ""
     end
 
+    -- Mutate buffer text without destroying the undo tree. With no undo
+    -- history yet (fresh load), 'undolevels' = -1 keeps the change
+    -- invisible to undo entirely. With history, that trick is FORBIDDEN:
+    -- any change made while undolevels is -1 ERASES the whole tree (the
+    -- 2026-08-22 "Already at oldest change" bug) - so the change is
+    -- undojoin'd into the last change block instead, falling back to a
+    -- plain undoable edit right after an undo (where undojoin is
+    -- refused). The modified flag is preserved either way.
+    local function quiet_edit(buf, fn)
+        local mod = vim.bo[buf].modified
+        vim.api.nvim_buf_call(buf, function()
+            if vim.fn.undotree().seq_last == 0 then
+                local ul = vim.bo[buf].undolevels
+                vim.bo[buf].undolevels = -1
+                fn()
+                vim.bo[buf].undolevels = ul
+            else
+                pcall(vim.cmd, "undojoin")
+                fn()
+            end
+        end)
+        vim.bo[buf].modified = mod
+    end
+
     -- Append the managed trailing line when missing. quiet = true (load,
-    -- post-write): not undoable and the buffer stays unmodified. quiet =
-    -- false (mid-session self-heal): undojoin'd into the user's change,
-    -- so undo treats edit + heal as one step; falls back to a plain
-    -- append when undojoin is not permitted (e.g. right after undo).
+    -- post-write): history-safe via quiet_edit, buffer stays unmodified.
+    -- quiet = false (mid-session self-heal): undojoin'd into the user's
+    -- change, so undo treats edit + heal as one step; falls back to a
+    -- plain append when undojoin is not permitted (e.g. right after
+    -- undo).
     local function ensure_phantom(buf, quiet)
         if not (vim.api.nvim_buf_is_valid(buf) and phantom_eligible(buf)) then
             return
@@ -333,11 +388,9 @@ function M.setup()
             return
         end
         if quiet then
-            local ul = vim.bo[buf].undolevels
-            vim.bo[buf].undolevels = -1
-            vim.api.nvim_buf_set_lines(buf, -1, -1, false, { "" })
-            vim.bo[buf].undolevels = ul
-            vim.bo[buf].modified = false
+            quiet_edit(buf, function()
+                vim.api.nvim_buf_set_lines(buf, -1, -1, false, { "" })
+            end)
         else
             pcall(vim.cmd, "undojoin")
             vim.api.nvim_buf_set_lines(buf, -1, -1, false, { "" })
@@ -408,6 +461,15 @@ function M.setup()
         group = phantom_group,
         pattern = "*",
         callback = function(args)
+            -- Undo the 'endofline' bookkeeping TrimOnSave armed for the
+            -- write (see its (b) comment). Restoring on BufReadPost too
+            -- covers a stale flag surviving an :e! reload.
+            if vim.b[args.buf].jwa_phantom_eol_restore then
+                vim.b[args.buf].jwa_phantom_eol_restore = nil
+                vim.bo[args.buf].endofline = true
+                vim.bo[args.buf].fixendofline = true
+                vim.bo[args.buf].modified = false
+            end
             ensure_phantom(args.buf, true)
         end,
     })
@@ -463,12 +525,13 @@ function M.setup()
                 end
                 local last = vim.api.nvim_buf_line_count(buf)
                 if last > 1 and vim.api.nvim_buf_get_lines(buf, last - 1, last, false)[1] == "" then
-                    local mod = vim.bo[buf].modified
-                    local ul = vim.bo[buf].undolevels
-                    vim.bo[buf].undolevels = -1
-                    vim.api.nvim_buf_set_lines(buf, last - 1, last, false, {})
-                    vim.bo[buf].undolevels = ul
-                    vim.bo[buf].modified = mod
+                    -- quiet_edit, NOT undolevels = -1: with history
+                    -- present the latter would erase the undo tree on
+                    -- every diffview open (same bug class as the
+                    -- 2026-08-22 save fix).
+                    quiet_edit(buf, function()
+                        vim.api.nvim_buf_set_lines(buf, last - 1, last, false, {})
+                    end)
                 end
                 vim.b[buf].jwa_phantom = false
             else

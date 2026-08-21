@@ -26,7 +26,7 @@ vim-surround runs with its stock keys; `{char}` is the pair character (`"`, `'`,
 
 File buffers show one extra `~` line below their last line, with no line number and colored like a comment: that is the file's final newline made visible - the `\n` POSIX requires at the end of every text file, which Vim normally keeps implicit.
 
-The line is real and reachable: `j` onto it, and `G` deliberately lands on it - it is the end of the file. On disk nothing changes: the save pipeline strips it before every write, so files keep exactly one final newline, and deleting it in the buffer just grows it back.
+The line is real and reachable: `j` onto it, and `G` deliberately lands on it - it is the end of the file. On disk nothing changes: the write skips the phantom through end-of-line bookkeeping (no buffer edit involved, so undo history survives saves), files keep exactly one final newline, and deleting the line in the buffer just grows it back.
 
 Keys behave specially on it (Helix semantics):
 
