@@ -112,7 +112,7 @@ Most servers run through Neovim's native LSP client, each configured in a small 
 | Domain | Servers |
 |--------|---------|
 | Systems and general | clangd (C/C++), gopls (Go), pyright (Python), lua_ls (Lua), perlnavigator (Perl), fortls (Fortran) |
-| Web | ts_ls (TypeScript), vue_ls (Vue), html, cssls, jsonls, yamlls |
+| Web | tsgo (TypeScript, the native TS 7 LSP via `tsc --lsp`), vue_ls (Vue), html, cssls, jsonls, yamlls |
 | Functional | ocamllsp (OCaml), elp (Erlang), clojure_lsp (Clojure), racket_langserver (Racket), fennel_ls (Fennel) |
 | Config and hardware | taplo (TOML), bashls (shell), dockerls (Docker), buf_ls (protobuf), autotools_ls, verible (Verilog) |
 

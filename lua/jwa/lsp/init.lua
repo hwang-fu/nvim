@@ -50,6 +50,12 @@
 --                             pydantic.fields.UndefinedType). To re-enable:
 --                             add lsp/servers/nginx_ls.lua, then add
 --                             "nginx_ls" to SERVERS below.
+--   * ts_ls                 - replaced by tsgo (2026-08-21): the native
+--                             TypeScript 7 LSP (`tsc --lsp --stdio`).
+--                             typescript-language-server needs the
+--                             JS-based tsserver.js, which typescript@7
+--                             no longer ships, so it could not start
+--                             at all. See lsp/servers/tsgo.lua.
 --
 -- Servers NOT in SERVERS by design:
 --   * rust_analyzer         - owned by the rustaceanvim plugin (see
@@ -90,7 +96,9 @@ local M = {}
 local SERVERS = {
     "clangd",
     "fortls",
-    "ts_ls",
+    -- ts_ls was replaced by tsgo; see the "Removed servers" note in
+    -- the header comment above.
+    "tsgo",
     "ocamllsp",
     "buf_ls",
     "pyright",

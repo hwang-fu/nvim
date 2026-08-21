@@ -3,7 +3,7 @@
 --
 -- Uses basic_on_attach (no inlay hints). embeddedLanguages keeps CSS and JS
 -- inside <style> / <script> blocks working as part of the HTML buffer (so
--- you get completion / hover for them without needing ts_ls / cssls to
+-- you get completion / hover for them without needing tsgo / cssls to
 -- attach to the same file).
 -- ============================================================================
 

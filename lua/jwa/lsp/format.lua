@@ -460,7 +460,7 @@ end
 -- if the module is reloaded mid-session.
 --
 -- The check intentionally covers ONLY the external CLI formatters. LSP-
--- driven formatters (gopls, jsonls, ts_ls, etc.) surface their own errors
+-- driven formatters (gopls, jsonls, tsgo, etc.) surface their own errors
 -- through the LSP layer when the server fails to start, so duplicating
 -- that visibility here would be noise.
 -- ============================================================================

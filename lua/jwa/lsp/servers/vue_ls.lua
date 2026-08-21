@@ -7,9 +7,17 @@
 -- are found, ts_path keeps its default and vue_ls falls back to whatever it
 -- can find on PATH (often broken).
 --
--- hybridMode = true means the TypeScript LSP (ts_ls) and Vue LSP cooperate
--- rather than duplicate work: ts_ls handles the <script> blocks, vue_ls
--- handles template + style + the Vue-specific bits.
+-- hybridMode = true means the TypeScript LSP and Vue LSP cooperate
+-- rather than duplicate work: the TS server handles the <script>
+-- blocks, vue_ls handles template + style + the Vue-specific bits.
+--
+-- KNOWN GAP (2026-08-21, flagged during the ts_ls -> tsgo migration):
+-- the tsdk probe below looks for the JS TypeScript lib
+-- (tsserverlibrary), which the globally installed typescript@7
+-- (native compiler) no longer ships - and the native tsgo server has
+-- no plugin mechanism for Vue's TS-side plugin either. Vue projects
+-- with their OWN typescript 5.x/6.x in node_modules are unaffected.
+-- Worth revisiting in a dedicated Vue round if Vue work starts.
 -- ============================================================================
 
 local helpers = require("jwa.lsp.helpers")
