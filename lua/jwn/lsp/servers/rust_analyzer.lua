@@ -409,6 +409,20 @@ local function install_rustaceanvim_config()
                         bindingModeHints = {
                             enable = true,
                         },
+                        -- Inferred generic arguments at call sites, shown
+                        -- as if the turbofish had been written out:
+                        -- collect::<Vec<&str>>() (2026-08-21, user
+                        -- request). Three independent sub-toggles; the
+                        -- choices here: TYPE args on (the actual want),
+                        -- CONST args on (rust-analyzer's own default),
+                        -- LIFETIME args off - call-site lifetimes overlap
+                        -- the always-on lifetimeElisionHints below and
+                        -- would double-print.
+                        genericParameterHints = {
+                            type = { enable = true },
+                            const = { enable = true },
+                            lifetime = { enable = false },
+                        },
                         chainingHints = {
                             enable = true,
                         },

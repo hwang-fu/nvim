@@ -11,6 +11,9 @@ All common [LSP keys](lsp.md) apply, plus:
 
 Cargo.toml dependency management has its own page: [crates](../crates.md).
 
+> [!NOTE]
+> Inlay hints run near-maximal: types, parameter names, chaining types, closing braces, closure return types, elided lifetimes, binding modes - and inferred generic arguments at call sites (`collect::<Vec<&str>>()` style), type and const args only. The knobs live in `lua/jwn/lsp/servers/rust_analyzer.lua`.
+
 ## The `:RustLsp` commands
 
 rust-analyzer's extras, available once the server has attached; every subcommand tab-completes.
