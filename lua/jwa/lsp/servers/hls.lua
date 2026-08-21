@@ -155,6 +155,25 @@ function M.setup()
                     -- memory on large projects; usually the right trade
                     -- for interactive editing.
                     checkProject = true,
+
+                    plugin = {
+                        -- Haskell-aware semantic token layer over the
+                        -- treesitter base (2026-08-21, user request):
+                        -- type-level vs term-level names, class methods,
+                        -- record fields, pattern synonyms each get their
+                        -- own token type. The ONE plugin toggle that was
+                        -- actually off: verified against the installed
+                        -- binary (generate-default-config, HLS 2.14) that
+                        -- semanticTokens defaults to globalOn = false,
+                        -- while the inlay-hint plugins the user also
+                        -- asked for (explicit-fields and importLens,
+                        -- inlayHintsOn) already default TRUE - nothing to
+                        -- enable there, the client-side inlay opt-in in
+                        -- standard_on_attach is all they need.
+                        semanticTokens = {
+                            globalOn = true,
+                        },
+                    },
                 },
             },
         },

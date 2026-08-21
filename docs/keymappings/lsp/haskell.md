@@ -14,3 +14,6 @@ All common [LSP keys](lsp.md) apply, plus:
 | `K` | Upgraded to the Hoogle-aware hover above |
 
 Telescope integration: `:Telescope ht` offers package-scoped file and grep pickers plus Hoogle signature search.
+
+> [!NOTE]
+> Highlighting and hints run rich: the HLS semanticTokens plugin colors type-level names, class methods, record fields, and pattern synonyms distinctly on top of treesitter, and the inlay-hint plugins (record-field expansions for wildcards, explicit import lists) are active - both ship on by default in HLS 2.14, with semanticTokens enabled in `lua/jwa/lsp/servers/hls.lua`.
