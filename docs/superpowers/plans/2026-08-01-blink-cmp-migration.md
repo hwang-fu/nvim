@@ -4,7 +4,7 @@
 
 **Goal:** Replace the seven-plugin nvim-cmp stack with blink.cmp per the approved spec at `docs/superpowers/specs/2026-08-01-blink-cmp-migration-design.md`.
 
-**Architecture:** Bare blink.cmp spec in `lua/jwn/plugins.lua`; behavior in a new `lua/jwn/completion.lua` module (renamed from `cmp.lua`) called from the root `init.lua` in plugins -> completion -> lsp order. LSP capabilities flow through the single `make_capabilities()` in `lua/jwn/lsp/helpers.lua`.
+**Architecture:** Bare blink.cmp spec in `lua/jwa/plugins.lua`; behavior in a new `lua/jwa/completion.lua` module (renamed from `cmp.lua`) called from the root `init.lua` in plugins -> completion -> lsp order. LSP capabilities flow through the single `make_capabilities()` in `lua/jwa/lsp/helpers.lua`.
 
 **Tech Stack:** Neovim >= 0.10, lazy.nvim, blink.cmp v1.x (prebuilt Rust fuzzy matcher).
 
@@ -22,7 +22,7 @@
 ### Task 1: plugins.lua - swap the completion plugin block
 
 **Files:**
-- Modify: `lua/jwn/plugins.lua` (the completion/snippet block, currently lines ~643-654)
+- Modify: `lua/jwa/plugins.lua` (the completion/snippet block, currently lines ~643-654)
 
 **Interfaces:**
 - Produces: plugin `saghen/blink.cmp` pinned `version = "1.*"`, loaded eagerly. Task 2's module and Task 3's capabilities depend on `require("blink.cmp")` resolving after `:Lazy sync`.
@@ -57,7 +57,7 @@ with (TAB-indented):
 	--   * hrsh7th/cmp-nvim-lsp   -> blink's built-in `lsp` source; the
 	--                            capabilities half now comes from
 	--                            blink.get_lsp_capabilities() in
-	--                            lua/jwn/lsp/helpers.lua
+	--                            lua/jwa/lsp/helpers.lua
 	--   * hrsh7th/cmp-buffer     -> built-in `buffer` source
 	--   * hrsh7th/cmp-path       -> built-in `path` source
 	--   * hrsh7th/cmp-cmdline    -> built-in cmdline completion. NOTE: the
@@ -80,7 +80,7 @@ with (TAB-indented):
 	-- fuzzy.implementation = "prefer_rust_with_warning" falls back to the
 	-- Lua matcher and says so.
 	--
-	-- Behavior config lives in lua/jwn/completion.lua, called from the
+	-- Behavior config lives in lua/jwa/completion.lua, called from the
 	-- root init.lua (plugins -> completion -> lsp order), the same wiring
 	-- the old nvim-cmp module had.
 	{
@@ -91,10 +91,10 @@ with (TAB-indented):
 
 - [ ] **Step 2: Verify**
 
-Run: `nvim --clean --headless -c "lua assert(loadfile('/home/hwangfu/.config/nvim/lua/jwn/plugins.lua'))" -c q`
+Run: `nvim --clean --headless -c "lua assert(loadfile('/home/hwangfu/.config/nvim/lua/jwa/plugins.lua'))" -c q`
 Expected: no output.
 
-Run: `grep -nP '[^\x00-\x7F]' /home/hwangfu/.config/nvim/lua/jwn/plugins.lua`
+Run: `grep -nP '[^\x00-\x7F]' /home/hwangfu/.config/nvim/lua/jwa/plugins.lua`
 Expected: no output.
 
 ---
@@ -102,15 +102,15 @@ Expected: no output.
 ### Task 2: completion.lua module + root init.lua rewire
 
 **Files:**
-- Create: `lua/jwn/completion.lua` (TABS)
-- Delete: `lua/jwn/cmp.lua`
+- Create: `lua/jwa/completion.lua` (TABS)
+- Delete: `lua/jwa/cmp.lua`
 - Modify: root `init.lua` (module list line 8, leader comment lines 23-28, ordering comment lines 39-48, wire-up line 52)
 
 **Interfaces:**
 - Consumes: `saghen/blink.cmp` from Task 1.
-- Produces: `require("jwn.completion").setup()` - the only completion entry point. Verification in Task 5 calls it via normal startup.
+- Produces: `require("jwa.completion").setup()` - the only completion entry point. Verification in Task 5 calls it via normal startup.
 
-- [ ] **Step 1: Create lua/jwn/completion.lua**
+- [ ] **Step 1: Create lua/jwa/completion.lua**
 
 Full content (TAB-indented). The LSP CODE HELPERS block is copied verbatim from cmp.lua lines 34-57 - keep it identical:
 
@@ -118,10 +118,10 @@ Full content (TAB-indented). The LSP CODE HELPERS block is copied verbatim from 
 -- ============================================================================
 -- blink.cmp setup: completion engine.
 --
--- Migrated from nvim-cmp (2026-08); this module was lua/jwn/cmp.lua.
+-- Migrated from nvim-cmp (2026-08); this module was lua/jwa/cmp.lua.
 -- One plugin now covers what took five (nvim-cmp + cmp-nvim-lsp /
 -- cmp-buffer / cmp-path / cmp-cmdline) plus the LuaSnip pair - see the
--- removal note in lua/jwn/plugins.lua.
+-- removal note in lua/jwa/plugins.lua.
 --
 -- What's wired up:
 --   * Engine          - blink.cmp with its prebuilt Rust fuzzy matcher
@@ -164,7 +164,7 @@ Full content (TAB-indented). The LSP CODE HELPERS block is copied verbatim from 
 -- LSP CODE HELPERS - jump around and act on code, active once a language
 -- server has attached (rust-analyzer, lua_ls, ...).
 --
--- Mapped in lua/jwn/lsp/init.lua:
+-- Mapped in lua/jwa/lsp/init.lua:
 --   K               hover: docs for the symbol under the cursor. Press K a
 --                   second time to jump into that popup, then scroll it and
 --                   press q to close.
@@ -189,7 +189,7 @@ Full content (TAB-indented). The LSP CODE HELPERS block is copied verbatim from 
 
 local M = {}
 
--- require("jwn.completion").setup()
+-- require("jwa.completion").setup()
 function M.setup()
 	require("blink.cmp").setup({
 		-- Parity mappings - each entry is a command list tried in order;
@@ -258,7 +258,7 @@ return M
 
 - [ ] **Step 2: Delete the old module**
 
-Run: `rm /home/hwangfu/.config/nvim/lua/jwn/cmp.lua`
+Run: `rm /home/hwangfu/.config/nvim/lua/jwa/cmp.lua`
 
 - [ ] **Step 3: Root init.lua - module list entry**
 
@@ -327,24 +327,24 @@ with (also fixing the old lsp/init.lua -> lsp/helpers.lua drift):
 Then replace:
 
 ```lua
-require("jwn.cmp").setup()
+require("jwa.cmp").setup()
 ```
 
 with:
 
 ```lua
-require("jwn.completion").setup()
+require("jwa.completion").setup()
 ```
 
 - [ ] **Step 6: Verify**
 
-Run: `nvim --clean --headless -c "lua assert(loadfile('/home/hwangfu/.config/nvim/lua/jwn/completion.lua')); assert(loadfile('/home/hwangfu/.config/nvim/init.lua'))" -c q`
+Run: `nvim --clean --headless -c "lua assert(loadfile('/home/hwangfu/.config/nvim/lua/jwa/completion.lua')); assert(loadfile('/home/hwangfu/.config/nvim/init.lua'))" -c q`
 Expected: no output.
 
-Run: `ls /home/hwangfu/.config/nvim/lua/jwn/cmp.lua`
+Run: `ls /home/hwangfu/.config/nvim/lua/jwa/cmp.lua`
 Expected: "No such file or directory".
 
-Run: `grep -nP '[^\x00-\x7F]' /home/hwangfu/.config/nvim/lua/jwn/completion.lua /home/hwangfu/.config/nvim/init.lua`
+Run: `grep -nP '[^\x00-\x7F]' /home/hwangfu/.config/nvim/lua/jwa/completion.lua /home/hwangfu/.config/nvim/init.lua`
 Expected: no output.
 
 ---
@@ -352,9 +352,9 @@ Expected: no output.
 ### Task 3: capabilities swap in helpers.lua + LSP server comments
 
 **Files:**
-- Modify: `lua/jwn/lsp/helpers.lua` (header lines ~12-15 and ~35, function comment + body lines ~46-59, define_server comment line ~163) - 4 SPACES
-- Modify: `lua/jwn/lsp/servers/hls.lua:77` - 4 SPACES
-- Modify: `lua/jwn/lsp/servers/rust_analyzer.lua:209-211` - 4 SPACES
+- Modify: `lua/jwa/lsp/helpers.lua` (header lines ~12-15 and ~35, function comment + body lines ~46-59, define_server comment line ~163) - 4 SPACES
+- Modify: `lua/jwa/lsp/servers/hls.lua:77` - 4 SPACES
+- Modify: `lua/jwa/lsp/servers/rust_analyzer.lua:209-211` - 4 SPACES
 
 **Interfaces:**
 - Consumes: `require("blink.cmp").get_lsp_capabilities(caps)` from the plugin installed in Task 1.
@@ -450,7 +450,7 @@ with:
 
 - [ ] **Step 5: hls.lua and rust_analyzer.lua comment mentions**
 
-In `lua/jwn/lsp/servers/hls.lua`, replace:
+In `lua/jwa/lsp/servers/hls.lua`, replace:
 
 ```lua
             -- cmp_nvim_lsp's snippet / additionalTextEdits bits, same
@@ -464,7 +464,7 @@ with:
             -- as every other server in this config.
 ```
 
-In `lua/jwn/lsp/servers/rust_analyzer.lua`, replace:
+In `lua/jwa/lsp/servers/rust_analyzer.lua`, replace:
 
 ```lua
 --   * capabilities = helpers.make_capabilities() so cmp_nvim_lsp's
@@ -482,7 +482,7 @@ with:
 
 - [ ] **Step 6: Verify**
 
-Run: `nvim --clean --headless -c "lua assert(loadfile('/home/hwangfu/.config/nvim/lua/jwn/lsp/helpers.lua')); assert(loadfile('/home/hwangfu/.config/nvim/lua/jwn/lsp/servers/hls.lua')); assert(loadfile('/home/hwangfu/.config/nvim/lua/jwn/lsp/servers/rust_analyzer.lua'))" -c q`
+Run: `nvim --clean --headless -c "lua assert(loadfile('/home/hwangfu/.config/nvim/lua/jwa/lsp/helpers.lua')); assert(loadfile('/home/hwangfu/.config/nvim/lua/jwa/lsp/servers/hls.lua')); assert(loadfile('/home/hwangfu/.config/nvim/lua/jwa/lsp/servers/rust_analyzer.lua'))" -c q`
 Expected: no output.
 
 Run: `grep -rn "cmp_nvim_lsp" /home/hwangfu/.config/nvim/lua/ /home/hwangfu/.config/nvim/init.lua`
@@ -493,12 +493,12 @@ Expected: no matches at all.
 ### Task 4: crates + keymap comment sweep
 
 **Files:**
-- Modify: `lua/jwn/plugins.lua` (crates.nvim spec comment, ~line 977-985) - TABS
-- Modify: `lua/jwn/crates.lua` (header lines ~24-27, entry-point comment lines ~117-119) - 4 SPACES
-- Modify: `lua/jwn/keymap.lua:107` - 4 SPACES
+- Modify: `lua/jwa/plugins.lua` (crates.nvim spec comment, ~line 977-985) - TABS
+- Modify: `lua/jwa/crates.lua` (header lines ~24-27, entry-point comment lines ~117-119) - 4 SPACES
+- Modify: `lua/jwa/keymap.lua:107` - 4 SPACES
 
 **Interfaces:**
-- Consumes: module name `lua/jwn/completion.lua` from Task 2 (comments must reference it, not cmp.lua).
+- Consumes: module name `lua/jwa/completion.lua` from Task 2 (comments must reference it, not cmp.lua).
 
 - [ ] **Step 1: plugins.lua crates comment**
 
@@ -510,7 +510,7 @@ Replace (TAB-indented):
 	-- rides the existing { name = "nvim_lsp" } source in cmp.lua and hover /
 	-- code actions ride taplo's existing K / <leader>ca bindings on Cargo.toml,
 	-- so neither cmp.lua nor the LSP keymaps need changing. See the long note
-	-- in lua/jwn/crates.lua for the full rationale and the <leader>c*
+	-- in lua/jwa/crates.lua for the full rationale and the <leader>c*
 	-- keymap reference.
 ```
 
@@ -521,8 +521,8 @@ with:
 	-- (deprecated, slated-for-removal) nvim-cmp source. With that, completion
 	-- rides blink.cmp's built-in `lsp` source and hover / code actions ride
 	-- taplo's existing K / <leader>ca bindings on Cargo.toml, so neither
-	-- lua/jwn/completion.lua nor the LSP keymaps need changing. See the
-	-- long note in lua/jwn/crates.lua for the full rationale and the
+	-- lua/jwa/completion.lua nor the LSP keymaps need changing. See the
+	-- long note in lua/jwa/crates.lua for the full rationale and the
 	-- <leader>c* keymap reference.
 ```
 
@@ -543,7 +543,7 @@ with:
 --     * completion  - crate / version / feature completions are served as a
 --                     normal LSP completionProvider, so they flow through
 --                     blink.cmp's built-in `lsp` source (configured in
---                     lua/jwn/completion.lua). No change needed there.
+--                     lua/jwa/completion.lua). No change needed there.
 ```
 
 - [ ] **Step 3: crates.lua entry-point comment**
@@ -582,11 +582,11 @@ with:
 
 - [ ] **Step 5: Verify**
 
-Run: `nvim --clean --headless -c "lua assert(loadfile('/home/hwangfu/.config/nvim/lua/jwn/plugins.lua')); assert(loadfile('/home/hwangfu/.config/nvim/lua/jwn/crates.lua')); assert(loadfile('/home/hwangfu/.config/nvim/lua/jwn/keymap.lua'))" -c q`
+Run: `nvim --clean --headless -c "lua assert(loadfile('/home/hwangfu/.config/nvim/lua/jwa/plugins.lua')); assert(loadfile('/home/hwangfu/.config/nvim/lua/jwa/crates.lua')); assert(loadfile('/home/hwangfu/.config/nvim/lua/jwa/keymap.lua'))" -c q`
 Expected: no output.
 
 Run: `grep -rn "LuaSnip\|luasnip\|cmp\.lua\|{ name = \"nvim_lsp\" }" /home/hwangfu/.config/nvim/lua/ /home/hwangfu/.config/nvim/init.lua`
-Expected: matches ONLY in comments that intentionally record history (plugins.lua removal note's LuaSnip lines, completion.lua's "was lua/jwn/cmp.lua" line). No code references.
+Expected: matches ONLY in comments that intentionally record history (plugins.lua removal note's LuaSnip lines, completion.lua's "was lua/jwa/cmp.lua" line). No code references.
 
 ---
 
@@ -613,7 +613,7 @@ Expected: contains `startup OK`, no error lines. (blink may print a one-time fuz
 
 - [ ] **Step 3: Capabilities prove-out**
 
-Run: `nvim --headless -c "lua local h = require('jwn.lsp.helpers'); local c = h.make_capabilities(); print('snippetSupport:', c.textDocument.completion.completionItem.snippetSupport)" -c q 2>&1`
+Run: `nvim --headless -c "lua local h = require('jwa.lsp.helpers'); local c = h.make_capabilities(); print('snippetSupport:', c.textDocument.completion.completionItem.snippetSupport)" -c q 2>&1`
 Expected: `snippetSupport: true` (proves blink.get_lsp_capabilities ran, not the bare-defaults fallback).
 
 - [ ] **Step 4: Manual checklist for the user**

@@ -30,22 +30,22 @@ The full reference lives in [docs/keymappings/](docs/keymappings/README.md), one
 | Path | What lives there |
 |------|------------------|
 | `init.lua` | Entry point: sets the leader keys, then wires up the modules below |
-| `lua/jwn/keymappings/` | Global keys, one file per domain: editor, movement, mouse, navigation |
-| `lua/jwn/plugins/` | lazy.nvim bootstrap, plus one spec file per plugin under `spec/` |
-| `lua/jwn/lsp/` | Language servers (one file each under `servers/`), format-on-save, external linters |
-| `lua/jwn/completion.lua` | Completion behavior |
-| `lua/jwn/colors.lua` | Automatic per-filetype colorschemes |
-| `lua/jwn/explorer.lua` | The file sidebar built on oil.nvim |
-| `lua/jwn/git.lua` | The lazygit floating window |
-| `lua/jwn/term.lua` | The shared floating-terminal helper |
-| `lua/jwn/repl.lua` | The utop REPL float, built on that helper |
-| `lua/jwn/crates.lua` | Cargo.toml dependency intelligence |
+| `lua/jwa/keymappings/` | Global keys, one file per domain: editor, movement, mouse, navigation |
+| `lua/jwa/plugins/` | lazy.nvim bootstrap, plus one spec file per plugin under `spec/` |
+| `lua/jwa/lsp/` | Language servers (one file each under `servers/`), format-on-save, external linters |
+| `lua/jwa/completion.lua` | Completion behavior |
+| `lua/jwa/colors.lua` | Automatic per-filetype colorschemes |
+| `lua/jwa/explorer.lua` | The file sidebar built on oil.nvim |
+| `lua/jwa/git.lua` | The lazygit floating window |
+| `lua/jwa/term.lua` | The shared floating-terminal helper |
+| `lua/jwa/repl.lua` | The utop REPL float, built on that helper |
+| `lua/jwa/crates.lua` | Cargo.toml dependency intelligence |
 | `colors/` | Local colorschemes |
 | `docs/keymappings/` | The keybinding reference, one Markdown page per topic |
 
 ## Plugins
 
-Managed by lazy.nvim. Each plugin's spec, keymaps, and documentation live together in one file under `lua/jwn/plugins/spec/`.
+Managed by lazy.nvim. Each plugin's spec, keymaps, and documentation live together in one file under `lua/jwa/plugins/spec/`.
 
 ### Editing
 
@@ -107,7 +107,7 @@ Repository-level work (commit, branch, push) happens in lazygit, floating in a t
 
 ## Language servers
 
-Most servers run through Neovim's native LSP client, each configured in a small file under `lua/jwn/lsp/servers/`:
+Most servers run through Neovim's native LSP client, each configured in a small file under `lua/jwa/lsp/servers/`:
 
 | Domain | Servers |
 |--------|---------|
@@ -140,7 +140,7 @@ Then:
 1. Clone this repository to `~/.config/nvim`.
 2. Start `nvim`. lazy.nvim bootstraps itself, installs every plugin at the exact versions pinned in `lazy-lock.json`, and the treesitter parsers for every supported language download and compile in the background. Expect the first launch to take a minute or two.
 3. Install the language toolchains you actually write with (rustup, opam, ghcup, ...). Language servers and formatters come from the toolchains, never from the editor, so they always match your compilers - each language starts working as its toolchain arrives, with nothing to configure.
-4. Run `:checkhealth jwn` any time for the full report of what the machine still lacks - editor tools, build prerequisites, formatters, linters, and language servers, each with an installation hint.
+4. Run `:checkhealth jwa` any time for the full report of what the machine still lacks - editor tools, build prerequisites, formatters, linters, and language servers, each with an installation hint.
 
 ### What the clone does not carry
 

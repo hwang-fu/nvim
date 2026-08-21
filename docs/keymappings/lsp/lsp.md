@@ -1,6 +1,6 @@
 # Language server keys
 
-*Defined in `lua/jwn/lsp/helpers.lua`; active in any buffer with a language server attached.*
+*Defined in `lua/jwa/lsp/helpers.lua`; active in any buffer with a language server attached.*
 
 | Key | Action |
 |-----|--------|
@@ -20,7 +20,7 @@
 | `[d` | Previous diagnostic (built in) |
 | `]d` | Next diagnostic (built in) |
 
-Formatting runs automatically on save, per language; `lua/jwn/lsp/format.lua` defines which formatter each language uses.
+Formatting runs automatically on save, per language; `lua/jwa/lsp/format.lua` defines which formatter each language uses.
 
 Peeking locations in an embedded panel - references, definitions, implementations - has its own page: [glance](glance.md).
 

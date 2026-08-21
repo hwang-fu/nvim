@@ -13,7 +13,7 @@ This folder documents every custom keybinding and user command in the Neovim con
 
 ## Global keys
 
-These are defined in `lua/jwn/keymappings/`, one file per page:
+These are defined in `lua/jwa/keymappings/`, one file per page:
 
 - [editor](editor.md) - saving, undo, clipboard, selection, and comment toggling
 - [movement](movement.md) - scrolling, word motion, line moving, and window resizing

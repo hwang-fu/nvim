@@ -22,7 +22,7 @@ Findings that shrink the migration:
   requirement; no custom snippets are defined. User chose to DROP both -
   LSP snippet items expand via Neovim's built-in vim.snippet under blink.
 * LSP capabilities flow through ONE function: helpers.make_capabilities()
-  (lua/jwn/lsp/helpers.lua). All servers - define_server users plus
+  (lua/jwa/lsp/helpers.lua). All servers - define_server users plus
   rustaceanvim / HLS / clangd - inherit from it.
 * crates.nvim completion rides its in-process LSP server; blink's lsp
   source picks it up with no changes.
@@ -31,7 +31,7 @@ User decisions: migrate now; drop LuaSnip; ENABLE blink's built-in cmdline
 completion (finishing what installing cmp-cmdline intended); docs popup
 auto-shows at 200ms.
 
-## Section A: plugin swap (lua/jwn/plugins.lua)
+## Section A: plugin swap (lua/jwa/plugins.lua)
 
 Remove seven specs, replaced by a dated removal note in the completion
 section: hrsh7th/nvim-cmp, hrsh7th/cmp-nvim-lsp, hrsh7th/cmp-buffer,
@@ -54,10 +54,10 @@ Add one spec:
 
 ## Section B: module rewrite (cmp.lua -> completion.lua)
 
-Rename lua/jwn/cmp.lua to lua/jwn/completion.lua. The old name
+Rename lua/jwa/cmp.lua to lua/jwa/completion.lua. The old name
 described the plugin (cmp); the new one describes the role and survives
-engine swaps. Root init.lua line 52: require("jwn.cmp").setup()
-becomes require("jwn.completion").setup() - the single call path,
+engine swaps. Root init.lua line 52: require("jwa.cmp").setup()
+becomes require("jwa.completion").setup() - the single call path,
 kept in the root exactly as before (see Section A).
 
 Root init.lua comment updates (verified stale on 2026-08-01):
@@ -105,7 +105,7 @@ require("blink.cmp").setup({...}) with keybinding PARITY as the rule:
 
 ## Section C: capabilities swap + comment sweep
 
-lua/jwn/lsp/helpers.lua make_capabilities():
+lua/jwa/lsp/helpers.lua make_capabilities():
 
 * Replace the pcall require("cmp_nvim_lsp") +
   cmp.default_capabilities(caps) with pcall require("blink.cmp") +
@@ -120,9 +120,9 @@ Comment sweep for stale references to nvim-cmp / cmp.lua / cmp sources:
 
 * plugins.lua crates.nvim spec comment (mentions the deprecated nvim-cmp
   source and "{ name = "nvim_lsp" } source in cmp.lua").
-* lua/jwn/crates.lua long note (same topic).
+* lua/jwa/crates.lua long note (same topic).
 * Any other grep hits for "nvim-cmp", "nvim_lsp", "cmp.lua", "cmp_luasnip",
-  "LuaSnip" in comments across lua/jwn/ - update to name blink.cmp's
+  "LuaSnip" in comments across lua/jwa/ - update to name blink.cmp's
   lsp source or the completion.lua module as appropriate. Code references
   must be zero after Sections A-C.
 

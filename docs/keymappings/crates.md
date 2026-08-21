@@ -1,6 +1,6 @@
 # Cargo.toml dependencies
 
-*Defined in `lua/jwn/crates.lua` (crates.nvim); active only in Cargo.toml buffers.*
+*Defined in `lua/jwa/crates.lua` (crates.nvim); active only in Cargo.toml buffers.*
 
 Everything runs through the `:Crates` command, which tab-completes its subcommands once a Cargo.toml has been opened.
 

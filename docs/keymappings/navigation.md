@@ -1,6 +1,6 @@
 # Navigation keys
 
-*Defined in `lua/jwn/keymappings/navigation.lua`.*
+*Defined in `lua/jwa/keymappings/navigation.lua`.*
 
 | Key | Mode | Action |
 |-----|------|--------|

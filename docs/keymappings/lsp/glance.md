@@ -1,6 +1,6 @@
 # Peek - glance.nvim
 
-*Defined in `lua/jwn/plugins/spec/glance.lua`.*
+*Defined in `lua/jwa/plugins/spec/glance.lua`.*
 
 Glance opens an embedded panel at the cursor - a location list beside a live preview - so call sites can be inspected and visited without leaving the code you are reading. It is the third way to consume LSP locations, next to telescope pickers (find one, transient) and the quickfix list (process all, persistent).
 

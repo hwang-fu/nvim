@@ -21,10 +21,10 @@ Upstream health, checked 2026-08-01:
 
 gitsigns.nvim stays exactly as configured.
 
-## Section A: lua/jwn/git.lua - lazygit float, no plugin
+## Section A: lua/jwa/git.lua - lazygit float, no plugin
 
 New module, 4-SPACE indent (keymap.lua convention), wired from root
-init.lua as require("jwn.git").setup().
+init.lua as require("jwa.git").setup().
 
 Behavior:
 * M.setup() registers ONE global keymap: <leader>gg -> open lazygit in a
@@ -50,7 +50,7 @@ Behavior:
   the config's style - native LSP config, built-in commenting), the
   keymap, and the guard rationale.
 
-## Section B: diffview.nvim spec (lua/jwn/plugins.lua, TABS)
+## Section B: diffview.nvim spec (lua/jwa/plugins.lua, TABS)
 
 * Spec: "sindrets/diffview.nvim", lazy-loaded via cmd = { "DiffviewOpen",
   "DiffviewClose", "DiffviewFileHistory", "DiffviewToggleFiles",
@@ -74,10 +74,10 @@ Behavior:
 ## Section C: housekeeping
 
 * Root init.lua: add module-list line for git ("git - lazygit float
-  keymap") and require("jwn.git").setup() next to keymap's call
+  keymap") and require("jwa.git").setup() next to keymap's call
   (order does not matter for it; after keymap keeps the list tidy).
 * keymap.lua header "NOT in this file" index: add a Git UI entry:
-  <leader>gg lazygit float (lua/jwn/git.lua); <leader>gd / gh / gH
+  <leader>gg lazygit float (lua/jwa/git.lua); <leader>gd / gh / gH
   diffview (plugin spec keys).
 * gitsigns spec comment: one-line cross-reference near the top pointing
   at <leader>g* for repo-level git UI (lazygit / diffview), so the two
@@ -96,7 +96,7 @@ Behavior:
 1. Parse-check every edited/created lua file.
 2. nvim --headless "+Lazy! sync" +qa - diffview.nvim installed, exit 0.
 3. Headless startup smoke test - no errors.
-4. Headless: require("jwn.git") loads; vim.fn.maparg("<leader>gg",
+4. Headless: require("jwa.git") loads; vim.fn.maparg("<leader>gg",
    "n") is non-empty after setup.
 5. Scratch git repo in the session scratchpad: headless nvim inside it
    runs :DiffviewOpen then :DiffviewClose without error output (proves
