@@ -2,7 +2,7 @@
 
 *REPL keys from conjure and structural editing from parinfer (`lua/jwn/plugins/spec/lisp.lua`); static analysis from clojure-lsp (`lua/jwn/lsp/servers/clojure_lsp.lua`).*
 
-Two engines share the work. clojure-lsp reads the code statically: completion, `gd`-style navigation, `<leader>rn` rename, `grr` references, format on save (cljfmt). Conjure talks to a **live REPL**: everything below with a `\` prefix evaluates real code in your running program. The localleader is backslash, so `\ee` means: press backslash, then `e`, then `e`.
+Two engines share the work. clojure-lsp reads the code statically: completion, `gd`-style navigation, `<leader>rn` rename, `grr` references, format on save (cljfmt), and compact hovers (arities on one line, no file-path footer). Conjure talks to a **live REPL**: everything below with a `\` prefix evaluates real code in your running program. The localleader is backslash, so `\ee` means: press backslash, then `e`, then `e`.
 
 All common [LSP keys](lsp.md) apply. Conjure shadows two of them in Clojure files: `gd` and `K` go through conjure first (definition and docs from the live REPL, falling back to the LSP). Throughout this page, "a Clojure file" means anything Neovim detects as the clojure filetype: `.clj`, `.cljs`, `.cljc`, and `.edn`.
 

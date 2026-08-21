@@ -1,8 +1,44 @@
 -- ============================================================================
 -- clojure_lsp: Clojure / ClojureScript / EDN language server.
--- Uses basic_on_attach (no inlay hints). Format-on-save is LSP-driven (see
--- the *.clj / *.cljs / *.cljc / *.edn entries in lsp/format.lua; verified
--- 2026-08-14 that the server advertises documentFormattingProvider).
+-- Uses basic_on_attach (no inlay hints). Format-on-save is LSP-driven
+-- (see the *.clj / *.cljs / *.cljc / *.edn entries in lsp/format.lua;
+-- verified 2026-08-14 that the server advertises
+-- documentFormattingProvider).
+--
+-- CONFIG CHANNEL: clojure-lsp reads its settings from initializationOptions
+-- (init_options below - carried in this repo, the reproducible channel),
+-- with config.edn files (global or per-project .lsp/config.edn) as the
+-- out-of-repo alternatives. Keys keep their EDN spellings, question marks
+-- included, hence the bracketed-string syntax.
+--
+-- Enabled 2026-08-21 (user took the whole recommended round):
+--   * hover compaction - arities on one line, no file-location footer.
+--   * lens-segregate-test-references - kept although lens DISPLAY is
+--     parked, see below; it costs nothing and is ready if lenses return.
+--
+-- PARKED: reference-count codelens display. Attempted 2026-08-21 and
+-- withdrawn the same day; the evidence chain, so nobody retries blind:
+--   * clojure-lsp sends UNRESOLVED lenses (no title until a
+--     codeLens/resolve round-trip; hand-made resolves answer instantly
+--     with e.g. "1 reference").
+--   * Neovim 0.12's framework resolves lazily during render, but that
+--     never converged here: provider enabled, zero resolve errors in
+--     the LSP log, yet 20s of forced redraws left every stored lens
+--     unresolved, and a live tmux session rendered no lens rows at all.
+--   * A pre-resolve wrapper (hold each codeLens response, resolve all,
+--     deliver a fully-resolved list) verified end-to-end headless -
+--     titles landed in the stored set - but in a live session the
+--     added round-trip latency made every response lose the race
+--     against clojure-lsp's startup refresh storm: zero lenses stored.
+-- Doing this properly means a private request+resolve+render loop
+-- (~50 lines of parallel codelens engine) - not worth it for a
+-- reference count. Revisit after a Neovim upgrade; ocamllsp lenses are
+-- unaffected (its titles arrive pre-resolved inline).
+--
+-- Known knob for later, when the linter first annoys: the embedded
+-- clj-kondo flags every public var nothing references
+-- (:clojure-lsp/unused-public-var) - tune per project in
+-- .clj-kondo/config.edn rather than globally here.
 --
 -- TOOLCHAIN REQUIREMENT (bitten 2026-08-14): clojure-lsp resolves the
 -- project classpath by shelling out to `clojure ... -Spath`, which needs
@@ -35,6 +71,13 @@ function M.setup()
             "build.boot",
             "shadow-cljs.edn",
             ".git",
+        },
+        init_options = {
+            ["lens-segregate-test-references"] = true,
+            hover = {
+                ["arity-on-same-line?"] = true,
+                ["hide-file-location?"] = true,
+            },
         },
         on_attach = helpers.basic_on_attach,
     })
