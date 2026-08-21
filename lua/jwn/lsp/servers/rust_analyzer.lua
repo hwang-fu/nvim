@@ -307,6 +307,47 @@ local function install_rustaceanvim_config()
             on_attach = function(client, bufnr)
                 helpers.standard_on_attach(client, bufnr)
 
+                -- --- capture(...) instead of move(...) -----------------
+                -- Closure capture hints arrive from rust-analyzer labeled
+                -- move(...) - defensible (see the closureCaptureHints
+                -- comment below) but ambiguous against Rust's everyday
+                -- meaning of move, so the label is rewritten to
+                -- capture(...) between server and screen (2026-08-21,
+                -- user request; no server-side knob exists for this).
+                --
+                -- Mechanics: Neovim's inlay-hint module passes an explicit
+                -- callback to client:request, which BYPASSES the
+                -- client.handlers table - so the interception wraps
+                -- client.request itself, narrowly: only the inlayHint
+                -- method, only labels that begin with "move(" (string
+                -- form) or a first label-part of exactly "move" (parts
+                -- form). If a rust-analyzer update ever changes the
+                -- label text, the shim degrades to a harmless no-op and
+                -- the stock move(...) shows again.
+                local orig_request = client.request
+                client.request = function(self, method, params, handler, target_bufnr)
+                    if method ~= "textDocument/inlayHint" or not handler then
+                        return orig_request(self, method, params, handler, target_bufnr)
+                    end
+                    return orig_request(self, method, params, function(err, result, ctx)
+                        for _, hint in ipairs(result or {}) do
+                            local label = hint.label
+                            if type(label) == "string" then
+                                if label:sub(1, 5) == "move(" then
+                                    hint.label = "capture(" .. label:sub(6)
+                                end
+                            elseif type(label) == "table" and label[1] then
+                                if label[1].value == "move" then
+                                    label[1].value = "capture"
+                                elseif type(label[1].value) == "string" and label[1].value:sub(1, 5) == "move(" then
+                                    label[1].value = "capture(" .. label[1].value:sub(6)
+                                end
+                            end
+                        end
+                        return handler(err, result, ctx)
+                    end, target_bufnr)
+                end
+
                 -- --- K override: enhanced hover with code actions ----
                 --
                 -- This is a DELIBERATE behavior change on Rust buffers
@@ -431,6 +472,22 @@ local function install_rustaceanvim_config()
                         },
                         closureReturnTypeHints = {
                             enable = "with_block",
+                        },
+                        -- Capture list at every closure (2026-08-21, user
+                        -- request): what enters the closure and how -
+                        -- capture(&count) shared borrow, capture(&mut
+                        -- count) mutable borrow, bare name = by value.
+                        -- rust-analyzer actually labels these move(...)
+                        -- (technically exact: every capture moves
+                        -- SOMETHING into the closure struct - for borrows,
+                        -- the reference itself - mirroring Rust's proposed
+                        -- capture-clause syntax), but the user found the
+                        -- word ambiguous against Rust's everyday meaning
+                        -- of move, so the on_attach shim below rewrites
+                        -- the label to capture(...) on its way to the
+                        -- screen.
+                        closureCaptureHints = {
+                            enable = true,
                         },
                         -- Show inferred lifetimes on every function that
                         -- has elided them, including the trivial cases
