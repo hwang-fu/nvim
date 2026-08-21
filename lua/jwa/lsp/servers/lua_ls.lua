@@ -4,14 +4,23 @@
 -- Heavily configured because it's the LSP for editing THIS config. Pieces
 -- that matter most:
 --   * runtime.version = "LuaJIT"             - Neovim embeds LuaJIT, not 5.x.
---   * workspace.library = { vim.env.VIMRUNTIME, ... } - exposes Neovim's own
---     Lua APIs and luv types so `vim.api.*` etc. resolve. (The "Undefined
---     global `vim`" warnings you might see in this file are because the LSP
---     workspace root happens to be ~ rather than your nvim config dir, so
---     library detection misfires; opening the file from inside ~/.config/nvim
---     usually fixes it.)
---   * diagnostics.globals = { "vim" }        - secondary fallback for the
---     same problem.
+--   * The Neovim API + plugin typings come from lazydev.nvim
+--     (plugins/spec/lazydev.lua), which feeds lua_ls per-workspace
+--     library entries for the runtime and for whatever plugins the open
+--     buffers require(). This replaced the static workspace.library
+--     entries (VIMRUNTIME + luv) that used to live here (2026-08-21):
+--     the static list never covered plugins - require("telescope") etc.
+--     resolved half-typed - and misfired when the workspace root fell
+--     outside the config dir.
+--   * diagnostics.globals = { "vim" }        - fallback so `vim` is never
+--     flagged as an undefined global even where lazydev is inactive.
+--   * hint.* - inlay hints, full set (Lua round, 2026-08-21):
+--     paramName = "All" names every argument (was "Literals": literal
+--     args only), arrayIndex = "Enable" labels table-literal indexes
+--     (was "Disable").
+--   * type.inferParamType = true - unannotated function parameters get
+--     their type inferred from call sites instead of `any`; better
+--     hover and more mismatch catches, occasionally a wrong guess.
 --   * telemetry.enable = false               - opt out of usage tracking.
 --
 -- Formatting is via stylua (see lsp/format.lua), driven by the project's
@@ -47,18 +56,19 @@ function M.setup()
                 },
                 workspace = {
                     checkThirdParty = false,
-                    library = {
-                        vim.env.VIMRUNTIME,
-                        "${3rd}/luv/library",
-                    },
+                    -- No static `library` here: lazydev.nvim supplies it
+                    -- dynamically (see the header comment).
                 },
                 completion = {
                     callSnippet = "Replace",
                 },
+                type = {
+                    inferParamType = true,
+                },
                 hint = {
                     enable = true,
-                    arrayIndex = "Disable",
-                    paramName = "Literals",
+                    arrayIndex = "Enable",
+                    paramName = "All",
                     paramType = true,
                     semicolon = "Disable",
                     setType = true,

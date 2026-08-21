@@ -126,7 +126,20 @@ function M.setup()
 			-- blink's default source config already lists "buffer" as
 			-- a fallback of "lsp" (buffer words only when the LSP has
 			-- nothing), which is the old two-group behavior.
-			default = { "lsp", "path", "buffer" },
+			--
+			-- "lazydev": module-name completion inside require("...")
+			-- strings in Lua buffers (see plugins/spec/lazydev.lua).
+			-- The provider module is a no-op outside Lua files; the
+			-- score_offset ranks its exact module paths above the
+			-- generic LSP items when both fire.
+			default = { "lazydev", "lsp", "path", "buffer" },
+			providers = {
+				lazydev = {
+					name = "LazyDev",
+					module = "lazydev.integrations.blink",
+					score_offset = 100,
+				},
+			},
 		},
 
 		-- Popup completion for ":" and "/" (blink built-in; keymaps are
