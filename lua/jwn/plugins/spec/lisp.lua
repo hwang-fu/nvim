@@ -117,6 +117,25 @@ return {
 			-- explicitly reminded") - red is the point. Registered
 			-- from `init`, not `config`: config runs on the plugin's lazy
 			-- ft load, AFTER the first FileType event has already fired.
+			-- Conjure opens every log buffer with a hardcoded sponsor
+			-- line ("; Sponsored by @somebody <3") - no config option
+			-- exists to disable it (checked source and :help,
+			-- 2026-08-21; the line is written unconditionally in
+			-- log.lua's on_new_log_buf). The user does not want ads in
+			-- the HUD, so the line is scrubbed when a log buffer first
+			-- reaches a window. Everything else in the log (the divider,
+			-- connection notices, eval output) is untouched.
+			vim.api.nvim_create_autocmd("BufWinEnter", {
+				pattern = "*conjure-log-*",
+				group = vim.api.nvim_create_augroup("JwnConjureNoSponsor", { clear = true }),
+				callback = function(args)
+					local first = vim.api.nvim_buf_get_lines(args.buf, 0, 1, false)[1] or ""
+					if first:find("Sponsored by", 1, true) then
+						vim.api.nvim_buf_set_lines(args.buf, 0, 1, false, {})
+					end
+				end,
+			})
+
 			local checked_roots = {}
 			vim.api.nvim_create_autocmd("FileType", {
 				pattern = "clojure",
