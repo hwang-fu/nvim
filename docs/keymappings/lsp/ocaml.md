@@ -47,4 +47,5 @@ The files land in `_build` (`cctx.ocaml-index`, one per library or executable), 
 ## Notes
 
 - `\p` pauses briefly before firing because it is also the start of `\pn` and `\pp`.
+- Hints run near-maximal: signature codelenses appear above every `let` - top-level and nested alike - and inlay hints show parameter, let-binding, and pattern-variable types. `K` uses the extended hover, documentation and type together. If nested lenses ever read as noise, the flag is `codelens.forNestedBindings` in `lua/jwn/lsp/servers/ocamllsp.lua`.
 - Local opam switches are auto-detected: the nearest `_opam/` at or above the project root supplies `ocamllsp`, with its `bin` first on the server's PATH so dune and ocamlformat come from the same switch. This covers both a switch beside `dune-project` and one shared switch at the top of a multi-project repo. Without any `_opam` up-tree, the global `ocamllsp` runs.

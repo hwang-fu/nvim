@@ -31,13 +31,12 @@
 -- enable_codelens below.
 --
 -- Settings currently left at their (off) defaults, available when wanted:
---   * extendedHover.enable          - richer K hover (docs + type together)
 --   * syntaxDocumentation.enable    - explain syntax constructs in hover
---   * codelens.forNestedBindings    - lenses on nested lets, not just
---                                     top-level (noisy; deliberately off)
 --   * merlinJumpCodeActions.enable  - merlin-style jump targets as code
---                                     actions
+--                                     actions (redundant here: \j covers it)
 --   * shortenMerlinDiagnostics.enable - compress long type-error messages
+-- (extendedHover and codelens.forNestedBindings graduated from this list
+-- to enabled, 2026-08-21 at the user's request - see the settings table.)
 --
 -- FILETYPE REALITY CHECK (verified against this config, 2026-08): Neovim
 -- detects .ml/.mli/.mll/.mly all as plain "ocaml" and dune/dune-project as
@@ -152,10 +151,22 @@ function M.setup()
             ".git",
         },
         settings = {
-            -- Type-signature lenses above top-level definitions. The
-            -- setting makes the SERVER compute them; enable_codelens
-            -- (chained in on_attach below) makes Neovim SHOW them.
+            -- Type-signature lenses above definitions. `enable` makes the
+            -- SERVER compute them; enable_codelens (chained in on_attach
+            -- below) makes Neovim SHOW them. forNestedBindings (on since
+            -- 2026-08-21, user request) extends the lenses from top-level
+            -- lets to INNER lets too, so local helper functions carry
+            -- their val-style signature as well. Known trade-off: in
+            -- deeply nested code this stacks a lens above every little
+            -- binding - if it ever reads as noise, this is the flag.
             codelens = {
+                enable = true,
+                forNestedBindings = true,
+            },
+            -- Richer K hover (2026-08-21, user request): documentation
+            -- and type together in one popup, instead of the type-only
+            -- standard hover.
+            extendedHover = {
                 enable = true,
             },
             -- All three hint kinds on -- the OCaml equivalent of the
