@@ -166,6 +166,28 @@ function M.setup()
                 -- where Dialyzer has inferred a type. Useful when
                 -- documenting library code; harmless when ignored.
                 suggestSpecs = true,
+
+                -- Extra Dialyzer warning classes on top of the standard
+                -- set (Elixir round, 2026-08-22). Verified against the
+                -- v0.30.0 source that the default is [] and that
+                -- everything else worth having (incremental dialyzer on
+                -- OTP 26+, dialyxir_long message format) is already on
+                -- by default:
+                --   * unmatched_returns - a return value that carries
+                --     meaning was dropped (classic: ignoring {:error,_})
+                --   * error_handling    - a function can only ever raise
+                --     or return errors; usually a bug
+                --   * missing_return  \ - the @spec promises fewer /
+                --   * extra_return    / more return shapes than the
+                --     code can actually produce
+                -- Deliberately NOT enabled: underspecs / overspecs /
+                -- specdiffs - notoriously noisy on real codebases.
+                dialyzerWarnOpts = {
+                    "unmatched_returns",
+                    "error_handling",
+                    "missing_return",
+                    "extra_return",
+                },
             }),
 
             -- ------------------------------------------------------------

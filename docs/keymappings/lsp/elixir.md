@@ -30,3 +30,6 @@ Test files get "Run test" codelenses above ExUnit functions.
 
 > [!NOTE]
 > Everything on this page needs a Mix project: ElixirLS only attaches when a `mix.exs` exists up-tree. On a stray `.ex` / `.exs` script there is no server, and format-on-save is skipped with a one-time warning instead of silently doing nothing.
+
+> [!NOTE]
+> Dialyzer runs on every save (incrementally on OTP 26+), with four extra warning classes beyond the standard set: dropped meaningful return values (`unmatched_returns`), functions that can only fail (`error_handling`), and `@spec`s promising more or fewer return shapes than the code produces (`extra_return`, `missing_return`). If a legacy codebase makes these too noisy, trim the `dialyzerWarnOpts` list in `lua/jwa/lsp/servers/elixirls.lua`.
