@@ -12,7 +12,7 @@ All common [LSP keys](lsp.md) apply, plus:
 Cargo.toml dependency management has its own page: [crates](../crates.md).
 
 > [!NOTE]
-> Inlay hints run near-maximal: types, parameter names, chaining types, closing braces, closure return types, elided lifetimes, binding modes, inferred generic arguments at call sites (`collect::<Vec<&str>>()` style, type and const args only), and closure capture lists (`move(&mut count)` reads as "what enters the closure": a reference for borrows, the bare name for real moves). The knobs live in `lua/jwn/lsp/servers/rust_analyzer.lua`.
+> Inlay hints run near-maximal: types, parameter names, chaining types, closing braces, closure return types, elided lifetimes, binding modes, inferred generic arguments at call sites (`collect::<Vec<&str>>()` style, type and const args only), and closure capture lists. The capture list's `move(&mut count)` label reads as "what enters the closure": a reference for borrows, the bare name for real moves - the `move` word is rust-analyzer's spelling, not a claim that ownership transfers. The knobs live in `lua/jwn/lsp/servers/rust_analyzer.lua`.
 
 ## The `:RustLsp` commands
 
