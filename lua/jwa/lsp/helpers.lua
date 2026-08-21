@@ -130,7 +130,9 @@ end
 -- call on older nvim versions where vim.lsp.inlay_hint does not exist.
 function M.enable_inlay_hints(bufnr)
     if vim.lsp.inlay_hint then
-        vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+        vim.lsp.inlay_hint.enable(true, {
+            bufnr = bufnr,
+        })
     end
 end
 
@@ -192,7 +194,9 @@ function M.enable_codelens(client, bufnr)
         return
     end
     install_codelens_sanitizer(client)
-    vim.lsp.codelens.enable(true, { bufnr = bufnr })
+    vim.lsp.codelens.enable(true, {
+        bufnr = bufnr,
+    })
 end
 
 -- ----------------------------------------------------------------------------

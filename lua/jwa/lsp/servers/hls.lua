@@ -119,7 +119,9 @@ function M.setup()
                 -- earlier helpers.set_common_keymaps K binding becomes
                 -- the live one (it was overwritten, not removed).
                 vim.keymap.set("n", "K", function()
-                    vim.cmd.Haskell({ "hover" })
+                    vim.cmd.Haskell({
+                        "hover",
+                    })
                 end, {
                     buffer = bufnr,
                     silent = true,

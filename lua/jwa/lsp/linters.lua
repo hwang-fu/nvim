@@ -36,7 +36,9 @@ function M.setup()
     -- registered linter handlers before the new ones are added, so reloading
     -- this module mid-session replaces the autocmds rather than stacking
     -- additional copies that would run the linter multiple times per save.
-    local linter_group = vim.api.nvim_create_augroup("Linters", { clear = true })
+    local linter_group = vim.api.nvim_create_augroup("Linters", {
+        clear = true,
+    })
 
     -- Severity levels emitted by JSON-based linters (shellcheck, hadolint).
     local SEVERITY = {
@@ -69,7 +71,10 @@ function M.setup()
     -- silent no-ops. Same goes for buffers with no on-disk filename.
     local function define_linter(opts)
         local ns = vim.api.nvim_create_namespace(opts.name)
-        vim.api.nvim_create_autocmd({ "BufWritePost", "BufReadPost" }, {
+        vim.api.nvim_create_autocmd({
+            "BufWritePost",
+            "BufReadPost",
+        }, {
             group = linter_group,
             pattern = opts.patterns,
             callback = function()
@@ -168,7 +173,10 @@ function M.setup()
     -- ------------------------------------------------------------------------
     define_linter({
         name = "checkmake",
-        cmd = { "checkmake", "--format={{.LineNumber}}:{{.Rule}}:{{.Violation}}" },
+        cmd = {
+            "checkmake",
+            "--format={{.LineNumber}}:{{.Rule}}:{{.Violation}}",
+        },
         patterns = {
             "Makefile",
             "makefile",
@@ -217,8 +225,15 @@ function M.setup()
     -- ------------------------------------------------------------------------
     define_linter({
         name = "yamllint",
-        cmd = { "yamllint", "--format", "parsable" },
-        patterns = { "*.yml", "*.yaml" },
+        cmd = {
+            "yamllint",
+            "--format",
+            "parsable",
+        },
+        patterns = {
+            "*.yml",
+            "*.yaml",
+        },
         parse = function(data)
             local diagnostics = {}
             for _, line in ipairs(data) do

@@ -111,12 +111,18 @@ local function start_ocamllsp(dispatchers, config)
         -- dune project root (multi-project repo sharing one _opam at its
         -- top, e.g. ~/proj/ocamlpractice), or in the root itself (single
         -- project). Nearest _opam wins, matching `opam env` semantics.
-        local hit = vim.fs.find("_opam", { upward = true, path = root, type = "directory" })[1]
+        local hit = vim.fs.find("_opam", {
+            upward = true,
+            path = root,
+            type = "directory",
+        })[1]
         if hit then
             local local_bin = hit .. "/bin/ocamllsp"
             if vim.fn.executable(local_bin) == 1 then
                 bin = local_bin
-                env = { PATH = hit .. "/bin:" .. (vim.env.PATH or "") }
+                env = {
+                    PATH = hit .. "/bin:" .. (vim.env.PATH or ""),
+                }
             end
         end
     end
@@ -147,7 +153,11 @@ function M.setup()
         -- nearest still wins, so multi-project repos keep rooting at
         -- each subfolder's own dune-project.
         root_markers = {
-            { "dune-project", "dune-workspace", "*.opam" },
+            {
+                "dune-project",
+                "dune-workspace",
+                "*.opam",
+            },
             ".git",
         },
         settings = {

@@ -9,7 +9,9 @@ local M = {}
 
 function M.setup()
     helpers.define_server("fortls", {
-        cmd = { "fortls" },
+        cmd = {
+            "fortls",
+        },
         filetypes = {
             "fortran",
         },

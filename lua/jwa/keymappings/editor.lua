@@ -87,16 +87,10 @@ function M.setup()
     ni("<C-s>", ":w<CR>")
     map("n", "<C-q>", ":q<CR>", { desc = "Quit window" })
     map("i", "<C-q>", function()
-        vim.notify(
-            "Can't quit from insert mode; press <Esc> first",
-            vim.log.levels.ERROR
-        )
+        vim.notify("Can't quit from insert mode; press <Esc> first", vim.log.levels.ERROR)
     end, { desc = "Reject quit-from-insert (use <Esc> first)" })
     map("v", "<C-q>", function()
-        vim.notify(
-            "Can't quit from visual mode; press <Esc> first",
-            vim.log.levels.ERROR
-        )
+        vim.notify("Can't quit from visual mode; press <Esc> first", vim.log.levels.ERROR)
     end, { desc = "Reject quit-from-visual (use <Esc> first)" })
 
     -- --- Substitute selection (Ctrl-R, visual only) ----------------------
@@ -110,7 +104,9 @@ function M.setup()
     -- Normal-mode <C-r> is Vim's BUILT-IN REDO, restored 2026-08-15 (a
     -- substitute-under-cursor map shadowed it before). Insert-mode <C-r>
     -- keeps its built-in insert-from-register.
-    map("v", "<C-r>",
+    map(
+        "v",
+        "<C-r>",
         [["zy:%s/\V<C-r>=substitute(escape(@z, '\/'), '\n', '\\n', 'g')<CR>//g<Left><Left>]],
         { desc = "Substitute selection across file" }
     )

@@ -33,8 +33,12 @@ local M = {}
 
 function M.setup()
     helpers.define_server("lua_ls", {
-        cmd = { "lua-language-server" },
-        filetypes = { "lua" },
+        cmd = {
+            "lua-language-server",
+        },
+        filetypes = {
+            "lua",
+        },
         root_markers = {
             ".luarc.json",
             ".luarc.jsonc",

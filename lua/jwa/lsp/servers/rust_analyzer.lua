@@ -170,7 +170,9 @@ local function install_notify_filter()
             local health = msg:match("rust%-analyzer.- health status is %[(%w+)%]")
             if health then
                 return orig_notify(
-                    "rustaceanvim: rust-analyzer health is [" .. health .. "]; :RustLsp logFile has details",
+                    "rustaceanvim: rust-analyzer health is ["
+                        .. health
+                        .. "]; :RustLsp logFile has details",
                     vim.log.levels.WARN,
                     opts
                 )
@@ -366,7 +368,10 @@ local function install_rustaceanvim_config()
                 -- removed, so dropping the override exposes it
                 -- again).
                 vim.keymap.set("n", "K", function()
-                    vim.cmd.RustLsp({ "hover", "actions" })
+                    vim.cmd.RustLsp({
+                        "hover",
+                        "actions",
+                    })
                 end, {
                     buffer = bufnr,
                     silent = true,
@@ -419,9 +424,15 @@ local function install_rustaceanvim_config()
                         -- the always-on lifetimeElisionHints below and
                         -- would double-print.
                         genericParameterHints = {
-                            type = { enable = true },
-                            const = { enable = true },
-                            lifetime = { enable = false },
+                            type = {
+                                enable = true,
+                            },
+                            const = {
+                                enable = true,
+                            },
+                            lifetime = {
+                                enable = false,
+                            },
                         },
                         chainingHints = {
                             enable = true,
@@ -466,7 +477,6 @@ local function install_rustaceanvim_config()
                 },
             },
         },
-
     }
 end
 
