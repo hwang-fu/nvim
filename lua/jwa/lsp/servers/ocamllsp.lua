@@ -132,7 +132,74 @@ local function start_ocamllsp(dispatchers, config)
     })
 end
 
+-- ----------------------------------------------------------------------------
+-- Semantic-token repair for parenthesized operator aliases (2026-08-22,
+-- user report: "( land )" renders wrong).
+--
+-- ocamllsp tags the pieces of a parenthesized operator alias -
+-- `let bit_and = ( land )` - as NAMESPACE semantic tokens, one per
+-- word INCLUDING each parenthesis (verified live with
+-- vim.lsp.semantic_tokens.get_at_pos: "(" -> namespace, "land" ->
+-- namespace). Semantic tokens paint above treesitter, so the parens
+-- lose their punctuation + rainbow color and the operator its
+-- @operator color, and the group renders in module color instead.
+--
+-- Fix, in two halves:
+--   1. Empty out @lsp.type.namespace.ocaml (the documented disable
+--      idiom, :h lsp-semantic-highlight), so ocamllsp's namespace
+--      tokens paint NOTHING by default and treesitter shows through.
+--      Re-applied on ColorScheme because colors.lua switches schemes
+--      per filetype and a :colorscheme wipes user groups (same
+--      pattern as PhantomEol's relink).
+--   2. An LspTokenUpdate autocmd repaints the namespace tokens that
+--      are REAL modules with the generic @lsp.type.namespace group -
+--      the exact group the .ocaml variant fell back to before, so
+--      List / Array / functors look unchanged. The discriminator is
+--      OCaml syntax itself: module paths MUST start uppercase, the
+--      misclassified alias pieces ("(", ")", "land", ...) never do.
+-- ----------------------------------------------------------------------------
+local function clear_ocaml_namespace_group()
+    vim.api.nvim_set_hl(0, "@lsp.type.namespace.ocaml", {})
+end
+
+local function install_namespace_token_repair()
+    local group = vim.api.nvim_create_augroup("JwaOcamlSemanticTokens", { clear = true })
+
+    clear_ocaml_namespace_group()
+    vim.api.nvim_create_autocmd("ColorScheme", {
+        group = group,
+        pattern = "*",
+        callback = clear_ocaml_namespace_group,
+    })
+
+    vim.api.nvim_create_autocmd("LspTokenUpdate", {
+        group = group,
+        callback = function(args)
+            local token = args.data.token
+            if token.type ~= "namespace" then
+                return
+            end
+            local client = vim.lsp.get_client_by_id(args.data.client_id)
+            if not client or client.name ~= "ocamllsp" then
+                return
+            end
+            local line = vim.api.nvim_buf_get_lines(args.buf, token.line, token.line + 1, false)[1] or ""
+            local text = line:sub(token.start_col + 1, token.end_col)
+            if text:match("^%u") then
+                vim.lsp.semantic_tokens.highlight_token(
+                    token,
+                    args.buf,
+                    args.data.client_id,
+                    "@lsp.type.namespace"
+                )
+            end
+        end,
+    })
+end
+
 function M.setup()
+    install_namespace_token_repair()
+
     helpers.define_server("ocamllsp", {
         cmd = start_ocamllsp,
         filetypes = {
