@@ -446,19 +446,23 @@ local function install_rustaceanvim_config()
                                 enable = false,
                             },
                         },
-                        -- The compiler's invisible coercions, rendered at
-                        -- the expression (2026-08-22, user request):
-                        -- auto-& / auto-&mut on method receivers and call
-                        -- arguments, deref chains on coercions -
-                        -- (&words).len(), take_slice(&**&words). The
-                        -- noisiest hint family rust-analyzer ships; the
-                        -- sub-knobs stay on their defaults (mode =
-                        -- "prefix", disableReborrows = true so pure
-                        -- &mut-reborrows like (&mut *mr) stay hidden,
-                        -- hideOutsideUnsafe = false). Set enable back to
-                        -- "never" if it wears out its welcome.
+                        -- Compiler-inserted receiver/argument rewrites
+                        -- (2026-08-22, user request, narrowed same day
+                        -- from "always"). What "reborrow" means in
+                        -- rust-analyzer 1.98, VERIFIED LIVE (the docs
+                        -- suggest an older, narrower meaning): it keeps
+                        -- the borrow-class ghosts - (&x), (&mut x),
+                        -- (&*x) - and drops the named coercion notes
+                        -- <unsize> and <never-to-any> that "always"
+                        -- adds. Exactly the split the user wanted, no
+                        -- client-side filtering needed. One category
+                        -- stays hidden through the disableReborrows
+                        -- default (true): pure same-type reborrows like
+                        -- (&mut *mr) on a receiver that is already
+                        -- &mut. Add disableReborrows = false here if
+                        -- those turn out to be missed.
                         expressionAdjustmentHints = {
-                            enable = "always",
+                            enable = "reborrow",
                         },
                         chainingHints = {
                             enable = true,
