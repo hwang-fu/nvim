@@ -411,18 +411,30 @@ local function install_rustaceanvim_config()
                     },
 
                     inlayHints = {
+                        -- Hint truncation length (rust-analyzer default:
+                        -- 25): longer type hints get cut with "...". 50
+                        -- keeps most real-world types whole (2026-08-22,
+                        -- user request).
+                        maxLength = 50,
                         bindingModeHints = {
                             enable = true,
                         },
-                        -- Inferred generic arguments at call sites, shown
-                        -- as if the turbofish had been written out:
-                        -- collect::<Vec<&str>>() (2026-08-21, user
-                        -- request). Three independent sub-toggles; the
-                        -- choices here: TYPE args on (the actual want),
-                        -- CONST args on (rust-analyzer's own default),
-                        -- LIFETIME args off - call-site lifetimes overlap
-                        -- the always-on lifetimeElisionHints below and
-                        -- would double-print.
+                        -- Parameter-NAME labels on generic arguments the
+                        -- code writes EXPLICITLY: collect::<Vec<i32>>()
+                        -- shows "B:" before Vec<i32>, first_chunk::<12>()
+                        -- shows "N:" before 12 (2026-08-21, user request;
+                        -- comment corrected 2026-08-22 - it originally
+                        -- claimed this family renders INFERRED turbofish,
+                        -- which is wrong: verified live that an inferred
+                        -- first_chunk() / collect() gets no call-site
+                        -- hint, and no rust-analyzer hint kind displays
+                        -- inferred generic arguments; the inferred answer
+                        -- surfaces only through the binding's type hint).
+                        -- Sub-toggles: TYPE and CONST on, LIFETIME off
+                        -- (it would label explicit lifetime turbofish
+                        -- args like longest::<'static> - rarely written,
+                        -- kept off alongside the always-on
+                        -- lifetimeElisionHints below).
                         genericParameterHints = {
                             type = {
                                 enable = true,
