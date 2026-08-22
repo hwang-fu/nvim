@@ -24,8 +24,11 @@
 --     errors from vim.notify, and flattens rustaceanvim's 4-line
 --     "standalone mode" notice into one warning line so it cannot
 --     trigger the hit-enter prompt (see long comment below).
---   * :RustFormat user command - on-demand rustfmt via the LSP, named
---     to dodge the legacy :RustFmt from runtime/rust.vim.
+--   * (moved) on-demand formatting lives on the :RustFmt name now,
+--     overriding the legacy runtime command of the same name - see
+--     after/ftplugin/rust.lua. The former global :RustFormat (named
+--     to dodge that legacy command) was removed 2026-08-22 when the
+--     user chose to own the familiar name instead.
 --
 -- What rustaceanvim adds, browseable with `:RustLsp <Tab>`:
 --   * expandMacro       expand the macro under cursor in a split. Useful
@@ -227,24 +230,6 @@ end
 -- buffer by accident gets a clear "wrong buffer" message instead of silently
 -- doing nothing because no rust-analyzer client is attached.
 -- ----------------------------------------------------------------------------
-local function install_rustfmt_command()
-    vim.api.nvim_create_user_command("RustFormat", function()
-        if vim.bo.filetype ~= "rust" then
-            vim.notify(
-                "RustFormat: current buffer is not a Rust file (filetype=" .. vim.bo.filetype .. ")",
-                vim.log.levels.WARN
-            )
-            return
-        end
-        vim.lsp.buf.format({
-            async = false,
-            name = "rust-analyzer",
-        })
-    end, {
-        desc = "Format current Rust buffer via rust-analyzer (rustfmt)",
-    })
-end
-
 -- ----------------------------------------------------------------------------
 -- vim.g.rustaceanvim
 --
@@ -521,7 +506,6 @@ end
 
 function M.setup()
     install_notify_filter()
-    install_rustfmt_command()
     install_rustaceanvim_config()
 end
 
