@@ -481,6 +481,15 @@ local function install_rustaceanvim_config()
                         },
                         parameterHints = {
                             enable = true,
+                            -- Name ghosts for arguments NOT yet passed at
+                            -- a wrong-arity call site (2026-08-22, user
+                            -- request): take_two(1) renders a trailing
+                            -- "second:" with nothing after it, so the
+                            -- missing parameter is visible without
+                            -- opening signature help.
+                            missingArguments = {
+                                enable = true,
+                            },
                         },
                         typeHints = {
                             enable = true,
