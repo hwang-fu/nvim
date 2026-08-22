@@ -446,6 +446,20 @@ local function install_rustaceanvim_config()
                                 enable = false,
                             },
                         },
+                        -- The compiler's invisible coercions, rendered at
+                        -- the expression (2026-08-22, user request):
+                        -- auto-& / auto-&mut on method receivers and call
+                        -- arguments, deref chains on coercions -
+                        -- (&words).len(), take_slice(&**&words). The
+                        -- noisiest hint family rust-analyzer ships; the
+                        -- sub-knobs stay on their defaults (mode =
+                        -- "prefix", disableReborrows = true so pure
+                        -- &mut-reborrows like (&mut *mr) stay hidden,
+                        -- hideOutsideUnsafe = false). Set enable back to
+                        -- "never" if it wears out its welcome.
+                        expressionAdjustmentHints = {
+                            enable = "always",
+                        },
                         chainingHints = {
                             enable = true,
                         },
