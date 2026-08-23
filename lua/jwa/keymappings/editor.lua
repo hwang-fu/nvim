@@ -28,6 +28,11 @@ function M.setup()
         map("i", lhs, "<Esc>" .. rhs)
     end
 
+    -- Forward declaration: the disk-aware save behind every Ctrl-S.
+    -- Defined in the Save / quit section below; declared here because
+    -- the visual-mode Ctrl-S in the Clipboard section calls it too.
+    local smart_save
+
     -- --- Clipboard (system) ---------------------------------------------
     map("v", "<C-D>", '"+y')
     -- (<C-c> copy alias removed 2026-08-15; visual <C-c> is back to its
@@ -48,13 +53,12 @@ function M.setup()
     -- with the 't' flag (process as if typed) and 'x' (execute
     -- synchronously) routes the <Esc> through the typed-key path,
     -- which reliably exits any visual/select mode regardless of entry.
-    -- Then we vim.cmd('silent! write') to save; silent! suppresses the
-    -- "N lines, M bytes" cmdline echo since the modified indicator in
-    -- the lualine already shows the save state.
+    -- Then smart_save() writes (disk-aware; see the Save / quit
+    -- section below).
     map("v", "<C-s>", function()
         local esc = vim.api.nvim_replace_termcodes("<Esc>", true, false, true)
         vim.api.nvim_feedkeys(esc, "tx", false)
-        vim.cmd("silent! write")
+        smart_save()
     end, { silent = true, desc = "Save file (exit visual/select first)" })
     -- (A visual-mode <C-l> alias for `gc` lived here until 2026-08-15;
     -- removed on user request to free the key - Ctrl-/ in the Comment
@@ -84,7 +88,151 @@ function M.setup()
     -- captured by :messages for later review. The message text does
     -- NOT match the ^rust_analyzer:%s*%-32%d+ filter installed in
     -- lsp/servers/rust_analyzer.lua, so it passes through unfiltered.
-    ni("<C-s>", ":w<CR>")
+    -- --- Disk-aware Ctrl-S (2026-08-23, user request) ---------------
+    -- "If someone else changed the file while we are inside it, a
+    -- Ctrl-S should refresh the buffer to the newest state rather
+    -- than overwrite the changes others made."
+    --
+    -- Every Ctrl-S therefore starts with :checktime, and the
+    -- FileChangedShell handler below decides what an on-disk change
+    -- means. Three cases:
+    --   * only WE changed     -> ordinary write (the common path).
+    --   * only the DISK moved -> the buffer is clean, so it reloads
+    --     to the newest version and NOTHING is written; a WARN notice
+    --     says the refresh happened.
+    --   * BOTH changed        -> a real conflict no key can merge.
+    --     Ctrl-S prompts (user request, same day): Mine overwrites
+    --     the disk with your buffer, Theirs discards your edits and
+    --     loads the disk version, Cancel (the default) leaves both
+    --     versions where they are - yours in the buffer, theirs on
+    --     disk - so nothing is lost by accident.
+    --
+    -- The handler is global (pattern *), so it also governs the
+    -- checktime Neovim runs by itself (FocusGained etc.): clean
+    -- buffers silently track the disk - same net effect as the
+    -- 'autoread' default - and conflicted buffers are kept, warned
+    -- about once, and left for Ctrl-S to explain at the moment that
+    -- actually matters.
+    --
+    -- Bookkeeping lives in closure tables keyed by buffer number, NOT
+    -- in b: variables: the reload that fcs_choice = "reload" triggers
+    -- WIPES buffer-local variables (verified live - a flag set by the
+    -- handler read back as nil after the reload, silently skipping the
+    -- refresh notice and issuing a redundant write). disk_check holds
+    -- the per-checktime result smart_save reads back; disk_warned
+    -- dedupes the background conflict ERROR so focus-switching in a
+    -- conflicted state does not spam. Entries clear on write, on
+    -- taking the disk version, and on buffer wipeout.
+    local disk_check = {}
+    local disk_warned = {}
+    local save_group = vim.api.nvim_create_augroup("JwaSmartSave", { clear = true })
+
+    vim.api.nvim_create_autocmd("FileChangedShell", {
+        group = save_group,
+        pattern = "*",
+        callback = function(args)
+            local reason = vim.v.fcs_reason
+            local modified = vim.bo[args.buf].modified
+            if reason == "deleted" then
+                -- File vanished from disk. Keep the buffer; a later
+                -- save simply recreates the file.
+                vim.v.fcs_choice = ""
+            elseif reason == "mode" then
+                -- Permission-only change; contents are untouched.
+                vim.v.fcs_choice = ""
+            elseif modified or reason == "conflict" then
+                -- Disk changed AND the buffer holds local edits.
+                vim.v.fcs_choice = ""
+                disk_check[args.buf] = "conflict"
+                if not disk_warned[args.buf] then
+                    disk_warned[args.buf] = true
+                    local name = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(args.buf), ":.")
+                    vim.schedule(function()
+                        vim.notify(
+                            string.format(
+                                "%s changed on disk while this buffer holds unsaved edits - kept your version; Ctrl-S will ask which one wins",
+                                name
+                            ),
+                            vim.log.levels.ERROR
+                        )
+                    end)
+                end
+            else
+                -- "changed" / "time" with a clean buffer: track disk.
+                vim.v.fcs_choice = "reload"
+                disk_check[args.buf] = "reloaded"
+                disk_warned[args.buf] = nil
+            end
+        end,
+    })
+
+    vim.api.nvim_create_autocmd({ "BufWritePost", "BufWipeout" }, {
+        group = save_group,
+        pattern = "*",
+        callback = function(args)
+            disk_check[args.buf] = nil
+            disk_warned[args.buf] = nil
+        end,
+    })
+
+    smart_save = function()
+        local buf = vim.api.nvim_get_current_buf()
+        -- Non-file buffers and unnamed scratch: plain :write, whose
+        -- own errors explain the situation better than we could.
+        if vim.bo[buf].buftype ~= "" or vim.api.nvim_buf_get_name(buf) == "" then
+            vim.cmd("write")
+            return
+        end
+        disk_check[buf] = nil
+        -- Two reload detectors are needed: with 'autoread' on (the
+        -- Neovim default) a clean buffer is reloaded WITHOUT firing
+        -- FileChangedShell (verified live - the handler never ran for
+        -- the clean-disk-change case), so disk_check stays empty and
+        -- only the changedtick bump betrays that the buffer was
+        -- replaced. The FCS "reloaded" marking still covers setups
+        -- where 'autoread' is off.
+        local tick = vim.api.nvim_buf_get_changedtick(buf)
+        vim.cmd("silent! checktime " .. buf)
+        if disk_check[buf] == "conflict" then
+            local choice = vim.fn.confirm(
+                "The file changed on disk while you edited it. Which version wins?",
+                "&Mine (overwrite disk)\n&Theirs (discard my edits)\n&Cancel",
+                3,
+                "Warning"
+            )
+            if choice == 1 then
+                vim.cmd("silent write!")
+                vim.notify("Ctrl-S: wrote your version over the on-disk changes", vim.log.levels.WARN)
+            elseif choice == 2 then
+                vim.cmd("silent edit!")
+                disk_check[buf] = nil
+                disk_warned[buf] = nil
+                vim.notify("Ctrl-S: took the on-disk version; your edits were discarded", vim.log.levels.WARN)
+            else
+                vim.notify(
+                    "Ctrl-S: nothing done - your edits stay in the buffer, the other version stays on disk",
+                    vim.log.levels.WARN
+                )
+            end
+            return
+        end
+        local reloaded = disk_check[buf] == "reloaded"
+            or vim.api.nvim_buf_get_changedtick(buf) ~= tick
+        if reloaded and not vim.bo[buf].modified then
+            vim.notify(
+                "Ctrl-S: refreshed to the newer on-disk version (you had no unsaved edits)",
+                vim.log.levels.WARN
+            )
+            return
+        end
+        vim.cmd("write")
+    end
+
+    map("n", "<C-s>", smart_save, { desc = "Save (refreshes from disk if others changed the file)" })
+    map("i", "<C-s>", function()
+        vim.cmd("stopinsert")
+        smart_save()
+    end, { desc = "Save (refreshes from disk if others changed the file)" })
     map("n", "<C-q>", ":q<CR>", { desc = "Quit window" })
     map("i", "<C-q>", function()
         vim.notify("Can't quit from insert mode; press <Esc> first", vim.log.levels.ERROR)

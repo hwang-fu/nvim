@@ -2,7 +2,7 @@
 -- Global keymappings: entrypoint + master index.
 --
 -- Goal: make Neovim feel closer to mainstream editor conventions for the
--- handful of universal shortcuts (Ctrl-S to save, Ctrl-A to select all,
+-- handful of universal shortcuts (Ctrl-S disk-aware save, Ctrl-A select all,
 -- Ctrl-arrow word navigation, Alt-arrow line moving) WITHOUT touching
 -- Vim's core motions.
 --
