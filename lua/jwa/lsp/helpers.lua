@@ -117,10 +117,10 @@ end
 -- Per-client tweaks
 -- ----------------------------------------------------------------------------
 
--- Some servers (clangd in particular) emit very chatty diagnostics that we'd
--- rather route through external linters or simply suppress. Replacing the
--- publishDiagnostics handler with a no-op silences them at the protocol layer
--- without disabling the rest of the LSP integration.
+-- Replace publishDiagnostics with a no-op: silences a server's diagnostics
+-- at the protocol layer without disabling the rest of the LSP integration.
+-- Currently UNUSED - clangd was the only caller until 2026-08-23, when the
+-- user asked for its diagnostics back. Kept for the next chatty server.
 function M.disable_diagnostics(client)
     client.handlers["textDocument/publishDiagnostics"] = function() end
 end
