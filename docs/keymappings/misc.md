@@ -44,4 +44,4 @@ Terminals, pickers, diff views, and the file sidebar do not have the line.
 
 ## Colorscheme
 
-One global theme for every file: dracula-soft, set at startup in `lua/jwa/colors.lua`, with no overrides on top. (The old per-filetype switching - 256_noir for web files, dracula on a dark-green background for the rest - was retired 2026-08-23; the alternate schemes in `colors/` and the colorscheme plugins remain installed for `:colorscheme` experiments.)
+One global theme for every file: dracula-soft, set at startup in `lua/jwa/colors.lua`, with a single override on top: the editor background is pinned to the kitty terminal's background color (`#32324e`), so the pane blends into the terminal. (The old per-filetype switching - 256_noir for web files, dracula on a dark-green background for the rest - was retired 2026-08-23; the alternate schemes in `colors/` and the colorscheme plugins remain installed for `:colorscheme` experiments.)

@@ -29,9 +29,37 @@
 
 local M = {}
 
+-- --------------------------------------------------------------------------
+-- Customization no. 1 (2026-08-23, user request): the editor background
+-- matches the kitty terminal background, so the nvim pane blends into
+-- the terminal instead of drawing its own darker box.
+--
+-- The color is COPIED from kitty's config (~/.config/kitty/modules/
+-- general.conf: `background #32324e`) - if kitty's background ever
+-- changes, update the hex here to match. (The self-syncing alternative
+-- is `Normal guibg=NONE`, true transparency; not chosen, a pinned copy
+-- keeps nvim identical even if kitty gains background effects.)
+--
+-- vim.cmd.highlight MERGES attributes into the existing group -
+-- dracula-soft's Normal foreground survives; only the background is
+-- repainted. nvim_set_hl would REPLACE the whole group and wipe fg.
+-- Applied once after the startup :colorscheme below, and re-applied by
+-- autocmd so a manual :colorscheme experiment keeps the terminal-
+-- matched background too.
+-- --------------------------------------------------------------------------
+local function apply_overrides()
+    vim.cmd.highlight("Normal guibg=#32324e")
+end
+
 -- require("jwa.colors").setup()
 function M.setup()
     vim.cmd.colorscheme("dracula-soft")
+    apply_overrides()
+    vim.api.nvim_create_autocmd("ColorScheme", {
+        group = vim.api.nvim_create_augroup("JwaColorOverrides", { clear = true }),
+        pattern = "*",
+        callback = apply_overrides,
+    })
 end
 
 return M
