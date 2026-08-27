@@ -98,16 +98,22 @@ end
 -- The dim-comment-gray alternative (#70747f, unstyled) was offered and
 -- may return depending on how this trial reads.
 -- SETTLED (2026-08-27) after a trial tour - bold, underline,
--- underdotted, underdashed, 50% and 70% opacity mixes: the scheme's
--- own hint gray with a straight underline and no background. The
--- underline is what keeps hints recognizably hints (the plain dim
--- variants read too much like comments); full-strength #969696 keeps
--- them legible. (Opacity lesson kept for posterity: the `blend`
--- attribute only works in floating windows - inline virtual text
--- needs opacity baked in as a channel mix against the background.)
+-- underdotted, underdashed, 50% and 70% opacity mixes: no background,
+-- a straight underline (what keeps hints recognizably hints), and -
+-- final twist, customization no. 4 - the FG COLORS OF HINTS AND
+-- COMMENTS SWAPPED, because the user wants comments to outrank hints
+-- in brightness: hints wear the scheme's old comment gray (#70747f),
+-- comments take the brighter register and are then nudged further
+-- toward white (#a8a8a8, from the scheme's #969696 hint gray via
+-- "slightly brighter towards white"). Treesitter/semantic comment
+-- groups follow automatically - they link to Comment.
+-- (Opacity lesson kept for posterity: the `blend` attribute only
+-- works in floating windows - inline virtual text needs opacity baked
+-- in as a channel mix against the background.)
 -- --------------------------------------------------------------------------
 local function style_inlay_hints()
-    vim.api.nvim_set_hl(0, "LspInlayHint", { fg = "#969696", underline = true })
+    vim.api.nvim_set_hl(0, "LspInlayHint", { fg = "#70747f", underline = true })
+    vim.api.nvim_set_hl(0, "Comment", { fg = "#a8a8a8" })
 end
 
 local function apply_overrides()
