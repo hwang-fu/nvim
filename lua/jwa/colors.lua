@@ -30,13 +30,32 @@
 local M = {}
 
 -- --------------------------------------------------------------------------
+-- Palette variables (2026-08-27, user request): the three colors this
+-- module owns, extracted so each is tuned in exactly one place. The
+-- customization blocks below tell the story of how each value was
+-- chosen; THESE are the knobs to turn.
+-- --------------------------------------------------------------------------
+local palette = {
+	-- Editor background, pinned to the kitty terminal background
+	-- (~/.config/kitty/modules/general.conf `background`). Keep the
+	-- two in sync by hand when either changes.
+	background = "#32324e",
+	-- Comment text: the scheme's hint gray nudged toward white, so
+	-- comments outrank inlay hints in brightness.
+	comment_fg = "#a8a8a8",
+	-- Inlay hint text: the scheme's original comment gray; the
+	-- underline (set below) is what keeps hints looking like hints.
+	inlay_hint_fg = "#70747f",
+}
+
+-- --------------------------------------------------------------------------
 -- Customization no. 1 (2026-08-23, user request): the editor background
 -- matches the kitty terminal background, so the nvim pane blends into
 -- the terminal instead of drawing its own darker box.
 --
 -- The color is COPIED from kitty's config (~/.config/kitty/modules/
 -- general.conf: `background #32324e`) - if kitty's background ever
--- changes, update the hex here to match. (The self-syncing alternative
+-- changes, update palette.background above. (The self-syncing alternative
 -- is `Normal guibg=NONE`, true transparency; not chosen, a pinned copy
 -- keeps nvim identical even if kitty gains background effects.)
 --
@@ -67,21 +86,21 @@ local M = {}
 -- the background pin, so scheme experiments stay italic-free too.
 -- --------------------------------------------------------------------------
 local function strip_code_italics()
-    for name, def in pairs(vim.api.nvim_get_hl(0, {})) do
-        if def.italic then
-            local lname = name:lower()
-            local emphasis = lname:find("italic", 1, true)
-                or lname:find("emphasis", 1, true)
-                or name == "markdownBlockquote"
-            if not emphasis then
-                def.italic = nil
-                if def.cterm then
-                    def.cterm.italic = nil
-                end
-                vim.api.nvim_set_hl(0, name, def)
-            end
-        end
-    end
+	for name, def in pairs(vim.api.nvim_get_hl(0, {})) do
+		if def.italic then
+			local lname = name:lower()
+			local emphasis = lname:find("italic", 1, true)
+				or lname:find("emphasis", 1, true)
+				or name == "markdownBlockquote"
+			if not emphasis then
+				def.italic = nil
+				if def.cterm then
+					def.cterm.italic = nil
+				end
+				vim.api.nvim_set_hl(0, name, def)
+			end
+		end
+	end
 end
 
 -- --------------------------------------------------------------------------
@@ -112,25 +131,25 @@ end
 -- in as a channel mix against the background.)
 -- --------------------------------------------------------------------------
 local function style_inlay_hints()
-    vim.api.nvim_set_hl(0, "LspInlayHint", { fg = "#70747f", underline = true })
-    vim.api.nvim_set_hl(0, "Comment", { fg = "#a8a8a8" })
+	vim.api.nvim_set_hl(0, "LspInlayHint", { fg = palette.inlay_hint_fg, underline = true })
+	vim.api.nvim_set_hl(0, "Comment", { fg = palette.comment_fg })
 end
 
 local function apply_overrides()
-    vim.cmd.highlight("Normal guibg=#32324e")
-    strip_code_italics()
-    style_inlay_hints()
+	vim.cmd.highlight("Normal guibg=" .. palette.background)
+	strip_code_italics()
+	style_inlay_hints()
 end
 
 -- require("jwa.colors").setup()
 function M.setup()
-    vim.cmd.colorscheme("dracula-soft")
-    apply_overrides()
-    vim.api.nvim_create_autocmd("ColorScheme", {
-        group = vim.api.nvim_create_augroup("JwaColorOverrides", { clear = true }),
-        pattern = "*",
-        callback = apply_overrides,
-    })
+	vim.cmd.colorscheme("dracula-soft")
+	apply_overrides()
+	vim.api.nvim_create_autocmd("ColorScheme", {
+		group = vim.api.nvim_create_augroup("JwaColorOverrides", { clear = true }),
+		pattern = "*",
+		callback = apply_overrides,
+	})
 end
 
 return M
