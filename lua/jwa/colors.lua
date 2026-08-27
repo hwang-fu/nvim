@@ -47,8 +47,46 @@ local M = {}
 -- autocmd so a manual :colorscheme experiment keeps the terminal-
 -- matched background too.
 -- --------------------------------------------------------------------------
+-- --------------------------------------------------------------------------
+-- Customization no. 2 (2026-08-23, user request): no italics in code.
+--
+-- dracula-soft ships 18 italic groups (surveyed live). The italics that
+-- annoy are the CODE ones - @type.builtin, Special, SpecialComment,
+-- Todo, italic URLs - while markup EMPHASIS is explicitly tolerable
+-- ("if it is markdown or certain files it is tolerable"). So the strip
+-- below removes the italic attribute from every highlight group EXCEPT
+-- those whose name declares emphasis semantics: anything containing
+-- "italic" or "emphasis" (@markup.italic, markdownItalic, htmlItalic,
+-- @markup.emphasis, ...) plus markdownBlockquote. Colors are untouched;
+-- only the slant goes.
+--
+-- Scope note: this runs at colorscheme time, so groups that a LAZILY
+-- loaded plugin defines later (render-markdown's own groups, for
+-- example) are not swept - acceptable, since those live in the
+-- markdown/UI domain the user tolerates. Re-runs on ColorScheme like
+-- the background pin, so scheme experiments stay italic-free too.
+-- --------------------------------------------------------------------------
+local function strip_code_italics()
+    for name, def in pairs(vim.api.nvim_get_hl(0, {})) do
+        if def.italic then
+            local lname = name:lower()
+            local emphasis = lname:find("italic", 1, true)
+                or lname:find("emphasis", 1, true)
+                or name == "markdownBlockquote"
+            if not emphasis then
+                def.italic = nil
+                if def.cterm then
+                    def.cterm.italic = nil
+                end
+                vim.api.nvim_set_hl(0, name, def)
+            end
+        end
+    end
+end
+
 local function apply_overrides()
     vim.cmd.highlight("Normal guibg=#32324e")
+    strip_code_italics()
 end
 
 -- require("jwa.colors").setup()
