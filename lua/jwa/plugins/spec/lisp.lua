@@ -123,15 +123,24 @@ return {
 			-- 2026-08-21; the line is written unconditionally in
 			-- log.lua's on_new_log_buf). The user does not want ads in
 			-- the HUD, so the line is scrubbed when a log buffer first
-			-- reaches a window. Everything else in the log (the divider,
-			-- connection notices, eval output) is untouched.
+			-- reaches a window.
+			--
+			-- REPLACED IN PLACE, NOT DELETED (2026-08-27 crash fix):
+			-- conjure records cursor positions and break-marker lines
+			-- for the log buffer (log.lua: last_eval_start, the HUD
+			-- cursor math) and trusts them later. Deleting a line
+			-- shrank the buffer under those recorded positions and
+			-- crashed a later append with "Invalid cursor line: out of
+			-- range" (seen on a stray ~/tmp/test.clj, traceback
+			-- through log.lua append). Overwriting the line keeps the
+			-- count intact, so every recorded position stays valid.
 			vim.api.nvim_create_autocmd("BufWinEnter", {
 				pattern = "*conjure-log-*",
 				group = vim.api.nvim_create_augroup("JwaConjureNoSponsor", { clear = true }),
 				callback = function(args)
 					local first = vim.api.nvim_buf_get_lines(args.buf, 0, 1, false)[1] or ""
 					if first:find("Sponsored by", 1, true) then
-						vim.api.nvim_buf_set_lines(args.buf, 0, 1, false, {})
+						vim.api.nvim_buf_set_lines(args.buf, 0, 1, false, { ";" })
 					end
 				end,
 			})
@@ -146,7 +155,28 @@ return {
 							return
 						end
 						local root = vim.fs.root(args.buf, { "deps.edn", "project.clj" })
-						if not root or checked_roots[root] then
+						if not root then
+							-- Stray .clj outside any project (2026-08-27,
+							-- user request): conjure's own HUD complaint
+							-- is silenced (see the on-load wrap in this
+							-- plugin's config below), so the modest
+							-- cmdline WARN the user asked for happens
+							-- here instead - once per directory, and only
+							-- when no .nrepl-port is around to connect to.
+							local dir = vim.fs.dirname(vim.api.nvim_buf_get_name(args.buf))
+							if dir and not checked_roots[dir] then
+								checked_roots[dir] = true
+								local port_file = vim.fs.find(".nrepl-port", { upward = true, path = dir })[1]
+								if not port_file then
+									vim.notify(
+										"Clojure: no nREPL to connect to (stray file, no project); start a REPL, then :ConjureConnect <port> to eval",
+										vim.log.levels.WARN
+									)
+								end
+							end
+							return
+						end
+						if checked_roots[root] then
 							return
 						end
 						checked_roots[root] = true
@@ -180,6 +210,33 @@ return {
 					end, 1000)
 				end,
 			})
+		end,
+		config = function()
+			-- --- Quiet auto-connect (2026-08-27, user request) -----------
+			-- On loading a clojure buffer, conjure's nrepl client on-load
+			-- runs connect-port-file() UN-silenced: with no .nrepl-port
+			-- around, it appends "; No nREPL port file found" to the log,
+			-- which pops the HUD float over a freshly opened stray file -
+			-- and that same append is where the "Invalid cursor line"
+			-- crash fired. The user wants the HUD only for real content,
+			-- so on-load is wrapped to pass silent? = true - the connect
+			-- attempt still happens and still succeeds loudly when a port
+			-- file exists; only the failure chatter is dropped (the
+			-- cmdline notices from JwaNreplReminder in init above are the
+			-- failure signal now). Manual :ConjureConnect is NOT wrapped:
+			-- when the user asks to connect, failures stay visible.
+			--
+			-- Faithful wrap: upstream on-load does nothing but call
+			-- action.connect-port-file() (client/clojure/nrepl/init.fnl,
+			-- checked 2026-08-27); lazy-lock pins conjure between
+			-- deliberate updates.
+			local ok, nrepl = pcall(require, "conjure.client.clojure.nrepl")
+			local ok2, action = pcall(require, "conjure.client.clojure.nrepl.action")
+			if ok and ok2 and type(action["connect-port-file"]) == "function" then
+				nrepl["on-load"] = function()
+					return action["connect-port-file"]({ ["silent?"] = true })
+				end
+			end
 		end,
 	},
 
