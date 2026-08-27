@@ -42,3 +42,6 @@ Active in Lisp buffers, with all commands under the **comma** key - that namespa
 | `,,` | Open slimv's menu of every command, tab-completable |
 
 Unlike conjure, slimv's keys have no per-key command equivalents; its two commands are `:Lisp <code>` and `:Eval <code>`, both evaluating the text you type. The full key list is in `:help slimv-keyboard`.
+
+> [!NOTE]
+> Racket and Scheme REPL processes do not auto-start when a file opens (their startup output used to pop the log float over the fresh buffer, duplicating the language server diagnostics). Start one deliberately with `\cs` in the buffer; evaluating without a REPL leaves a `; No REPL running` breadcrumb. Clojure differs: connecting to an already-running nREPL is free, so that stays automatic.

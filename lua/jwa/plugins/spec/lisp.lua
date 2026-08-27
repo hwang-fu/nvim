@@ -237,6 +237,30 @@ return {
 					return action["connect-port-file"]({ ["silent?"] = true })
 				end
 			end
+
+			-- --- No REPL auto-start for racket / scheme (2026-08-27) -----
+			-- Their stdio clients' on-load is M.start() verbatim (checked
+			-- both fnl sources): opening a .rkt/.scm immediately spawns
+			-- the REPL process, whose startup banner and module-load
+			-- errors stream into the log and pop the HUD over the fresh
+			-- buffer - duplicating what the language servers already show
+			-- inline (user report: "this float window is useless").
+			-- on-load becomes a no-op: the process starts when actually
+			-- wanted, via <localleader>cs (conjure's client-start
+			-- mapping), and an eval without a REPL leaves the breadcrumb
+			-- "; No REPL running". Clojure is different on purpose -
+			-- connecting to an ALREADY-RUNNING nREPL costs nothing and
+			-- stays automatic (silent wrap above); racket/scheme on-load
+			-- STARTS a process, which should be deliberate.
+			for _, mod in ipairs({
+				"conjure.client.racket.stdio",
+				"conjure.client.scheme.stdio",
+			}) do
+				local okc, client = pcall(require, mod)
+				if okc and type(client["on-load"]) == "function" then
+					client["on-load"] = function() end
+				end
+			end
 		end,
 	},
 
