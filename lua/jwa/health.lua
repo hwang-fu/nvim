@@ -58,7 +58,6 @@ function M.check()
     -- ------------------------------------------------------------------
     health.start("Build prerequisites (plugin installs and parser compiles)")
     probe("git", "warn", "lazy.nvim installs and updates plugins with it")
-    probe("cargo", "warn", "parinfer-rust compiles itself with cargo on install")
     probe("make", "warn", "telescope's fzf sorter builds with make")
     if has("cc") or has("gcc") or has("clang") then
         health.ok("C compiler (cc / gcc / clang)")

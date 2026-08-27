@@ -1,6 +1,6 @@
 # Clojure
 
-*REPL keys from conjure and structural editing from parinfer (`lua/jwa/plugins/spec/lisp.lua`); static analysis from clojure-lsp (`lua/jwa/lsp/servers/clojure_lsp.lua`).*
+*REPL keys from conjure (`lua/jwa/plugins/spec/lisp.lua`); static analysis from clojure-lsp (`lua/jwa/lsp/servers/clojure_lsp.lua`). No structural-editing plugin: parens are yours to type, and only format-on-save (whitespace-only) touches the code.*
 
 Two engines share the work. clojure-lsp reads the code statically: completion, `gd`-style navigation, `<leader>rn` rename, `grr` references, format on save (cljfmt), and compact hovers (arities on one line, no file-path footer). Conjure talks to a **live REPL**: everything below with a `\` prefix evaluates real code in your running program. The localleader is backslash, so `\ee` means: press backslash, then `e`, then `e`.
 

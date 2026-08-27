@@ -2,7 +2,7 @@
 
 *All four plugins are defined in `lua/jwa/plugins/spec/lisp.lua`.*
 
-Four plugins cover the Lisp family. Two of them have no keys at all: parinfer-rust keeps parentheses balanced from your indentation as you edit (use `:ParinferOff` and `:ParinferOn` around a weirdly-indented paste), and rainbow-delimiters colors parentheses by nesting depth.
+Three plugins cover the Lisp family. One of them has no keys at all: rainbow-delimiters colors parentheses by nesting depth - display only. Nothing edits your code on its own: parinfer-rust (which auto-balanced parens from indentation) was removed 2026-08-27 by choice, so parentheses are typed and deleted by hand, and the only automatic change is cljfmt's whitespace-only formatting on save.
 
 ## Conjure - evaluate from the buffer
 

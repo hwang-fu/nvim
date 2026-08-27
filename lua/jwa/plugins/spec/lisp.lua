@@ -1,6 +1,5 @@
--- Lisp tooling cluster (2026-08-14). Four plugins, four disjoint
+-- Lisp tooling cluster (2026-08-14). Three plugins, three disjoint
 -- jobs, one language family:
---   * parinfer-rust        structural editing: parens follow indent
 --   * rainbow-delimiters   depth-colored parens (display only)
 --   * conjure              eval-from-buffer REPL (clojure / fennel /
 --                          racket / scheme)
@@ -8,29 +7,24 @@
 --                          (sbcl + SWANK: debugger, inspector)
 -- Ownership fences, so they do not fight each other:
 --   * slimv's BUNDLED paredit.vim is disabled (g:paredit_mode = 0):
---     parinfer is the one structural editor, everywhere.
+--     no plugin edits code on its own, per the user.
 --   * slimv's clojure / scheme support is disabled: conjure +
 --     clojure-lsp own clojure; conjure owns scheme. slimv is CL-only.
 --   * conjure is pinned to the four lisp filetypes: upstream would
 --     otherwise also grab python / lua / rust buffers.
+--
+-- REMOVED (2026-08-27): eraserhd/parinfer-rust, the structural editor
+-- that made parens follow indentation on every edit. The user watched
+-- closing parens appear that they did not type and rejected the whole
+-- editing model: "I just want format-on-save, NO editing on their
+-- own." Formatting stays with cljfmt-via-clojure-lsp on save (which
+-- only ever moves whitespace - verified by diff when this was
+-- diagnosed). To resurrect: re-add the plugin with
+-- build = "cargo build --release" and restore the cargo probe in
+-- lua/jwa/health.lua.
 -- ------------------------------------------------------------------
 
--- parinfer-rust: parens follow indentation, automatically, on every
--- edit. No keymaps, no commands in day-to-day use ("smart" mode, the
--- default). The build step compiles the bundled Rust library with
--- the system cargo. Active in the plugin's HARDCODED filetype list:
--- clojure, scheme, lisp, racket, hy, fennel, janet, carp, wast,
--- yuck - and notably DUNE, so dune stanzas also self-balance (their
--- final shape still belongs to `dune format-dune-file` on save).
--- Escape hatches when it misbehaves on weirdly-indented pastes:
--- :ParinferOff / :ParinferOn, or paste with paren-changes suspended
--- via g:parinfer_mode = "paren" for the session.
 return {
-	{
-		"eraserhd/parinfer-rust",
-		build = "cargo build --release",
-	},
-
 	-- rainbow-delimiters: color parens / brackets by nesting depth via
 	-- treesitter. Whitelisted to the s-expression filetypes where depth
 	-- reading genuinely helps; delete the whitelist to rainbow every
@@ -293,8 +287,10 @@ return {
 		init = function()
 			-- Comma leader; see the CRITICAL note above.
 			vim.g.slimv_leader = ","
-			-- parinfer owns structural editing; slimv bundles its own
-			-- paredit.vim at plugin/ level (would load globally).
+			-- No plugin edits code on its own (parinfer was removed for
+			-- exactly that, 2026-08-27); slimv bundles its own
+			-- paredit.vim at plugin/ level (would load globally), so it
+			-- stays disabled too.
 			vim.g.paredit_mode = 0
 			-- CL-only: conjure + clojure-lsp own clojure, conjure owns
 			-- scheme. These are slimv's own ftplugin guard variables.
