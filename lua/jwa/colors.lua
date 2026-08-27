@@ -97,19 +97,17 @@ end
 -- which is exactly right here (the bg must go away, not merge).
 -- The dim-comment-gray alternative (#70747f, unstyled) was offered and
 -- may return depending on how this trial reads.
--- Trial iterations (all 2026-08-27): bold -> underline -> underdotted
--- -> underdashed -> underdashed at 50% -> plain at 70% (rejected: too
--- similar to comments) -> CURRENT: underline at 50% opacity, whose
--- line keeps hints distinguishable from comment text at a glance.
---
--- Opacity note: the `blend` highlight attribute only applies in
--- floating windows - inline virtual text ignores it - so the opacity
--- is baked in arithmetically instead: #646472 is the 50/50 channel mix
--- of the hint gray #969696 over the pinned editor background #32324e.
--- If the background pin ever changes, recompute this mix.
+-- SETTLED (2026-08-27) after a trial tour - bold, underline,
+-- underdotted, underdashed, 50% and 70% opacity mixes: the scheme's
+-- own hint gray with a straight underline and no background. The
+-- underline is what keeps hints recognizably hints (the plain dim
+-- variants read too much like comments); full-strength #969696 keeps
+-- them legible. (Opacity lesson kept for posterity: the `blend`
+-- attribute only works in floating windows - inline virtual text
+-- needs opacity baked in as a channel mix against the background.)
 -- --------------------------------------------------------------------------
 local function style_inlay_hints()
-    vim.api.nvim_set_hl(0, "LspInlayHint", { fg = "#646472", underline = true })
+    vim.api.nvim_set_hl(0, "LspInlayHint", { fg = "#969696", underline = true })
 end
 
 local function apply_overrides()
