@@ -91,5 +91,20 @@ Refresh often; treat a fresh JVM (and CI) as the source of truth.
 
 Conjure also manages multiple nREPL sessions under `\s*`; that is rarely needed day one - `:help conjure-client-clojure-nrepl` has the full list.
 
+## Outside a project
+
+A `.clj` file with no `deps.edn` or `project.clj` up-tree has nothing conjure can auto-connect to; opening one prints a single warning instead ("no nREPL to connect to (stray file, no project)"). Two ways forward:
+
+**Upgrade the folder to a project** - the thirty-second fix, and the better habit:
+
+```
+echo '{}' > deps.edn
+clj -M:nrepl:portal
+```
+
+An empty `{}` is a complete, working project file: the `clj` tool merges the installation defaults, then `~/.clojure/deps.edn` (where the `:nrepl` / `:portal` aliases live), then the project file - so everything is inherited and the whole workflow above just works. Do NOT copy the user-level file into projects; it already applies everywhere, and copies drift stale. A project's own `deps.edn` carries only what is specific to it, conventionally starting from `{:paths ["src"] :deps {}}` once a second namespace needs to `require` the first.
+
+**Or connect by hand** - run `clj -M:nrepl` in any terminal, read the port it prints (or the `.nrepl-port` file it writes there), and `:ConjureConnect <port>`. Works, but nothing about the file's location is remembered; the project route makes it automatic next time.
+
 > [!NOTE]
 > The general Lisp-family story (parinfer, rainbow-delimiters, Fennel / Racket / Scheme evaluation, slimv for Common Lisp) lives in [lisp](lisp.md); this page is the Clojure-specific REPL workflow.
