@@ -42,6 +42,6 @@ Terminals, pickers, diff views, and the file sidebar do not have the line.
 > [!NOTE]
 > Git does not see it either: gitsigns reads the buffer through a small shim that drops the phantom, so a clean file shows no `+1`, and staging a hunk or the whole buffer never writes the phantom into the index. `:checkhealth jwa` reports the shim's state; if a gitsigns update ever breaks it, phantom lines disable themselves rather than risk the index.
 
-## Automatic colorschemes
+## Colorscheme
 
-Colorschemes switch by filetype with no keybinding (`lua/jwa/colors.lua`): web and markup files get 256_noir, everything else gets dracula on a dark-green background.
+One global theme for every file: dracula-soft, set at startup in `lua/jwa/colors.lua`, with no overrides on top. (The old per-filetype switching - 256_noir for web files, dracula on a dark-green background for the rest - was retired 2026-08-23; the alternate schemes in `colors/` and the colorscheme plugins remain installed for `:colorscheme` experiments.)
