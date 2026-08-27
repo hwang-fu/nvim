@@ -84,9 +84,28 @@ local function strip_code_italics()
     end
 end
 
+-- --------------------------------------------------------------------------
+-- Customization no. 3 (2026-08-27, user request, FIRST-LOOK TRIAL): inlay
+-- hints without a background box, in bold.
+--
+-- dracula-soft ships LspInlayHint with its own bg (#2f3146) - invisible
+-- against the scheme's native background but a visible darker chip
+-- against our pinned kitty #32324e, which made dense hint lines read as
+-- tiling. The redefinition below drops the box entirely and answers the
+-- user's "without background but bold" spec: scheme's hint gray
+-- (#969696), bold, transparent. nvim_set_hl REPLACES the whole group,
+-- which is exactly right here (the bg must go away, not merge).
+-- The dim-comment-gray alternative (#70747f, no bold) was offered and
+-- may return depending on how this trial reads.
+-- --------------------------------------------------------------------------
+local function style_inlay_hints()
+    vim.api.nvim_set_hl(0, "LspInlayHint", { fg = "#969696", bold = true })
+end
+
 local function apply_overrides()
     vim.cmd.highlight("Normal guibg=#32324e")
     strip_code_italics()
+    style_inlay_hints()
 end
 
 -- require("jwa.colors").setup()
