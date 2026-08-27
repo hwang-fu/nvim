@@ -78,6 +78,27 @@ function M.setup()
                 ["arity-on-same-line?"] = true,
                 ["hide-file-location?"] = true,
             },
+            -- NO cache redirection, after a full investigation
+            -- (2026-08-27, prompted by scratch dirs seemingly sprouting
+            -- .clj-kondo/). What the probes and the settings docs
+            -- established:
+            --   * A genuinely stray .clj (no deps.edn / project.clj
+            --     up-tree) creates NOTHING - single-file mode keeps its
+            --     analysis in memory. The observed folder must have come
+            --     from a directory that had become a project.
+            --   * In real projects, .lsp/.cache (analysis db) and
+            --     .clj-kondo/.cache (lint cache) are project-local BY
+            --     DESIGN: the real setting is :cache-path (NOT
+            --     "cache-dir", which the server echoes back in
+            --     final-settings without using - do not trust that echo
+            --     as proof a setting exists), it moves only the .lsp
+            --     half, and pointing it at one shared absolute dir
+            --     would make every project fight over the same
+            --     db.transit.json. clj-kondo's cache has no relocation
+            --     setting at all.
+            -- Conclusion: project-local caches stay (gitignore them
+            -- globally); scratch dirs were never dirtied in the first
+            -- place.
         },
         on_attach = helpers.basic_on_attach,
     })
