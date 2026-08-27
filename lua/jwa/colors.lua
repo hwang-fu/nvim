@@ -97,10 +97,11 @@ end
 -- which is exactly right here (the bg must go away, not merge).
 -- The dim-comment-gray alternative (#70747f, unstyled) was offered and
 -- may return depending on how this trial reads.
--- Trial iterations so far: bold (2026-08-27) -> underline (same day).
+-- Trial iterations so far (all 2026-08-27): bold -> underline ->
+-- underdotted.
 -- --------------------------------------------------------------------------
 local function style_inlay_hints()
-    vim.api.nvim_set_hl(0, "LspInlayHint", { fg = "#969696", underline = true })
+    vim.api.nvim_set_hl(0, "LspInlayHint", { fg = "#969696", underdotted = true })
 end
 
 local function apply_overrides()
