@@ -1,5 +1,5 @@
 {
-  "SchemaStore.nvim": { "branch": "main", "commit": "b4a92475bb6928810b66a0dd2fd86bea44089aba" },
+  "SchemaStore.nvim": { "branch": "main", "commit": "335b491a8f4c888a2337bfcba7e2aff288e889ee" },
   "arm-syntax-vim": { "branch": "master", "commit": "84ee5c476bbfde87dd6b5fb9f6f207fbce335a73" },
   "blink.cmp": { "branch": "main", "commit": "78336bc89ee5365633bcf754d93df01678b5c08f" },
   "conjure": { "branch": "main", "commit": "84c739c753bd07c006849d10ebce1863dd41af7f" },
