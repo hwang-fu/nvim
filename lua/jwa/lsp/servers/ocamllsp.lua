@@ -246,18 +246,23 @@ function M.setup()
             extendedHover = {
                 enable = true,
             },
-            -- All three hint kinds on -- the OCaml equivalent of the
-            -- full-inlay-hints preference used for Rust. Each is an
-            -- independent boolean; there is no umbrella `enable` key.
+            -- Inlay hints OFF (2026-08-28, user decision): with the
+            -- type-signature codelens above every definition (incl.
+            -- nested lets, forNestedBindings), the inline hints drew
+            -- the same types a second time - `int -> char -> int` on
+            -- the lens line, then `floor: int` again in the header.
+            -- The lens is the single source; hints were pure
+            -- duplication. Each key is an independent boolean (no
+            -- umbrella `enable`); flip any back to true to restore
+            -- that hint kind alone.
             inlayHints = {
-                -- `let x = ...` -> show the inferred type of x.
-                hintLetBindings = true,
+                -- `let x = ...` -> inferred type of x.
+                hintLetBindings = false,
                 -- Variables bound in patterns (match arms, tuple
-                -- destructuring) -> show their inferred types.
-                hintPatternVariables = true,
-                -- Function parameters in definitions -> show their
-                -- inferred types.
-                hintFunctionParams = true,
+                -- destructuring).
+                hintPatternVariables = false,
+                -- Function parameters in definitions.
+                hintFunctionParams = false,
             },
         },
         on_attach = function(client, bufnr)
