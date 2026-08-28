@@ -246,22 +246,23 @@ function M.setup()
             extendedHover = {
                 enable = true,
             },
-            -- Inlay hints OFF (2026-08-28, user decision): with the
-            -- type-signature codelens above every definition (incl.
-            -- nested lets, forNestedBindings), the inline hints drew
-            -- the same types a second time - `int -> char -> int` on
-            -- the lens line, then `floor: int` again in the header.
-            -- The lens is the single source; hints were pure
-            -- duplication. Each key is an independent boolean (no
-            -- umbrella `enable`); flip any back to true to restore
-            -- that hint kind alone.
+            -- Inlay hints: ONLY where the codelens cannot reach
+            -- (2026-08-28, user decision, refined the same day). The
+            -- type-signature lens above every definition (incl.
+            -- nested lets, forNestedBindings) already states parameter
+            -- and let-binding types, so those two hint kinds drew the
+            -- same facts twice and are off. Variables bound inside
+            -- PATTERNS - match arms (`| Some position ->`), tuple
+            -- destructuring - are not definitions, so no lens ever
+            -- sits above them; that one hint kind stays on and is the
+            -- only inline type text in OCaml buffers. Each key is an
+            -- independent boolean (no umbrella `enable`).
             inlayHints = {
-                -- `let x = ...` -> inferred type of x.
+                -- `let x = ...` -> covered by the lens line above it.
                 hintLetBindings = false,
-                -- Variables bound in patterns (match arms, tuple
-                -- destructuring).
-                hintPatternVariables = false,
-                -- Function parameters in definitions.
+                -- Match-arm / destructuring variables: lens-unreachable.
+                hintPatternVariables = true,
+                -- Function parameters -> covered by the signature lens.
                 hintFunctionParams = false,
             },
         },
