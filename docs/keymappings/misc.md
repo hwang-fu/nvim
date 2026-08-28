@@ -16,6 +16,8 @@ vim-surround runs with its stock keys; `{char}` is the pair character (`"`, `'`,
 | Command | Action |
 |---------|--------|
 | `:ToggleWS` | Toggle whitespace visualization for the current window (defined in `lua/jwa/init.lua`) |
+| `:FormatNotOnSave` | Disable format-on-save globally for the session - saves become byte-identical everywhere. In a buffer whose filetype has format-on-save, a yellow warning confirms the change; in one that never formats, the switch flips silently |
+| `:FormatOnSave` | Re-enable format-on-save (the default state), same messaging rule |
 | `:checkhealth jwa` | The fresh-machine report: everything this config wants that the machine lacks - editor tools, build prerequisites, formatters, linters, language servers |
 | `:Lazy` | Open the plugin manager |
 | `:Lazy sync` | Install and update plugins |

@@ -32,6 +32,17 @@
 
 local M = {}
 
+-- ----------------------------------------------------------------------------
+-- Global format-on-save switch (2026-08-28, user request). Default ON:
+-- formatting on save is the standing behavior for every covered
+-- filetype; the :FormatOnSave / :FormatNotOnSave commands (defined at
+-- the end of setup_format_on_save) flip this for the session - useful
+-- in foreign codebases whose files should stay byte-identical. All
+-- write-time entry points consult it: the LSP-driven callback, the
+-- Elixir handler, and format_with_cmd (every CLI formatter).
+-- ----------------------------------------------------------------------------
+local format_on_save_enabled = true
+
 -- ============================================================================
 -- 1. Format-on-save autocmds
 -- ============================================================================
@@ -90,6 +101,9 @@ local function setup_format_on_save()
             "*.lhs",
         },
         callback = function()
+            if not format_on_save_enabled then
+                return
+            end
             vim.lsp.buf.format({
                 async = false,
             })
@@ -113,6 +127,9 @@ local function setup_format_on_save()
         group = format_group,
         pattern = { "*.ex", "*.exs", "*.heex" },
         callback = function(args)
+            if not format_on_save_enabled then
+                return
+            end
             if vim.fs.root(args.buf, "mix.exs") then
                 vim.lsp.buf.format({
                     async = false,
@@ -147,6 +164,9 @@ local function setup_format_on_save()
     --     newline (most do): split() would produce an extra "" entry, which
     --     nvim_buf_set_lines would render as a blank line at EOF.
     local function format_with_cmd(cmd)
+        if not format_on_save_enabled then
+            return
+        end
         local cursor = vim.api.nvim_win_get_cursor(0)
         local bufnr = vim.api.nvim_get_current_buf()
         local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
@@ -455,6 +475,64 @@ local function setup_format_on_save()
             })
         end,
     })
+
+    -- ------------------------------------------------------------------------
+    -- :FormatOnSave / :FormatNotOnSave (2026-08-28, user request).
+    --
+    -- One GLOBAL switch (the module-local format_on_save_enabled flag at
+    -- the top of this file), default ON. The messaging rule is the
+    -- user's spec verbatim: flipping it from a buffer whose filetype has
+    -- no format-on-save wiring stays SILENT (the flag still changes -
+    -- it is global); flipping it from a covered buffer echoes a yellow
+    -- WarningMsg line, kept in :messages.
+    --
+    -- Coverage detection interrogates this very autocmd group, so every
+    -- future formatter is accounted for automatically. Two pattern
+    -- families need care:
+    --   * the "*"-pattern handlers (shell, nginx) gate on FILETYPE
+    --     inside their callbacks - mirrored here explicitly;
+    --   * everything else is a filename glob, matched against both the
+    --     buffer's tail (dune, CMakeLists.txt) and full path.
+    -- ------------------------------------------------------------------------
+    local function buffer_has_format_on_save(buf)
+        local name = vim.api.nvim_buf_get_name(buf)
+        local tail = vim.fn.fnamemodify(name, ":t")
+        for _, au in ipairs(vim.api.nvim_get_autocmds({
+            group = format_group,
+            event = "BufWritePre",
+        })) do
+            if au.pattern == "*" then
+                local ft = vim.bo[buf].filetype
+                if ft == "sh" or ft == "bash" or ft == "nginx" then
+                    return true
+                end
+            else
+                local re = vim.fn.glob2regpat(au.pattern)
+                if vim.fn.match(tail, re) >= 0 or vim.fn.match(name, re) >= 0 then
+                    return true
+                end
+            end
+        end
+        return false
+    end
+
+    local function set_format_on_save(on)
+        format_on_save_enabled = on
+        if buffer_has_format_on_save(0) then
+            vim.api.nvim_echo({ {
+                on and "Format-on-save enabled - this buffer formats again on :w"
+                    or "Format-on-save disabled - this buffer now saves byte-identical",
+                "WarningMsg",
+            } }, true, {})
+        end
+    end
+
+    vim.api.nvim_create_user_command("FormatOnSave", function()
+        set_format_on_save(true)
+    end, { desc = "Enable format-on-save (the default; global)" })
+    vim.api.nvim_create_user_command("FormatNotOnSave", function()
+        set_format_on_save(false)
+    end, { desc = "Disable format-on-save globally for this session" })
 end
 
 -- ============================================================================
