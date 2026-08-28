@@ -107,6 +107,7 @@ local SERVERS = {
     -- rust_analyzer is owned by rustaceanvim; see the "Servers NOT in
     -- SERVERS by design" note in the header comment above.
     "lua_ls",
+    "jdtls",
     -- hls is owned by haskell-tools.nvim; see the "Servers NOT in
     -- SERVERS by design" note in the header comment above.
     -- elixirls is owned by elixir-tools.nvim; see the "Servers NOT in
@@ -124,6 +125,7 @@ local SERVERS = {
     "fennel_ls",
     "taplo",
     "autotools_ls",
+    "cmake_ls",
     "verible",
 }
 

@@ -52,6 +52,7 @@ return {
 			"javascript", "typescript", "vue", "html", "css",
 			"json", "yaml", "toml", "bash", "dockerfile",
 			"proto", "make", "perl", "fortran",
+			"java", "cmake",
 		}
 		local installed = {}
 		for _, lang in ipairs(require("nvim-treesitter").get_installed()) do

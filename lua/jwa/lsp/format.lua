@@ -75,6 +75,8 @@ local function setup_format_on_save()
             "*.mli",
             "*.pl",
             "*.pm",
+            -- Java: the Eclipse formatter inside jdtls (2026-08-28).
+            "*.java",
             -- "*.ex" / "*.exs" / "*.heex" moved to their own autocmd
             -- below (2026-08-16): ElixirLS only attaches inside a Mix
             -- project, so the Elixir handler warns instead of silently
@@ -252,6 +254,23 @@ local function setup_format_on_save()
         callback = function()
             format_with_cmd({
                 "stylua",
+                "-",
+            })
+        end,
+    })
+
+    -- CMake: gersemi (2026-08-28). Reads stdin with "-"; style is
+    -- gersemi's own opinionated default. Deliberately a CLI formatter,
+    -- not cmake-language-server's - see lsp/servers/cmake_ls.lua.
+    vim.api.nvim_create_autocmd("BufWritePre", {
+        group = format_group,
+        pattern = {
+            "CMakeLists.txt",
+            "*.cmake",
+        },
+        callback = function()
+            format_with_cmd({
+                "gersemi",
                 "-",
             })
         end,
@@ -485,6 +504,7 @@ M.FORMATTER_BINARIES = {
     { cmd = "shfmt", label = "shell (sh, bash)" },
     { cmd = "erlfmt", label = "Erlang (erl, hrl, app.src, rebar.config)" },
     { cmd = "ocamlformat", label = "OCaml (fallback when no .ocamlformat)" },
+    { cmd = "gersemi", label = "CMake" },
 }
 
 local function check_formatter_binaries()
