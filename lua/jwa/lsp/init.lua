@@ -205,9 +205,10 @@ end
 -- The collision is routine, not a freak case. vim.lsp.buf.format() with
 -- async = false blocks on request_sync, which pumps incoming traffic while
 -- it waits, so every format-on-save opens a window in which any message
--- the server pushes lands inside BufWritePre. HLS pushes one on each
--- ormolu parse failure -- that is, on every save of a half-typed Haskell
--- buffer -- and each one silently cost a save.
+-- the server pushes lands inside BufWritePre. HLS pushing one on each
+-- ormolu parse failure is what exposed it, back when Haskell still
+-- formatted on save; Haskell no longer does, but every language that
+-- still formats on save keeps the same window open.
 --
 -- Three choices below, all load-bearing:
 --

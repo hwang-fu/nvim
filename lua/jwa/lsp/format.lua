@@ -16,9 +16,10 @@
 --       and replaces the contents while preserving the cursor. Each external
 --       formatter gets its own autocmd so the pattern stays specific.
 --
--- Not every language formats on save. Rust and OCaml are deliberately off,
--- with a manual command each (:RustFmt in after/ftplugin/rust.lua, :OCamlFmt
--- in after/ftplugin/ocaml.lua) so a save never rewrites the buffer under you.
+-- Not every language formats on save. Rust, OCaml and Haskell are
+-- deliberately off, with a manual command each (:RustFmt, :OCamlFmt,
+-- :HaskellFmt, all in after/ftplugin/) so a save never rewrites the buffer
+-- under you.
 --
 -- check_formatter_binaries() also lives in this module. The format_with_cmd
 -- helper is silent on failure by design (a non-zero exit is treated as "leave
@@ -35,6 +36,8 @@
 --   require("jwa.lsp.format").format_ocaml_buffer()
 --     Formats the current OCaml buffer, picking the LSP or the CLI path the
 --     same way the old save-time handlers did. Called by :OCamlFmt.
+--   require("jwa.lsp.format").format_haskell_buffer()
+--     Formats the current Haskell buffer through HLS. Called by :HaskellFmt.
 -- ============================================================================
 
 local M = {}
@@ -141,6 +144,44 @@ function M.format_ocaml_buffer()
     })
 end
 
+-- ----------------------------------------------------------------------------
+-- Haskell formatting, on demand only (2026-08-29, user request).
+--
+-- Same move as OCaml above, and simpler: Haskell only ever had the one path,
+-- HLS running whichever formatter `formattingProvider` names (ormolu, set in
+-- lsp/servers/hls.lua). There is no CLI arm to fall back to.
+--
+-- The client filter reads oddly and is correct: haskell-tools.nvim starts HLS
+-- under its OWN name rather than "hls", so that string is what identifies the
+-- client (haskell-tools/lsp/helpers.lua). Naming it keeps the format request
+-- off any other server that happens to attach to the buffer.
+--
+-- The no-client branch exists because vim.lsp.buf.format() on a buffer with no
+-- matching server is a SILENT no-op: you press the key, nothing happens, and
+-- nothing says why. That trap already cost this config twice (Erlang under
+-- ELP, Elixir outside a Mix project); an explicit command is exactly where it
+-- would be most confusing.
+--
+-- Not gated on format_on_save_enabled, for the reason given on the OCaml
+-- function above.
+-- ----------------------------------------------------------------------------
+local HASKELL_CLIENT = "haskell-tools.nvim"
+
+function M.format_haskell_buffer()
+    if vim.tbl_isempty(vim.lsp.get_clients({ bufnr = 0, name = HASKELL_CLIENT })) then
+        vim.notify(
+            "HaskellFmt: no HLS client attached to this buffer, nothing to format",
+            vim.log.levels.WARN
+        )
+        return
+    end
+
+    vim.lsp.buf.format({
+        async = false,
+        name = HASKELL_CLIENT,
+    })
+end
+
 -- ============================================================================
 -- 1. Format-on-save autocmds
 -- ============================================================================
@@ -192,8 +233,10 @@ local function setup_format_on_save()
             -- lsp/servers/elp.lua), so LSP format-on-save was a silent
             -- no-op for Erlang the whole time. Erlang now formats via
             -- the external erlfmt CLI in section (b) below.
-            "*.hs",
-            "*.lhs",
+            -- "*.hs" / "*.lhs" were here until 2026-08-29, alongside the
+            -- OCaml pair. Haskell is on demand now too, through
+            -- :HaskellFmt -> M.format_haskell_buffer() near the top of
+            -- this file.
         },
         callback = function()
             if not format_on_save_enabled then
