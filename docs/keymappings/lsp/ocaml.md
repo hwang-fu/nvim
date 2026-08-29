@@ -28,6 +28,19 @@ Every key above also exists as a command (`:OCamlConstruct` for `\c`, `:OCamlSwi
 | `:OCamlSearchDefinition <query>` | Search definitions by type, for example `int -> string`; a name works as a query too |
 | `:OCamlSearchDeclaration <query>` | The same search, landing on declarations instead of definitions |
 
+## Formatting
+
+OCaml does not format on save - a save leaves the file exactly as you typed it. `:OCamlFmt` formats the current buffer when you ask, and chooses its formatter the same way the old save-time behavior did:
+
+| The project | What runs | Resulting style |
+|-------------|-----------|-----------------|
+| Has a `.ocamlformat` anywhere up-tree | ocamlformat through ocamllsp | Whatever that file says - the project's own style always wins |
+| Has none | ocamlformat directly, with `--enable-outside-detected-project` | Jane Street |
+
+The second row is why the command exists in this shape: ocamlformat refuses to run outside a project it recognizes and ocamllsp inherits that refusal, so a scratch `.ml` can only be formatted by calling the binary with the flag that lifts it. The command lives in `after/ftplugin/ocaml.lua`; the two paths are in `lua/jwa/lsp/format.lua`.
+
+`:FormatNotOnSave` does not affect `:OCamlFmt` - that switch silences saves, and this is an explicit request. `dune` and `dune-project` files are unaffected as well: they still format on save through `dune format-dune-file`.
+
 ## The REPL float
 
 `\r` opens utop in a floating terminal. Inside a dune project it runs `dune utop .` from the project root, so your own libraries are built and loaded; elsewhere it falls back to plain utop. Toggling the float away only hides it - the session keeps running per project until utop exits (`#quit` or `Ctrl-D`). To scroll or copy from the float, `Ctrl-\ Ctrl-N` leaves terminal mode and `i` returns.

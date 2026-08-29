@@ -12,9 +12,13 @@
 --   (b) External CLI formatters  - for tools the LSP does not expose
 --       (fprettify, dune format-dune-file, ruff format, stylua, raco fmt,
 --       verible-verilog-format, prettier-plugin-nginx, shfmt). The
---       format_with_cmd() helper below pipes the buffer through stdin / stdout
+--       run_formatter() helper below pipes the buffer through stdin / stdout
 --       and replaces the contents while preserving the cursor. Each external
 --       formatter gets its own autocmd so the pattern stays specific.
+--
+-- Not every language formats on save. Rust and OCaml are deliberately off,
+-- with a manual command each (:RustFmt in after/ftplugin/rust.lua, :OCamlFmt
+-- in after/ftplugin/ocaml.lua) so a save never rewrites the buffer under you.
 --
 -- check_formatter_binaries() also lives in this module. The format_with_cmd
 -- helper is silent on failure by design (a non-zero exit is treated as "leave
@@ -28,6 +32,9 @@
 --   require("jwa.lsp.format").setup()
 --     Registers both the autocmds and the deferred binary-presence warning.
 --     Called once from lua/jwa/lsp/init.lua.
+--   require("jwa.lsp.format").format_ocaml_buffer()
+--     Formats the current OCaml buffer, picking the LSP or the CLI path the
+--     same way the old save-time handlers did. Called by :OCamlFmt.
 -- ============================================================================
 
 local M = {}
@@ -42,6 +49,97 @@ local M = {}
 -- Elixir handler, and format_with_cmd (every CLI formatter).
 -- ----------------------------------------------------------------------------
 local format_on_save_enabled = true
+
+-- ----------------------------------------------------------------------------
+-- Pipe the current buffer through an external formatter and replace the
+-- contents in-place. Used by every CLI formatter in section (b) below through
+-- the format_with_cmd() wrapper, and directly by on-demand entry points that
+-- must run whatever the format-on-save switch currently says.
+--
+-- Behavior contract:
+--   * On success (exit 0): replace buffer contents with the formatter's
+--     stdout, then restore the cursor position (best-effort - the
+--     pcall guards against the cursor landing past the new EOF).
+--   * On failure (non-zero exit): leave the buffer untouched. We do NOT
+--     surface the error to the user; that's intentional, otherwise every
+--     transient parse error from the formatter would interrupt save.
+--   * The trailing-empty-line trim is for formatters that append a final
+--     newline (most do): split() would produce an extra "" entry, which
+--     nvim_buf_set_lines would render as a blank line at EOF.
+-- ----------------------------------------------------------------------------
+local function run_formatter(cmd)
+    local cursor = vim.api.nvim_win_get_cursor(0)
+    local bufnr = vim.api.nvim_get_current_buf()
+    local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+    local content = table.concat(lines, "\n")
+
+    local formatted = vim.fn.system(cmd, content)
+
+    if vim.v.shell_error == 0 then
+        local new_lines = vim.split(formatted, "\n", {
+            trimempty = false,
+        })
+        if new_lines[#new_lines] == "" then
+            table.remove(new_lines)
+        end
+        vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, new_lines)
+    end
+
+    pcall(vim.api.nvim_win_set_cursor, 0, cursor)
+end
+
+-- ----------------------------------------------------------------------------
+-- OCaml formatting, on demand only (2026-08-29, user request).
+--
+-- OCaml used to format on save through both sections below, one path per
+-- buffer. It now runs only when asked, through the buffer-local :OCamlFmt in
+-- after/ftplugin/ocaml.lua - but the two-path choice is unchanged, because
+-- which formatter is correct depends on the project, not on when it runs:
+--
+--   * WITH a .ocamlformat up-tree, ocamllsp is asked to format, so the
+--     project's own style always wins. That is what keeps collaborating on
+--     repos with a different profile safe.
+--   * WITHOUT one, ocamlformat is run directly with the Jane Street profile,
+--     giving personal / scratch OCaml a style with no per-project file
+--     (requested 2026-08-14). This arm cannot go through the LSP: ocamlformat
+--     refuses to run outside a detected project, and ocamllsp inherits the
+--     refusal.
+--
+-- Flags on the CLI arm:
+--   --enable-outside-detected-project
+--       lifts ocamlformat's refusal to run without a project config
+--       (a reproducibility default, sensible for repos, hostile to
+--       scratch files).
+--   --profile=janestreet
+--       the style. Kept HERE rather than in the XDG global config
+--       file (~/.config/ocamlformat, which the flag above would
+--       also consult) so the whole arrangement is visible inside
+--       the nvim config.
+--   --impl / --intf
+--       what the input is; stdin has no filename to infer from, so
+--       it is chosen from the buffer's extension.
+--
+-- Deliberately NOT gated on format_on_save_enabled: :FormatNotOnSave silences
+-- saves, and an explicit :OCamlFmt is not a save.
+-- ----------------------------------------------------------------------------
+function M.format_ocaml_buffer()
+    if vim.fs.root(0, ".ocamlformat") then
+        vim.lsp.buf.format({
+            async = false,
+            name = "ocamllsp",
+        })
+        return
+    end
+
+    local kind = vim.fn.expand("%:e") == "mli" and "--intf" or "--impl"
+    run_formatter({
+        "ocamlformat",
+        "--enable-outside-detected-project",
+        "--profile=janestreet",
+        kind,
+        "-",
+    })
+end
 
 -- ============================================================================
 -- 1. Format-on-save autocmds
@@ -77,13 +175,10 @@ local function setup_format_on_save()
             "*.jsx",
             "*.ts",
             "*.tsx",
-            -- OCaml formats through the LSP ONLY in projects with a
-            -- .ocamlformat file (ocamlformat refuses to run otherwise,
-            -- and ocamllsp inherits the refusal). Projects WITHOUT one
-            -- are covered by the Jane-Street-profile CLI fallback in
-            -- section (b) below - exactly one path is effective per save.
-            "*.ml",
-            "*.mli",
+            -- "*.ml" / "*.mli" were here until 2026-08-29. OCaml no
+            -- longer formats on save at all: it is on demand through
+            -- :OCamlFmt, which still makes the same two-path choice.
+            -- See M.format_ocaml_buffer() near the top of this file.
             "*.pl",
             "*.pm",
             -- Java: the Eclipse formatter inside jdtls (2026-08-28).
@@ -150,41 +245,15 @@ local function setup_format_on_save()
     -- (b) External CLI formatters
     -- ------------------------------------------------------------------------
 
-    -- Pipe the current buffer through an external formatter and replace the
-    -- contents in-place. Used by every per-language autocmd below.
-    --
-    -- Behavior contract:
-    --   * On success (exit 0): replace buffer contents with the formatter's
-    --     stdout, then restore the cursor position (best-effort - the
-    --     pcall guards against the cursor landing past the new EOF).
-    --   * On failure (non-zero exit): leave the buffer untouched. We do NOT
-    --     surface the error to the user; that's intentional, otherwise every
-    --     transient parse error from the formatter would interrupt save.
-    --   * The trailing-empty-line trim is for formatters that append a final
-    --     newline (most do): split() would produce an extra "" entry, which
-    --     nvim_buf_set_lines would render as a blank line at EOF.
+    -- Save-time wrapper around run_formatter(). Every CLI formatter on a
+    -- BufWritePre goes through here, so the :FormatNotOnSave switch has one
+    -- place to bite. On-demand entry points call run_formatter directly:
+    -- that switch is about saving, not about an explicit request.
     local function format_with_cmd(cmd)
         if not format_on_save_enabled then
             return
         end
-        local cursor = vim.api.nvim_win_get_cursor(0)
-        local bufnr = vim.api.nvim_get_current_buf()
-        local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-        local content = table.concat(lines, "\n")
-
-        local formatted = vim.fn.system(cmd, content)
-
-        if vim.v.shell_error == 0 then
-            local new_lines = vim.split(formatted, "\n", {
-                trimempty = false,
-            })
-            if new_lines[#new_lines] == "" then
-                table.remove(new_lines)
-            end
-            vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, new_lines)
-        end
-
-        pcall(vim.api.nvim_win_set_cursor, 0, cursor)
+        run_formatter(cmd)
     end
 
     -- Fortran: fprettify
@@ -435,46 +504,9 @@ local function setup_format_on_save()
         end,
     })
 
-    -- OCaml: ocamlformat CLI fallback for projects WITHOUT a .ocamlformat.
-    --
-    -- In projects that HAVE .ocamlformat this autocmd deliberately does
-    -- nothing and formatting rides ocamllsp (section (a) above): the
-    -- project's own style always wins, which is what keeps collaborating
-    -- on repos with a different profile safe. Only when no .ocamlformat
-    -- exists anywhere up the tree does this fallback fire, giving
-    -- personal / scratch OCaml the Jane Street style with no per-project
-    -- file (requested 2026-08-14).
-    --
-    -- Flags:
-    --   --enable-outside-detected-project
-    --       lifts ocamlformat's refusal to run without a project config
-    --       (a reproducibility default, sensible for repos, hostile to
-    --       scratch files).
-    --   --profile=janestreet
-    --       the style. Kept HERE rather than in the XDG global config
-    --       file (~/.config/ocamlformat, which the flag above would
-    --       also consult) so the whole arrangement is visible inside
-    --       the nvim config.
-    --   --impl / --intf
-    --       what the input is; stdin has no filename to infer from, so
-    --       it is chosen from the buffer's extension.
-    vim.api.nvim_create_autocmd("BufWritePre", {
-        group = format_group,
-        pattern = { "*.ml", "*.mli" },
-        callback = function()
-            if vim.fs.root(0, ".ocamlformat") then
-                return -- project defines its style; the LSP path owns this save
-            end
-            local kind = vim.fn.expand("%:e") == "mli" and "--intf" or "--impl"
-            format_with_cmd({
-                "ocamlformat",
-                "--enable-outside-detected-project",
-                "--profile=janestreet",
-                kind,
-                "-",
-            })
-        end,
-    })
+    -- OCaml has no BufWritePre entry of any kind. Since 2026-08-29 it
+    -- formats on demand only, through :OCamlFmt -> M.format_ocaml_buffer(),
+    -- defined near the top of this file where its two paths are explained.
 
     -- ------------------------------------------------------------------------
     -- :FormatOnSave / :FormatNotOnSave (2026-08-28, user request).
@@ -581,7 +613,9 @@ M.FORMATTER_BINARIES = {
     { cmd = "verible-verilog-format", label = "Verilog / SystemVerilog" },
     { cmd = "shfmt", label = "shell (sh, bash)" },
     { cmd = "erlfmt", label = "Erlang (erl, hrl, app.src, rebar.config)" },
-    { cmd = "ocamlformat", label = "OCaml (fallback when no .ocamlformat)" },
+    -- Not a save-time formatter any more: :OCamlFmt reaches for this binary
+    -- only in a project with no .ocamlformat of its own.
+    { cmd = "ocamlformat", label = "OCaml (:OCamlFmt, when no .ocamlformat)" },
     { cmd = "gersemi", label = "CMake" },
 }
 
