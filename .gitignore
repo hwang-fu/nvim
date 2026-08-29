@@ -482,6 +482,12 @@ flycheck_*.el
 atlassian-ide-plugin.xml
 fabric.properties
 
+# ---> Obsidian
+# Per-vault settings: appearance, enabled community plugins, hotkeys, and the
+# last window layout. Machine-local taste and workspace state - none of it is
+# needed to read or edit the vault's Markdown, which is the part worth keeping.
+.obsidian/
+
 # ---> Visual Studio
 # User-specific files
 *.rsuser
