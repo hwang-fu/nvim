@@ -22,6 +22,8 @@
 
 Formatting runs automatically on save, per language; `lua/jwa/lsp/format.lua` defines which formatter each language uses.
 
+Messages a server pushes on its own - a formatter refusing a file it cannot parse, a project failing to load - arrive as a single yellow line and never interrupt what you are doing. Server **errors** are shown at warning level deliberately: an error-level message echoed while a save was in flight used to abort the write itself, so the file stayed unsaved behind the error text. Long messages are cut to fit one line. Diagnostics are untouched by this - a real fault still marks the offending line in the buffer, which is where the detail belongs. The handler is in `lua/jwa/lsp/init.lua`.
+
 Peeking locations in an embedded panel - references, definitions, implementations - has its own page: [glance](glance.md).
 
 ## Schema checking for config files

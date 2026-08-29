@@ -16,4 +16,7 @@ All common [LSP keys](lsp.md) apply, plus:
 Telescope integration: `:Telescope ht` offers package-scoped file and grep pickers plus Hoogle signature search.
 
 > [!NOTE]
+> Format-on-save runs ormolu through HLS. A buffer that does not parse yet - mid-edit, a mismatched bracket - is refused by ormolu and saves unformatted, announced by a one-line yellow warning; the parse error itself is already marked on the offending line as a diagnostic, so nothing is lost by the short message.
+
+> [!NOTE]
 > Highlighting and hints run rich: the HLS semanticTokens plugin colors type-level names, class methods, record fields, and pattern synonyms distinctly on top of treesitter, and the inlay-hint plugins (record-field expansions for wildcards, explicit import lists) are active - both ship on by default in HLS 2.14, with semanticTokens enabled in `lua/jwa/lsp/servers/hls.lua`.
