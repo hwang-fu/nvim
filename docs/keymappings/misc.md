@@ -15,7 +15,7 @@ vim-surround runs with its stock keys; `{char}` is the pair character (`"`, `'`,
 
 | Command | Action |
 |---------|--------|
-| `:ToggleWS` | Toggle whitespace visualization for the current window (defined in `lua/jwa/init.lua`) |
+| `:ToggleWS` | Toggle whitespace visualization for the current window (defined in `lua/jwa/init.lua`). File buffers start with it on, for the indent guides described below, so the first press turns markers off |
 | `:FormatNotOnSave` | Disable format-on-save globally for the session - saves become byte-identical everywhere. In a buffer whose filetype has format-on-save, a yellow warning confirms the change; in one that never formats, the switch flips silently |
 | `:FormatOnSave` | Re-enable format-on-save (the default state), same messaging rule |
 | `:checkhealth jwa` | The fresh-machine report: everything this config wants that the machine lacks - editor tools, build prerequisites, formatters, linters, language servers |
@@ -23,6 +23,16 @@ vim-surround runs with its stock keys; `{char}` is the pair character (`"`, `'`,
 | `:Lazy sync` | Install and update plugins |
 | `:TSInstall <lang>` | Install a treesitter parser |
 | `:TSUpdate` | Update the installed treesitter parsers |
+
+## Indent guides
+
+A faint vertical bar marks every indent step in a file buffer. It is not a plugin: Neovim's own `listchars` paints a repeating pattern across leading spaces, and the pattern is rebuilt per window so its width tracks that buffer's `shiftwidth` - four columns in Lua or Rust, two in Haskell, YAML, OCaml and the rest of the list that gets two-space indents.
+
+Only real files get them. Terminals, oil listings and other scratch buffers stay bare, and `:ToggleWS` still flips markers for whatever window you are in.
+
+The color is a light grey-white at 20% opacity over the editor background, set in `lua/jwa/init.lua` as `WHITESPACE_FG_DARK`. Opacity is mixed into the value by hand rather than declared, because Neovim's `blend` attribute only works inside floating windows - the same lesson the inlay hints ran into, recorded in `lua/jwa/colors.lua`.
+
+One consequence worth knowing if you retune it: Neovim paints every `listchars` marker with a single highlight group, so the indent bars and the trailing-space dots share one color. Trailing whitespace is stripped on save anyway, so it rarely lives long enough for the compromise to bite.
 
 ## The phantom final-newline line
 

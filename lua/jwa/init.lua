@@ -61,10 +61,11 @@ function M.setup()
     -- Marker characters chosen to be ASCII-only and visually low-noise:
     --   tab = ">."  - tab start marked with `>`, the rest filled with `.`
     --                 so a 4-wide tab reads as `>...`
-    --   lead = "."  - leading space gets a single dot. Combined with the
-    --                 dim Whitespace color below, leading indentation
-    --                 reads as a faint dot grid -- enough to see indent
-    --                 structure, not enough to compete with code.
+    --   leadmultispace - indent guides, set per window further down rather
+    --                 than here, because the pattern has to match that
+    --                 buffer's shiftwidth. Replaces the old lead = "."
+    --                 dot grid: one bar per indent step says the same
+    --                 thing as four dots and says it more quietly.
     --   trail = "." - trailing space marker (most useful: catches that
     --                 line you accidentally left hanging spaces on)
     --   nbsp = "_"  - non-breaking space. Worth surfacing because they
@@ -74,31 +75,101 @@ function M.setup()
     --   extends/precedes = ">"/"<" - shown only when `wrap = false` and a
     --                 line runs off-screen; the marker hints at which
     --                 direction the offscreen content goes.
-    vim.opt.listchars = {
+    local listchars_base = {
         tab = ">.",
-        lead = ".",
         trail = ".",
         nbsp = "_",
         extends = ">",
         precedes = "<",
     }
+    vim.opt.listchars = listchars_base
 
-    -- Subtle color for the markers. Apply now AND on every :colorscheme
-    -- (which runs `:highlight clear` and would otherwise reset our tweak).
+    -- Marker color, one per background variant. Named rather than inlined
+    -- because it is the knob that actually gets turned - the shape of the
+    -- guides has not changed since they were added, the shade has, several
+    -- times.
     --
-    -- The color is picked to be barely-visible against the active
-    -- background: a dark dim-grey on dark themes, a light grey on light
-    -- themes. `Whitespace` colors the tab/space/trail markers; `NonText`
-    -- covers extends/precedes (and the empty-line `~` markers).
+    -- WHITESPACE_FG_DARK is a light grey-white at 20% opacity. The opacity
+    -- is baked in as a channel mix rather than expressed as one, for the
+    -- reason already recorded in lua/jwa/colors.lua: the `blend` highlight
+    -- attribute only applies inside floating windows. So #505066 is 20%
+    -- #c8c8c8 over the pinned background #32324e. Recompute it if that
+    -- background pin ever moves - it is baked against that exact value, and
+    -- nothing here will notice if it silently stops matching. Nearby steps,
+    -- same mix: 10% -> #41415a, 15% -> #484860, 25% -> #58586c,
+    -- 30% -> #5f5f73.
+    --
+    -- One caveat worth knowing before tuning: Neovim paints EVERY
+    -- 'listchars' item with `Whitespace`, so one color serves both the
+    -- indent bars and the trailing-space dots. Whatever is chosen here is a
+    -- compromise between two jobs - guides want to sit behind the code,
+    -- trailing whitespace wants to be caught.
+    local WHITESPACE_FG_DARK = "#505066"
+    local WHITESPACE_FG_LIGHT = "#ececec"
+
+    -- Apply now AND on every :colorscheme (which runs `:highlight clear` and
+    -- would otherwise reset our tweak). `Whitespace` colors the tab/space/
+    -- trail markers; `NonText` covers extends/precedes (and the empty-line
+    -- `~` markers).
     local function apply_dim_whitespace()
-        local hl = vim.o.background == "dark" and { fg = "#2a2a2a" } or { fg = "#ececec" }
-        vim.api.nvim_set_hl(0, "Whitespace", hl)
-        vim.api.nvim_set_hl(0, "NonText", hl)
+        local fg = vim.o.background == "dark" and WHITESPACE_FG_DARK or WHITESPACE_FG_LIGHT
+        vim.api.nvim_set_hl(0, "Whitespace", { fg = fg })
+        vim.api.nvim_set_hl(0, "NonText", { fg = fg })
     end
     apply_dim_whitespace()
     vim.api.nvim_create_autocmd("ColorScheme", {
         group = vim.api.nvim_create_augroup("JwaWhitespaceHl", { clear = true }),
         callback = apply_dim_whitespace,
+    })
+
+    -- ------------------------------------------------------------------------
+    -- Indent guides: a faint bar at every indent step.
+    --
+    -- Native, no plugin. 'listchars' leadmultispace paints a repeating
+    -- pattern across leading spaces, so "|   " puts a bar on every 4th
+    -- column. The cycle length must equal that buffer's shiftwidth or the
+    -- bars drift off the real indent steps, and the LispIndent autocmd near
+    -- the bottom of this file forces shiftwidth 2 on a long list of
+    -- filetypes - so this is rebuilt per window instead of set once.
+    --
+    -- Deferred through vim.schedule because the FileType autocmd that sets
+    -- shiftwidth 2 is registered LATER than this one and therefore runs
+    -- after it; reading shiftwidth directly in the callback would read the
+    -- value about to be replaced. The window id is captured and reapplied
+    -- through nvim_win_call so the deferred run cannot land on whatever
+    -- window happens to be current a tick later.
+    --
+    -- Only real file buffers get this. `list` stays off globally so oil
+    -- listings, terminals and other scratch buffers keep a clean canvas,
+    -- and :ToggleWS still flips the current window either way.
+    -- ------------------------------------------------------------------------
+    local function apply_indent_guides(win)
+        if not vim.api.nvim_win_is_valid(win) then
+            return
+        end
+        vim.api.nvim_win_call(win, function()
+            if vim.bo.buftype ~= "" then
+                return
+            end
+            local step = vim.bo.shiftwidth
+            if step <= 0 then
+                step = vim.bo.tabstop
+            end
+            vim.opt_local.listchars = vim.tbl_extend("force", listchars_base, {
+                leadmultispace = "|" .. string.rep(" ", math.max(step - 1, 0)),
+            })
+            vim.wo.list = true
+        end)
+    end
+
+    vim.api.nvim_create_autocmd({ "FileType", "BufWinEnter" }, {
+        group = vim.api.nvim_create_augroup("JwaIndentGuides", { clear = true }),
+        callback = function()
+            local win = vim.api.nvim_get_current_win()
+            vim.schedule(function()
+                apply_indent_guides(win)
+            end)
+        end,
     })
 
     -- :ToggleWS - flip whitespace visibility for the current window.
