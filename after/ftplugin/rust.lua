@@ -34,8 +34,14 @@ vim.api.nvim_buf_create_user_command(0, "RustFmt", function()
         async = false,
         name = "rust-analyzer",
     })
+    -- :update, not :write - a write with nothing to write still bumps mtime
+    -- and wakes anything watching the file. Runs even when formatting did
+    -- nothing: this command means "format and save", and a formatter that
+    -- refused leaves the buffer as you typed it, which is what a plain :w
+    -- would have written anyway.
+    vim.cmd("update")
 end, {
-    desc = "Format via rust-analyzer (rustfmt, project edition)",
+    desc = "Format via rust-analyzer (rustfmt, project edition), then save",
 })
 
 vim.api.nvim_buf_create_user_command(0, "RustFmtRange", function()

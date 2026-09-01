@@ -21,6 +21,8 @@ Haskell does not format on save - a save leaves the file exactly as you typed it
 
 A buffer that does not parse yet - mid-edit, a mismatched bracket - is refused by ormolu and left alone, with a one-line yellow warning saying so; the parse error itself is already marked on the offending line as a diagnostic. With no HLS attached the command says so rather than quietly doing nothing.
 
+`:HaskellFmt` writes the file when it is done, so formatting and saving stay one action even though saving alone no longer formats. It writes only if the buffer actually differs from disk, and it writes even when the formatter declined or no server was attached - a refused format leaves the buffer as you typed it, which is what a plain `:w` would have saved anyway.
+
 `:FormatNotOnSave` does not affect `:HaskellFmt` - that switch silences saves, and this is an explicit request.
 
 > [!NOTE]

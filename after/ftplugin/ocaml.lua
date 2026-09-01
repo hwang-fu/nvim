@@ -23,8 +23,14 @@
 
 vim.api.nvim_buf_create_user_command(0, "OCamlFmt", function()
     require("jwa.lsp.format").format_ocaml_buffer()
+    -- :update, not :write - a write with nothing to write still bumps mtime
+    -- and wakes anything watching the file. Runs even when formatting did
+    -- nothing: this command means "format and save", and a formatter that
+    -- refused leaves the buffer as you typed it, which is what a plain :w
+    -- would have written anyway.
+    vim.cmd("update")
 end, {
-    desc = "Format this buffer (ocamllsp, or ocamlformat's janestreet profile)",
+    desc = "Format this buffer (ocamllsp, or ocamlformat's janestreet profile), then save",
 })
 
 -- Keep the runtime's cleanup contract intact: change the filetype and the

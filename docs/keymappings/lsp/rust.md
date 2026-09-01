@@ -6,7 +6,7 @@ All common [LSP keys](lsp.md) apply, plus:
 
 | Command / key | Action |
 |---------------|--------|
-| `:RustFmt` | Format the buffer with rustfmt via rust-analyzer, honoring the project's edition (format-on-save is off for Rust by choice). This config's implementation replaces Neovim's bundled legacy command of the same name, which hardcoded edition 2018 |
+| `:RustFmt` | Format the buffer with rustfmt via rust-analyzer, honoring the project's edition, then save the file (format-on-save is off for Rust by choice, so this is the one action that does both). It writes only if the buffer differs from disk, and writes even when the formatter declined. This config's implementation replaces Neovim's bundled legacy command of the same name, which hardcoded edition 2018 |
 | `K` | Upgraded hover: shows actions you can pick, not just documentation |
 
 Cargo.toml dependency management has its own page: [crates](../crates.md).

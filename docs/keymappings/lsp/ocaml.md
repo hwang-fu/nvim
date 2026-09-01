@@ -39,6 +39,8 @@ OCaml does not format on save - a save leaves the file exactly as you typed it. 
 
 The second row is why the command exists in this shape: ocamlformat refuses to run outside a project it recognizes and ocamllsp inherits that refusal, so a scratch `.ml` can only be formatted by calling the binary with the flag that lifts it. The command lives in `after/ftplugin/ocaml.lua`; the two paths are in `lua/jwa/lsp/format.lua`.
 
+`:OCamlFmt` writes the file when it is done, so formatting and saving stay one action even though saving alone no longer formats. It writes only if the buffer actually differs from disk, and it writes even when the formatter declined - a refused format leaves the buffer as you typed it, which is what a plain `:w` would have saved anyway.
+
 `:FormatNotOnSave` does not affect `:OCamlFmt` - that switch silences saves, and this is an explicit request. `dune` and `dune-project` files are unaffected as well: they still format on save through `dune format-dune-file`.
 
 ## The REPL float

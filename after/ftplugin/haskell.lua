@@ -18,8 +18,15 @@
 
 vim.api.nvim_buf_create_user_command(0, "HaskellFmt", function()
     require("jwa.lsp.format").format_haskell_buffer()
+    -- :update, not :write - a write with nothing to write still bumps mtime
+    -- and wakes anything watching the file. Runs even when formatting did
+    -- nothing, including the no-HLS-attached case that only warns: this
+    -- command means "format and save", and a formatter that refused leaves
+    -- the buffer as you typed it, which is what a plain :w would have
+    -- written anyway.
+    vim.cmd("update")
 end, {
-    desc = "Format this buffer through HLS (ormolu)",
+    desc = "Format this buffer through HLS (ormolu), then save",
 })
 
 -- Keep the runtime's cleanup contract intact: change the filetype and the
