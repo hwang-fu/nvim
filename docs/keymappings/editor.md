@@ -10,7 +10,7 @@ Familiar shortcuts from mainstream editors, layered on top of Vim without touchi
 
 | Situation | What happens |
 |-----------|--------------|
-| Only you changed the buffer | Ordinary save |
+| Only you changed the buffer | Ordinary save - but only when the buffer actually differs from the file. Pressing `Ctrl-S` on something you have not edited does nothing at all, rather than rewriting identical bytes and bumping the file's timestamp under whatever is watching it. `:w` is still there when you want the write to happen regardless |
 | Only the disk changed (you have no unsaved edits) | The buffer refreshes to the newest on-disk version; nothing is written, and a notice says so |
 | Both changed | A prompt asks which version wins: `Mine` overwrites the disk, `Theirs` discards your edits and loads the disk version, `Cancel` (the default) leaves your edits in the buffer and their version on disk |
 

@@ -225,7 +225,12 @@ function M.setup()
             )
             return
         end
-        vim.cmd("write")
+        -- :update, not :write. Ctrl-S gets pressed reflexively, often on a
+        -- buffer nobody touched; an unconditional write would bump mtime
+        -- every time and wake watchers, rebuilds and reload loops for a file
+        -- whose bytes did not change. An explicit :w stays the way to force
+        -- a write regardless.
+        vim.cmd("update")
     end
 
     map("n", "<C-s>", smart_save, { desc = "Save (refreshes from disk if others changed the file)" })
