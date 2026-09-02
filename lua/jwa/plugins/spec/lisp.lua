@@ -41,6 +41,21 @@ return {
 	-- via require("rainbow-delimiters.lib").nsids[lang] instead.
 	{
 		"HiPhish/rainbow-delimiters.nvim",
+		-- Skip submodules on every clone / update. This repo carries three,
+		-- and not one of them is used by the plugin at runtime: test/bin is
+		-- the author's busted shim runner, .luals/addons/{busted,luassert}
+		-- are LuaLS type definitions for developing the plugin. lazy.nvim
+		-- passes --recurse-submodules unless told otherwise (see its
+		-- lua/lazy/manage/task/git.lua), so every :Lazy sync was fetching
+		-- three extra repositories, from two different hosts, to install
+		-- test tooling for a plugin we only consume.
+		--
+		-- Upstream meant to prevent exactly this: the file's own header
+		-- says it was "intentionally renamed to prevent Neovim plugin
+		-- managers from picking up on it" - but the file in the checked-out
+		-- revision is still named .gitmodules, so the intent never took
+		-- effect. Hence the guard on our side.
+		submodules = false,
 		init = function()
 			vim.g.rainbow_delimiters = {
 				whitelist = {
