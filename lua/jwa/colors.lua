@@ -61,13 +61,11 @@ local palette = {
 -- That trade is worth stating plainly: the pane no longer matches the
 -- terminal around it, so nvim now draws a black rectangle inside a
 -- #32324e kitty window. Matching them again means changing kitty, not
--- this file. Nothing else here derives from the background any more -
--- with one exception outside this module, noted below.
+-- this file.
 --
--- Outside dependency: lua/jwa/init.lua bakes the indent-guide color as a
--- percentage of white mixed over THIS value, because Neovim's `blend`
--- attribute only works in floating windows. Change the background and
--- that mix has to be recomputed - nothing will warn you.
+-- Nothing derives from this value, and nothing needs to follow it when it
+-- changes. The indent-guide colour in lua/jwa/init.lua is a settled
+-- literal of its own, deliberately independent of whatever is behind it.
 --
 -- vim.cmd.highlight MERGES attributes into the existing group -
 -- dracula-soft's Normal foreground survives; only the background is

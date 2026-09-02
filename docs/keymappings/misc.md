@@ -30,7 +30,7 @@ A faint vertical bar marks every indent step in a file buffer. It is not a plugi
 
 Only real files get them. Terminals, oil listings and other scratch buffers stay bare, and `:ToggleWS` still flips markers for whatever window you are in.
 
-The color is a light grey-white at 20% opacity over the editor background, set in `lua/jwa/init.lua` as `WHITESPACE_FG_DARK`. Opacity is mixed into the value by hand rather than declared, because Neovim's `blend` attribute only works inside floating windows - the same lesson the inlay hints ran into, recorded in `lua/jwa/colors.lua`.
+The color is a settled dim blue-grey, set in `lua/jwa/init.lua` as `WHITESPACE_FG_DARK`. It is chosen rather than computed - it does not follow the background, the colorscheme, or anything else - so changing any of those leaves the guides exactly as they are.
 
 One consequence worth knowing if you retune it: Neovim paints every `listchars` marker with a single highlight group, so the indent bars and the trailing-space dots share one color. Trailing whitespace is stripped on save anyway, so it rarely lives long enough for the compromise to bite.
 

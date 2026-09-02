@@ -89,23 +89,18 @@ function M.setup()
     -- guides has not changed since they were added, the shade has, several
     -- times.
     --
-    -- WHITESPACE_FG_DARK is a light grey-white at 20% opacity. The opacity
-    -- is baked in as a channel mix rather than expressed as one, for the
-    -- reason already recorded in lua/jwa/colors.lua: the `blend` highlight
-    -- attribute only applies inside floating windows. So #282828 is 20%
-    -- #c8c8c8 over the editor background, which lua/jwa/colors.lua sets to
-    -- #000000. Recompute it if that background moves - it is baked against
-    -- that exact value, and nothing here will notice if it silently stops
-    -- matching. (It has moved once already: the same 20% over the old
-    -- kitty-matched #32324e was #505066.) Nearby steps, same mix:
-    -- 10% -> #141414, 15% -> #1e1e1e, 25% -> #323232, 30% -> #3c3c3c.
+    -- WHITESPACE_FG_DARK is a settled colour: a dim blue-grey the user
+    -- picked and is happy with. It is not derived from the background, the
+    -- colorscheme, or an opacity of anything, and it is not expected to
+    -- change - the literal below IS the specification. There is nothing
+    -- here to recompute and nothing to keep in sync with it.
     --
     -- One caveat worth knowing before tuning: Neovim paints EVERY
     -- 'listchars' item with `Whitespace`, so one color serves both the
     -- indent bars and the trailing-space dots. Whatever is chosen here is a
     -- compromise between two jobs - guides want to sit behind the code,
     -- trailing whitespace wants to be caught.
-    local WHITESPACE_FG_DARK = "#282828"
+    local WHITESPACE_FG_DARK = "#505066"
     local WHITESPACE_FG_LIGHT = "#ececec"
 
     -- Apply now AND on every :colorscheme (which runs `:highlight clear` and
