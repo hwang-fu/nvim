@@ -41,6 +41,14 @@ local palette = {
 	-- be kept in sync with it. See customization no. 1 below for what
 	-- it replaced.
 	background = "#000000",
+	-- The kitty terminal's own background, copied by hand from
+	-- ~/.config/kitty/modules/general.conf. UNUSED on purpose - it is
+	-- kept because it was the editor background from 2026-08-23 to
+	-- 2026-08-29, and it is the value to put back into `background`
+	-- above if the nvim pane should blend into the terminal again
+	-- instead of drawing its own black rectangle. Not dead weight to
+	-- delete: retyping a hand-copied colour is how the two drift apart.
+	kitty_background = "#32324e",
 	-- Comment text: the scheme's hint gray nudged toward white, so
 	-- comments outrank inlay hints in brightness.
 	comment_fg = "#a8a8a8",
