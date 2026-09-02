@@ -36,10 +36,11 @@ local M = {}
 -- chosen; THESE are the knobs to turn.
 -- --------------------------------------------------------------------------
 local palette = {
-	-- Editor background, pinned to the kitty terminal background
-	-- (~/.config/kitty/modules/general.conf `background`). Keep the
-	-- two in sync by hand when either changes.
-	background = "#32324e",
+	-- Editor background. Plain black, chosen for concentration
+	-- (2026-08-29) - NOT derived from anything else, so nothing has to
+	-- be kept in sync with it. See customization no. 1 below for what
+	-- it replaced.
+	background = "#000000",
 	-- Comment text: the scheme's hint gray nudged toward white, so
 	-- comments outrank inlay hints in brightness.
 	comment_fg = "#a8a8a8",
@@ -49,15 +50,24 @@ local palette = {
 }
 
 -- --------------------------------------------------------------------------
--- Customization no. 1 (2026-08-23, user request): the editor background
--- matches the kitty terminal background, so the nvim pane blends into
--- the terminal instead of drawing its own darker box.
+-- Customization no. 1: the editor background is repainted, overriding
+-- whatever the colorscheme ships.
 --
--- The color is COPIED from kitty's config (~/.config/kitty/modules/
--- general.conf: `background #32324e`) - if kitty's background ever
--- changes, update palette.background above. (The self-syncing alternative
--- is `Normal guibg=NONE`, true transparency; not chosen, a pinned copy
--- keeps nvim identical even if kitty gains background effects.)
+-- It was kitty's own background (#32324e, copied by hand from
+-- ~/.config/kitty/modules/general.conf) from 2026-08-23, so the nvim pane
+-- blended into the terminal instead of drawing its own box. Replaced by
+-- plain black on 2026-08-29 at the user's request, for concentration.
+--
+-- That trade is worth stating plainly: the pane no longer matches the
+-- terminal around it, so nvim now draws a black rectangle inside a
+-- #32324e kitty window. Matching them again means changing kitty, not
+-- this file. Nothing else here derives from the background any more -
+-- with one exception outside this module, noted below.
+--
+-- Outside dependency: lua/jwa/init.lua bakes the indent-guide color as a
+-- percentage of white mixed over THIS value, because Neovim's `blend`
+-- attribute only works in floating windows. Change the background and
+-- that mix has to be recomputed - nothing will warn you.
 --
 -- vim.cmd.highlight MERGES attributes into the existing group -
 -- dracula-soft's Normal foreground survives; only the background is
@@ -109,8 +119,8 @@ end
 --
 -- dracula-soft ships LspInlayHint with its own bg (#2f3146) - invisible
 -- against the scheme's native background but a visible darker chip
--- against our pinned kitty #32324e, which made dense hint lines read as
--- tiling. The redefinition below drops the box entirely and answers the
+-- against the kitty-matched #32324e in force at the time, which made
+-- dense hint lines read as tiling. The redefinition below drops the box entirely and answers the
 -- user's "without background but bold" spec: scheme's hint gray
 -- (#969696), bold, transparent. nvim_set_hl REPLACES the whole group,
 -- which is exactly right here (the bg must go away, not merge).
