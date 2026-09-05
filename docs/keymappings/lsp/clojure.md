@@ -50,6 +50,12 @@ Every key also exists as a command, created by conjure in Clojure files - the Co
 | `\xr` | `:ConjureCljMacroExpand` | Show the macroexpansion of the current form (`\xa` / `:ConjureCljMacroExpandAll` expands everything) |
 | `\ls` / `\lv` | `:ConjureLogSplit` / `:ConjureLogVSplit` | Open conjure's log of results in a split / vsplit |
 
+### Where results show up
+
+An evaluation reports itself twice: as `=> value` in virtual text at the end of the line, and as a full entry in conjure's log. The log is the complete record - stdout, stack traces, connection notices, everything - and nothing opens it for you. Conjure's floating HUD, which used to pop into the top-right corner whenever the log grew, is switched off in this config: it arrived uninvited, over the code, showing the log's tail rather than the thing you just asked for.
+
+So the inline `=>` is the everyday feedback, and `\ls` / `\lv` is how you look deeper. That matters most for the commands whose **whole** output is a log entry and which therefore show nothing on their own: `\vs`, `\ve`, `\vt`, `\v1` - `\v3`, the `\x*` expansions, and `\K`. Working with a log split open is the natural mode when you are leaning on those.
+
 The idiomatic scratchpad is the rich comment block: a `(comment ...)` at the bottom of a file full of loose expressions. The compiler ignores it; you put the cursor inside any form and `\ee` it. Experiments stay in the file, versioned, without ever running at load time.
 
 ## Tests

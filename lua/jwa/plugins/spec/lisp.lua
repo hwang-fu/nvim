@@ -128,6 +128,30 @@ return {
 			-- would take the command away with the key.
 			vim.g["conjure#mapping#doc_word"] = "K"
 
+			-- No HUD (2026-09-06, user request).
+			--
+			-- The HUD is a transient float in the top-right corner showing
+			-- the TAIL of conjure's log, opened whenever the newest log
+			-- line is not already on screen. Its trouble is that the log
+			-- receives everything: connection chatter, REPL banners, stale
+			-- errors from an evaluation two minutes ago. So it appears
+			-- uninvited, over the code, carrying history nobody asked for.
+			-- Two workarounds further down this file already exist only
+			-- because of it; this replaces the whack-a-mole with the switch.
+			--
+			-- What this does NOT change: evaluation, and the inline `=> `
+			-- virtual text that reports each result at the end of the line.
+			-- Those are separate features and stay exactly as they were.
+			--
+			-- What it DOES change, and it is worth knowing: a whole family
+			-- of conjure commands writes only to the log - \vs view-source,
+			-- \ve last-exception, \vt view-tap, \v1..\v3 result recall, the
+			-- \x* macro expansions, and \K above. With no HUD and no log
+			-- window open, those look like they did nothing. Open the log
+			-- with \ls or \lv when using them; note that a visible log
+			-- window suppressed the HUD anyway, so nothing is lost there.
+			vim.g["conjure#log#hud#enabled"] = false
+
 			-- --- nREPL forgot-to-start reminder (2026-08-17, user request) ---
 			--
 			-- Conjure never starts the Clojure REPL (deliberate: the REPL is
