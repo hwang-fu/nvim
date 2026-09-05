@@ -49,6 +49,11 @@ local palette = {
 	-- instead of drawing its own black rectangle. Not dead weight to
 	-- delete: retyping a hand-copied colour is how the two drift apart.
 	kitty_background = "#32324e",
+	-- Background of fenced code blocks inside rendered markdown, which
+	-- in practice means the code samples in every LSP hover popup.
+	-- Wanted: clearly a block against the float's own #292a35, while
+	-- staying dark enough for the near-white float text.
+	code_block_bg = "#3a3c4c",
 	-- Comment text: the scheme's hint gray nudged toward white, so
 	-- comments outrank inlay hints in brightness.
 	comment_fg = "#a8a8a8",
@@ -170,11 +175,38 @@ local function hide_color_column()
 	vim.api.nvim_set_hl(0, "ColorColumn", { link = "Normal" })
 end
 
+-- --------------------------------------------------------------------------
+-- Customization no. 6 (2026-09-06): give rendered code blocks a background
+-- of their own, instead of borrowing ColorColumn's.
+--
+-- render-markdown.nvim defines RenderMarkdownCode as a link to ColorColumn
+-- (its core/colors.lua). That is a reasonable default - until customization
+-- no. 5 above made ColorColumn invisible on purpose, at which point every
+-- code sample inside every LSP hover popup was painted the same black as
+-- the editor, and hover text started bleeding into the buffer behind it
+-- with no visible edge. The two groups were only ever the same by accident;
+-- this separates them.
+--
+-- Safe against ordering: render-markdown installs its links with
+-- `default = true`, which never overwrites an explicit definition. Whether
+-- its ColorScheme handler runs before or after apply_overrides, the
+-- explicit value below is the one that survives.
+--
+-- The general lesson, written down because it cost a regression: a
+-- highlight group is a shared namespace. Before repurposing a standard one,
+-- grep the installed plugins for it - the option it is named after is not
+-- the only thing that reads it.
+-- --------------------------------------------------------------------------
+local function style_code_blocks()
+	vim.api.nvim_set_hl(0, "RenderMarkdownCode", { bg = palette.code_block_bg })
+end
+
 local function apply_overrides()
 	vim.cmd.highlight("Normal guibg=" .. palette.background)
 	strip_code_italics()
 	style_inlay_hints()
 	hide_color_column()
+	style_code_blocks()
 end
 
 -- require("jwa.colors").setup()
