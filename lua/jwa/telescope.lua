@@ -111,6 +111,27 @@ function M.setup()
     -- Keybindings. Each opens the telescope popup for a different source.
     -- The `desc` text is what shows up in `:nmap <leader>f` and which-key.
     local builtin = require("telescope.builtin")
+
+    -- Search root for the DIRECTORY-SCOPED pickers.
+    --
+    -- 'autochdir' is on (see section 4 of lua/jwa/init.lua), so the cwd
+    -- follows whatever buffer is focused. Telescope's default scope is the
+    -- cwd, which would quietly turn "search the project" into "search the
+    -- folder this one file happens to sit in" - no error, just fewer
+    -- results. So the pickers that claim to be project-wide say where the
+    -- project is instead of inheriting it.
+    --
+    -- Resolution order: the nearest .git above the current buffer; failing
+    -- that the nearest .git above the directory nvim was started in; failing
+    -- that that directory itself. The launch directory is read from
+    -- jwa.init, which snapshots it before autochdir can move it - reading
+    -- the live cwd here would defeat the whole point.
+    local function project_root()
+        local name = vim.api.nvim_buf_get_name(0)
+        local from_buf = name ~= "" and vim.fs.root(name, ".git") or nil
+        local launch = require("jwa").launch_dir or vim.fn.getcwd()
+        return from_buf or vim.fs.root(launch, ".git") or launch
+    end
     local function map(lhs, rhs, desc)
         vim.keymap.set("n", lhs, rhs, {
             silent = true,
@@ -120,21 +141,32 @@ function M.setup()
 
     -- Short forms (2026-08-15): <leader>t / <leader>T are instant
     -- aliases of ff / fF; the gitsigns toggles vacated <leader>t*.
-    map("<leader>t", builtin.find_files, "Telescope: find files")
+    map("<leader>t", function()
+        builtin.find_files({ cwd = project_root() })
+    end, "Telescope: find files")
     map("<leader>T", function()
-        builtin.find_files({ no_ignore = true, hidden = true })
+        builtin.find_files({ cwd = project_root(), no_ignore = true, hidden = true })
     end, "Telescope: find ALL files (ignored + hidden)")
-    map("<leader>ff", builtin.find_files, "Telescope: find files")
+    map("<leader>ff", function()
+        builtin.find_files({ cwd = project_root() })
+    end, "Telescope: find files")
     -- Capital sibling: same picker, but looking past ignore files and
     -- including dotfiles (2026-08-15).
     map("<leader>fF", function()
-        builtin.find_files({ no_ignore = true, hidden = true })
+        builtin.find_files({ cwd = project_root(), no_ignore = true, hidden = true })
     end, "Telescope: find ALL files (ignored + hidden)")
-    map("<leader>fg", builtin.live_grep, "Telescope: live grep (project contents)")
+    map("<leader>fg", function()
+        builtin.live_grep({ cwd = project_root() })
+    end, "Telescope: live grep (project contents)")
     map("<leader>fG", function()
-        builtin.live_grep({ additional_args = { "--no-ignore", "--hidden" } })
+        builtin.live_grep({
+            cwd = project_root(),
+            additional_args = { "--no-ignore", "--hidden" },
+        })
     end, "Telescope: live grep ALL files (ignored + hidden)")
-    map("<leader>fs", builtin.grep_string, "Telescope: grep word under cursor")
+    map("<leader>fs", function()
+        builtin.grep_string({ cwd = project_root() })
+    end, "Telescope: grep word under cursor")
     -- Fuzzy search the CURRENT buffer's lines - the no-regex answer to
     -- "/" (2026-08-15). Slash mnemonic: f/ = find by searching.
     map("<leader>f/", builtin.current_buffer_fuzzy_find, "Telescope: fuzzy search this buffer")

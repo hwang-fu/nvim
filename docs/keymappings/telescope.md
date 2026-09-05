@@ -20,6 +20,14 @@
 
 Every picker is also a command: `:Telescope <picker>`, and bare `:Telescope` lists them all.
 
+## Where the file and grep pickers search
+
+The seven pickers that walk a directory - `<leader>t`, `<leader>T`, `<leader>ff`, `<leader>fF`, `<leader>fg`, `<leader>fG` and `<leader>fs` - search the **project root**, not the working directory. The root is the nearest `.git` above the file you are in; outside a repository it falls back to the nearest `.git` above the directory Neovim was started in, and then to that directory itself.
+
+This is deliberate rather than incidental. The working directory follows whatever buffer you are looking at (see [misc](misc.md#the-working-directory-follows-the-file)), so a picker left on its default scope would search the one folder that file happens to live in and quietly return fewer results. Pinning the root keeps "search the project" true wherever you are in it.
+
+To search somewhere else on purpose, pass a directory: `:Telescope live_grep cwd=%:p:h` greps just the current file's folder, and `:Telescope find_files cwd=~/work` looks outside the project entirely.
+
 ## Inside a picker
 
 | Key | Action |

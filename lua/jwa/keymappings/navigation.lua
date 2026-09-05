@@ -30,9 +30,12 @@ function M.setup()
     -- current window (full screen); replaced by the sidebar for NERDTree
     -- parity.
     --
-    -- Side-effect free: does NOT change Neovim's :cwd, so plugins keyed
-    -- off cwd (lazy, telescope's default scope, etc.) keep behaving the
-    -- same. If you also want :cwd to follow, see `:h 'autochdir'`.
+    -- Side-effect free: opening the sidebar does not itself move Neovim's
+    -- :cwd. That says less than it used to - since 2026-08-29 'autochdir'
+    -- is on (section 4 of lua/jwa/init.lua), so the cwd follows whatever
+    -- buffer is focused anyway. What still holds is that THIS map is not
+    -- the thing moving it, and that re-rooting the sidebar at a buffer's
+    -- directory works whether or not the cwd agrees.
     --
     -- Buffer-local keys inside oil listings (`..` up-dir alias, the
     -- sidebar-aware <CR> and <C-t> overrides, <C-s> passthrough to save)

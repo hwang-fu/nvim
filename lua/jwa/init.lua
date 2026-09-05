@@ -195,6 +195,26 @@ function M.setup()
     vim.g.mapleader = " " -- <leader> = space (used by mappings in keymappings/)
     vim.g.maplocalleader = "\\" -- <localleader> = backslash (filetype-scoped maps, e.g. ocaml.nvim)
 
+    -- The working directory follows the buffer (2026-08-29, user request).
+    -- Open a/b/c/d.txt after `nvim .` and the cwd becomes a/b/c, so `:e .`,
+    -- `:!`, and a fresh :terminal all start where the file lives instead of
+    -- where nvim was launched.
+    --
+    -- Vim's own note on this option is "when this option is on some plugins
+    -- may not work", and it is not idle: anything that reads the cwd to mean
+    -- "the project" now reads it as "this file's folder". The one place in
+    -- this config where that mattered is the pair of telescope pickers
+    -- advertised as project-wide, which are pinned to a real project root in
+    -- lua/jwa/telescope.lua rather than left on their cwd default. Anything
+    -- added later that means "project" must pin its own root the same way -
+    -- the cwd no longer carries that meaning.
+    -- Captured BEFORE autochdir is switched on, because after that the cwd
+    -- is a moving target: this is the only remaining record of the directory
+    -- nvim was actually started in. jwa.telescope falls back to it when the
+    -- current buffer is not inside any git repository.
+    M.launch_dir = vim.fn.getcwd()
+    vim.o.autochdir = true
+
     -- ------------------------------------------------------------------------
     -- 5. Plugin-side knobs
     -- ------------------------------------------------------------------------

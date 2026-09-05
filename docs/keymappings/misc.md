@@ -24,6 +24,12 @@ vim-surround runs with its stock keys; `{char}` is the pair character (`"`, `'`,
 | `:TSInstall <lang>` | Install a treesitter parser |
 | `:TSUpdate` | Update the installed treesitter parsers |
 
+## The working directory follows the file
+
+Open `a/b/c/d.txt` after starting with `nvim .` and the working directory becomes `a/b/c`, not the directory you launched from. `:e .` then shows the folder you are actually in, `:!` runs there, and a fresh `:terminal` starts there. This is Vim's own `'autochdir'`, set in `lua/jwa/init.lua`.
+
+The catch is that anything reading the working directory to mean "the project" now reads it as "this file's folder". One place in this config cared, and is handled: the telescope file and grep pickers pin themselves to a real project root instead (see [telescope](telescope.md#where-the-file-and-grep-pickers-search)). Anything added later that means "project" has to say so explicitly - the working directory no longer carries that meaning.
+
 ## Indent guides
 
 A faint vertical bar marks every indent step in a file buffer. It is not a plugin: Neovim's own `listchars` paints a repeating pattern across leading spaces, and the pattern is rebuilt per window so its width tracks that buffer's `shiftwidth` - four columns in Lua or Rust, two in Haskell, YAML, OCaml and the rest of the list that gets two-space indents.
