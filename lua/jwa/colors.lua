@@ -151,10 +151,30 @@ local function style_inlay_hints()
 	vim.api.nvim_set_hl(0, "Comment", { fg = palette.comment_fg })
 end
 
+-- --------------------------------------------------------------------------
+-- Customization no. 5 (2026-08-29, user request): the 'colorcolumn' stripe
+-- is painted like ordinary text, which makes it invisible.
+--
+-- Done as a LINK rather than by copying the background value. A copy would
+-- have to be revisited every time the background changes, and the failure
+-- mode of forgetting is silent - a stripe in the old colour, still there,
+-- looking deliberate. A link cannot go stale: whatever Normal becomes,
+-- from this palette or from a different colorscheme, ColorColumn is that.
+--
+-- The option itself is untouched. Nothing in this config sets
+-- 'colorcolumn'; in a stock Neovim only the `man` ftplugin does, so the
+-- stripe is rare to begin with - this decides how it looks when something
+-- does ask for it, rather than suppressing the request.
+-- --------------------------------------------------------------------------
+local function hide_color_column()
+	vim.api.nvim_set_hl(0, "ColorColumn", { link = "Normal" })
+end
+
 local function apply_overrides()
 	vim.cmd.highlight("Normal guibg=" .. palette.background)
 	strip_code_italics()
 	style_inlay_hints()
+	hide_color_column()
 end
 
 -- require("jwa.colors").setup()
