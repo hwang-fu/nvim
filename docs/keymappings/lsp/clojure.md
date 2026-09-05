@@ -4,7 +4,9 @@
 
 Two engines share the work. clojure-lsp reads the code statically: completion, `gd`-style navigation, `<leader>rn` rename, `grr` references, format on save (cljfmt), and compact hovers (arities on one line, no file-path footer). Conjure talks to a **live REPL**: everything below with a `\` prefix evaluates real code in your running program. The localleader is backslash, so `\ee` means: press backslash, then `e`, then `e`.
 
-All common [LSP keys](lsp.md) apply. Conjure shadows two of them in Clojure files: `gd` and `K` go through conjure first (definition and docs from the live REPL, falling back to the LSP). Throughout this page, "a Clojure file" means anything Neovim detects as the clojure filetype: `.clj`, `.cljs`, `.cljc`, and `.edn`.
+All common [LSP keys](lsp.md) apply, `K` included: it opens the same hover float here as in every other language, showing clojure-lsp's compact hover. Conjure's own documentation lookup - which asks the **live REPL**, so it can describe a var you defined at the prompt a minute ago - lives on `\K` instead, and its answer appears in the REPL log rather than in a popup. `gd` still goes through conjure first, falling back to the LSP.
+
+Throughout this page, "a Clojure file" means anything Neovim detects as the clojure filetype: `.clj`, `.cljs`, `.cljc`, and `.edn`.
 
 ## Starting the REPL
 
@@ -81,6 +83,7 @@ Refresh often; treat a fresh JVM (and CI) as the source of truth.
 | `\ve` | `:ConjureCljLastException` | View the last exception as structured data instead of a stack-trace wall |
 | `\v1` / `\v2` / `\v3` | - | Recall the three most recent evaluation results (keys only, no command form) |
 | `\vs` | `:ConjureCljViewSource` | View the source of the symbol under the cursor |
+| `\K` | `:ConjureDocWord` | Documentation for the symbol under the cursor, asked of the live REPL - so it knows vars defined at the prompt, which `K` (clojure-lsp's hover) has never seen. The answer lands in the log, not in a popup |
 
 ## Connection
 

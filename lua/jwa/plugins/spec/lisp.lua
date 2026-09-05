@@ -77,7 +77,8 @@ return {
 	--   \ew   eval word (inspect a value)     \E    eval visual selection
 	--   \ls   open log in split               \lv   log in vsplit
 	--   gd    conjure's go-to-definition (falls back to LSP's)
-	--   K     conjure doc lookup (shadows LSP hover in its buffers)
+	--   \K    conjure doc lookup, from the live REPL (moved off bare K
+	--         2026-09-05 so K stays the LSP hover float, as elsewhere)
 	-- Clients per filetype (upstream defaults kept):
 	--   clojure -> nREPL: start one per project (e.g. `clj -M:nrepl` or
 	--              any editor-nrepl alias); conjure auto-connects via
@@ -102,6 +103,30 @@ return {
 				"racket",
 				"scheme",
 			}
+
+			-- Give `K` back to the LSP (2026-09-05, user request).
+			--
+			-- Conjure claims a bare `K` for its doc lookup, and its answer
+			-- does not arrive in a popup: it is appended to the REPL log,
+			-- which then pops the HUD in the top-right corner showing the
+			-- log TAIL - previous errors and duplicate entries included.
+			-- Every other language in this config answers `K` with an LSP
+			-- hover float over the symbol, and that is what the user wants
+			-- here too.
+			--
+			-- How the move works: conjure builds this mapping in
+			-- mapping.lua's M.buf, which reads a STRING as "prefix it with
+			-- the localleader" and a LIST as "use this key bare". Upstream
+			-- ships doc_word = {"K"}, a list, hence the bare K. Handing it
+			-- the string "K" makes it <localleader>K, i.e. \K.
+			--
+			-- Moved rather than disabled (false would work) because the
+			-- capability is real and clojure-lsp cannot replace it: conjure
+			-- asks the LIVE REPL, so it can document a var defined minutes
+			-- ago at the prompt, which static analysis has never seen. The
+			-- same M.buf branch also creates :ConjureDocWord, so disabling
+			-- would take the command away with the key.
+			vim.g["conjure#mapping#doc_word"] = "K"
 
 			-- --- nREPL forgot-to-start reminder (2026-08-17, user request) ---
 			--
