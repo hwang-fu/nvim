@@ -94,7 +94,15 @@ function M.set_common_keymaps(bufnr)
     map("n", "gD", vim.lsp.buf.declaration)
     map("n", "gt", vim.lsp.buf.type_definition)
     map("n", "gi", vim.lsp.buf.implementation)
-    map("n", "K", vim.lsp.buf.hover)
+    -- Bordered, for the same reason as the signature popup below: without
+    -- one the float has no edge, and hover content is long enough to sit
+    -- over a screenful of code looking like the buffer got corrupted
+    -- rather than like a window. Servers that replace K with their own
+    -- hover (haskell-tools, rustaceanvim) bring their own window and are
+    -- unaffected by this.
+    map("n", "K", function()
+        vim.lsp.buf.hover({ border = "rounded" })
+    end)
     map("n", "<leader>rn", vim.lsp.buf.rename)
     map("n", "<leader>ca", vim.lsp.buf.code_action)
     -- Rounded border on the signature popup (2026-09-05, user request).
