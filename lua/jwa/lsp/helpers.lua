@@ -97,7 +97,23 @@ function M.set_common_keymaps(bufnr)
     map("n", "K", vim.lsp.buf.hover)
     map("n", "<leader>rn", vim.lsp.buf.rename)
     map("n", "<leader>ca", vim.lsp.buf.code_action)
-    map({ "n", "i" }, "<C-k>", vim.lsp.buf.signature_help)
+    -- Rounded border on the signature popup (2026-09-05, user request).
+    --
+    -- LSP floats take their border from the call's own `border` option and
+    -- fall back to 'winborder' (runtime/lua/vim/lsp/util.lua), which this
+    -- config never sets - so every LSP popup was borderless while the
+    -- diagnostic float from `gl` has had a rounded border all along
+    -- (lsp/init.lua's vim.diagnostic.config). "rounded" here is that same
+    -- border, and the one the floating terminal in lua/jwa/term.lua uses.
+    --
+    -- Passed per call rather than by setting 'winborder' globally: that
+    -- option reaches EVERY floating window that has not asked for a border
+    -- of its own, which here would also restyle blink.cmp's menu and
+    -- documentation popups. Widening it is one line if that is ever wanted;
+    -- this keeps the change to the window that was asked about.
+    map({ "n", "i" }, "<C-k>", function()
+        vim.lsp.buf.signature_help({ border = "rounded" })
+    end)
 end
 
 -- Diagnostic navigation: gl opens the floating diagnostic window for the
