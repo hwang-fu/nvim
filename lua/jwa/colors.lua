@@ -49,6 +49,10 @@ local palette = {
 	-- instead of drawing its own black rectangle. Not dead weight to
 	-- delete: retyping a hand-copied colour is how the two drift apart.
 	kitty_background = "#32324e",
+	-- Floating-window border. The scheme paints it near-white, the same
+	-- colour as the text, which is what makes a thin line read as a heavy
+	-- frame. Dimmed until it is an edge rather than a feature.
+	float_border_fg = "#5b5e70",
 	-- Background of fenced code blocks inside rendered markdown, which
 	-- in practice means the code samples in every LSP hover popup.
 	-- Wanted: clearly a block against the float's own #292a35, while
@@ -201,12 +205,36 @@ local function style_code_blocks()
 	vim.api.nvim_set_hl(0, "RenderMarkdownCode", { bg = palette.code_block_bg })
 end
 
+-- --------------------------------------------------------------------------
+-- Customization no. 7 (2026-09-06, user request): a thinner-looking float
+-- border.
+--
+-- There is no thinner border STYLE to switch to. Neovim offers single and
+-- rounded (both the light box-drawing set), bold, double, solid and shadow
+-- ('winborder' in options.txt) - rounded is already the lightest stroke
+-- available, so weight has to come off the colour instead.
+--
+-- The scheme gives FloatBorder the same near-white as the float's text,
+-- which is why one light line reads as a frame around everything. Dimming
+-- it keeps the edge legible - the point of having it at all is telling
+-- popup from buffer - without competing with the content inside.
+--
+-- The border keeps NO background of its own, so the corners sit on the
+-- editor background rather than the float's. Giving it bg = NormalFloat's
+-- would fuse the frame into the popup body; not done, because the ring of
+-- editor background is part of what separates the two.
+-- --------------------------------------------------------------------------
+local function style_float_border()
+	vim.api.nvim_set_hl(0, "FloatBorder", { fg = palette.float_border_fg })
+end
+
 local function apply_overrides()
 	vim.cmd.highlight("Normal guibg=" .. palette.background)
 	strip_code_italics()
 	style_inlay_hints()
 	hide_color_column()
 	style_code_blocks()
+	style_float_border()
 end
 
 -- require("jwa.colors").setup()
