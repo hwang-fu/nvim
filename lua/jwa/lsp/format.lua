@@ -16,10 +16,10 @@
 --       and replaces the contents while preserving the cursor. Each external
 --       formatter gets its own autocmd so the pattern stays specific.
 --
--- Not every language formats on save. Rust, OCaml and Haskell are
+-- Not every language formats on save. Rust, OCaml, Haskell and Clojure are
 -- deliberately off, with a manual command each (:RustFmt, :OCamlFmt,
--- :HaskellFmt, all in after/ftplugin/) so a save never rewrites the buffer
--- under you.
+-- :HaskellFmt, :ClojureFmt, all in after/ftplugin/) so a save never rewrites
+-- the buffer under you.
 --
 -- check_formatter_binaries() also lives in this module. The format_with_cmd
 -- helper is silent on failure by design (a non-zero exit is treated as "leave
@@ -38,6 +38,9 @@
 --     same way the old save-time handlers did. Called by :OCamlFmt.
 --   require("jwa.lsp.format").format_haskell_buffer()
 --     Formats the current Haskell buffer through HLS. Called by :HaskellFmt.
+--   require("jwa.lsp.format").format_clojure_buffer()
+--     Formats the current Clojure buffer through clojure-lsp (cljfmt).
+--     Called by :ClojureFmt.
 -- ============================================================================
 
 local M = {}
@@ -182,6 +185,44 @@ function M.format_haskell_buffer()
     })
 end
 
+-- ----------------------------------------------------------------------------
+-- Clojure formatting, on demand only (2026-09-06, user request).
+--
+-- Fourth language off the save path, after Rust, OCaml and Haskell, and the
+-- same single-path shape as Haskell: clojure-lsp runs cljfmt, and there is no
+-- CLI arm behind it.
+--
+-- Covers .clj, .cljs, .cljc AND .edn, because Neovim gives all four the
+-- `clojure` filetype (.edn through a detect function that answers "clojure"
+-- unless the file is an EDIF netlist). Leaving .edn on save while .clj came
+-- off would be the odd split, not the tidy one - same filetype, same
+-- formatter, same key.
+--
+-- Worth knowing about what changed here: unlike ormolu or ocamlformat, cljfmt
+-- only ever touched whitespace, so formatting on save was never going to
+-- rewrite the shape of your code. It comes off the save path for consistency
+-- with its three siblings, not because it was doing damage.
+--
+-- The no-client warning and the absence of a format_on_save_enabled gate are
+-- both there for the reasons given on the two functions above.
+-- ----------------------------------------------------------------------------
+local CLOJURE_CLIENT = "clojure_lsp"
+
+function M.format_clojure_buffer()
+    if vim.tbl_isempty(vim.lsp.get_clients({ bufnr = 0, name = CLOJURE_CLIENT })) then
+        vim.notify(
+            "ClojureFmt: no clojure-lsp client attached to this buffer, nothing to format",
+            vim.log.levels.WARN
+        )
+        return
+    end
+
+    vim.lsp.buf.format({
+        async = false,
+        name = CLOJURE_CLIENT,
+    })
+end
+
 -- ============================================================================
 -- 1. Format-on-save autocmds
 -- ============================================================================
@@ -202,10 +243,10 @@ local function setup_format_on_save()
         pattern = {
             "*.go",
             -- "*.rs", -- format-on-save disabled; uncomment to re-enable rustfmt
-            "*.clj",
-            "*.cljs",
-            "*.cljc",
-            "*.edn",
+            -- "*.clj" / "*.cljs" / "*.cljc" / "*.edn" were here until
+            -- 2026-09-06. Clojure joined Rust, OCaml and Haskell on the
+            -- on-demand path: :ClojureFmt -> M.format_clojure_buffer()
+            -- near the top of this file.
             "*.toml",
             "*.json",
             "*.jsonc",

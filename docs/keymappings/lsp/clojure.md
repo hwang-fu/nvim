@@ -1,8 +1,8 @@
 # Clojure
 
-*REPL keys from conjure (`lua/jwa/plugins/spec/lisp.lua`); static analysis from clojure-lsp (`lua/jwa/lsp/servers/clojure_lsp.lua`). No structural-editing plugin: parens are yours to type, and only format-on-save (whitespace-only) touches the code.*
+*REPL keys from conjure (`lua/jwa/plugins/spec/lisp.lua`); static analysis from clojure-lsp (`lua/jwa/lsp/servers/clojure_lsp.lua`). No structural-editing plugin: parens are yours to type, and nothing reformats the file unless you ask with `:ClojureFmt`.*
 
-Two engines share the work. clojure-lsp reads the code statically: completion, `gd`-style navigation, `<leader>rn` rename, `grr` references, format on save (cljfmt), and compact hovers (arities on one line, no file-path footer). Conjure talks to a **live REPL**: everything below with a `\` prefix evaluates real code in your running program. The localleader is backslash, so `\ee` means: press backslash, then `e`, then `e`.
+Two engines share the work. clojure-lsp reads the code statically: completion, `gd`-style navigation, `<leader>rn` rename, `grr` references, formatting on request (cljfmt, via `:ClojureFmt`), and compact hovers (arities on one line, no file-path footer). Conjure talks to a **live REPL**: everything below with a `\` prefix evaluates real code in your running program. The localleader is backslash, so `\ee` means: press backslash, then `e`, then `e`.
 
 All common [LSP keys](lsp.md) apply, `K` included: it opens the same hover float here as in every other language, showing clojure-lsp's compact hover. Conjure's own documentation lookup - which asks the **live REPL**, so it can describe a var you defined at the prompt a minute ago - lives on `\K` instead, and its answer appears in the REPL log rather than in a popup. `gd` still goes through conjure first, falling back to the LSP.
 
@@ -49,6 +49,14 @@ Every key also exists as a command, created by conjure in Clojure files - the Co
 | `\ei` | `:ConjureCljInterrupt` | Interrupt the oldest running evaluation - the escape hatch for an accidental infinite loop |
 | `\xr` | `:ConjureCljMacroExpand` | Show the macroexpansion of the current form (`\xa` / `:ConjureCljMacroExpandAll` expands everything) |
 | `\ls` / `\lv` | `:ConjureLogSplit` / `:ConjureLogVSplit` | Open conjure's log of results in a split / vsplit |
+
+### Formatting
+
+Clojure does not format on save - a save leaves the file exactly as you typed it. `:ClojureFmt` runs cljfmt through clojure-lsp over the current buffer and writes the file afterwards, so the two stay one action. It covers `.clj`, `.cljs`, `.cljc` and `.edn` alike, since Neovim gives all four the same filetype and cljfmt formats all four.
+
+Worth knowing if you liked the old behaviour: cljfmt only ever touched whitespace, so formatting on save here was never going to rearrange your code the way ormolu or ocamlformat would. It moved off the save path to match Rust, OCaml and Haskell, not because it was misbehaving.
+
+`:FormatNotOnSave` does not affect `:ClojureFmt` - that switch silences saves, and this is an explicit request.
 
 ### Where results show up
 
