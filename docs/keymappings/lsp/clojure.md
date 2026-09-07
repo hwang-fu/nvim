@@ -99,6 +99,16 @@ Refresh often; treat a fresh JVM (and CI) as the source of truth.
 | `\vs` | `:ConjureCljViewSource` | View the source of the symbol under the cursor |
 | `\K` | `:ConjureDocWord` | Documentation for the symbol under the cursor, asked of the live REPL - so it knows vars defined at the prompt, which `K` (clojure-lsp's hover) has never seen. The answer lands in the log, not in a popup |
 
+## Java interop
+
+`gd` on a Java class - `MessageDigest`, `HttpRequest`, anything imported from the JDK - jumps into the real JDK source. That only works because the sources are installed: clojure-lsp finds `src.zip` by following the `java` on your `PATH` into its JDK, then extracts it once into `~/.cache/clojure-lsp/jdk/`. Without them the jump does nothing, and clojure-lsp will not fetch them on its own - its `:java :download-jdk-source?` setting is off by default, and points at a reduced OpenJDK 19 tree that would not match the JDK you actually run.
+
+On Fedora the sources are a separate package, versioned to match the JDK: `sudo dnf install java-25-openjdk-src` for the JDK 25 currently on `PATH`. When the system JDK moves to a new major version, install that version's `-src` alongside; the packages are built to coexist, which is why the version is in the name.
+
+What you land in is reference material, not a project. **No Java language server runs there**, deliberately: jdtls skips `~/.cache/clojure-lsp/` (`lua/jwa/lsp/servers/jdtls.lua`). Asking a Java server to analyse JDK source outside a module context makes the module system contradict itself - `The package java.net.http conflicts with a package accessible from another module: java.net.http` - which is true, unfixable, and says nothing you wanted to know. `Ctrl-O` walks back out.
+
+Navigation and completion are as far as the static side goes. clojure-lsp supports finding Java class definitions and completing fields and methods; **hover on a Java member frequently returns nothing**, so a `K` on `.getBytes` coming up empty is the tool's limit rather than a fault in your code. For that question the live REPL is the better instrument: `\K` asks the running JVM through nREPL, which resolves Java members by reflection and is not bound by what static analysis indexed.
+
 ## Connection
 
 | Key | Command | Action |
