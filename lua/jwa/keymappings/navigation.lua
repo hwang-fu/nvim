@@ -71,14 +71,21 @@ function M.setup()
         vim.cmd(cmd)
     end
 
+    -- BufferLineCycleNext / Prev rather than :bnext / :bprevious. With
+    -- bufferline's default ordering the two are the same walk, so this
+    -- changes nothing today. It matters the day a tab gets dragged or
+    -- `sort_by` is changed: bufferline's commands follow the order shown in
+    -- the bar, while :bnext is hardcoded to buffer numbers and would start
+    -- moving the highlight somewhere the eye did not expect. See the spec in
+    -- plugins/spec/bufferline.lua.
     map("n", "]b", function()
-        cycle_buffer("bnext")
+        cycle_buffer("BufferLineCycleNext")
     end, {
         silent = true,
         desc = "Next buffer (warns when only one is open)",
     })
     map("n", "[b", function()
-        cycle_buffer("bprevious")
+        cycle_buffer("BufferLineCyclePrev")
     end, {
         silent = true,
         desc = "Previous buffer (warns when only one is open)",
