@@ -228,6 +228,28 @@ local function style_float_border()
 	vim.api.nvim_set_hl(0, "FloatBorder", { fg = palette.float_border_fg })
 end
 
+-- --------------------------------------------------------------------------
+-- Customization no. 8 (2026-09-07, user request): the sign column shares the
+-- editor background.
+--
+-- The scheme gives SignColumn its own #292a35, which against a black Normal
+-- draws a permanent lighter stripe down the left edge - visible on every
+-- window, whether or not any sign is in it. Linked rather than copied, for
+-- the reason given on ColorColumn above: a copy would have to be revisited
+-- every time the background moves, and forgetting is silent.
+--
+-- Checked before repurposing this group, which is the habit customization
+-- no. 6 was paid for. Three installed plugins reference SignColumn:
+-- render-markdown links its own Sign highlight to it and therefore inherits
+-- this, which is what we want; glance and diffview both remap SignColumn to
+-- private groups through winhighlight inside their own windows, so neither
+-- sees the change at all. diffview's own table already sets SignColumn to
+-- Normal, which is some comfort that this is the conventional answer.
+-- --------------------------------------------------------------------------
+local function blend_sign_column()
+	vim.api.nvim_set_hl(0, "SignColumn", { link = "Normal" })
+end
+
 local function apply_overrides()
 	vim.cmd.highlight("Normal guibg=" .. palette.background)
 	strip_code_italics()
@@ -235,6 +257,7 @@ local function apply_overrides()
 	hide_color_column()
 	style_code_blocks()
 	style_float_border()
+	blend_sign_column()
 end
 
 -- require("jwa.colors").setup()

@@ -33,6 +33,45 @@ return {
 		"nvim-tree/nvim-web-devicons",
 	},
 	config = function()
+		-- Repaint the whole bar on the editor background (2026-09-07, user
+		-- request). The scheme gives bufferline four or five slightly
+		-- different darks - fill #1c1c1c, inactive tabs #0f1014, the selected
+		-- one #292a35 - none of which is Normal's #000000, so the bar reads
+		-- as a lighter band pasted above the buffer.
+		--
+		-- Done as a sweep rather than a list because there are 62
+		-- BufferLine* groups and 60 of them carry a background: naming them
+		-- would be a table nobody could keep correct across plugin updates.
+		-- Every other attribute is preserved, so the tabs keep whatever
+		-- foreground, bold and underline the scheme gave them - only the
+		-- background is forced.
+		--
+		-- Read from the live Normal rather than a literal, so it follows the
+		-- editor background instead of needing to be recomputed with it.
+		-- Deferred through vim.schedule inside the ColorScheme handler
+		-- because lua/jwa/colors.lua repaints Normal from its own
+		-- ColorScheme autocmd; reading during the event would race it and
+		-- could catch the scheme's background instead of ours.
+		local function match_normal_background()
+			local normal = vim.api.nvim_get_hl(0, { name = "Normal", link = false })
+			if not normal.bg then
+				return
+			end
+			for name, def in pairs(vim.api.nvim_get_hl(0, {})) do
+				if name:match("^BufferLine") and def.bg then
+					def.bg = normal.bg
+					-- Drop `default` before writing it back. bufferline
+					-- registers the per-filetype icon highlights with
+					-- default = true, and nvim_set_hl honours that flag on
+					-- the way IN: a default definition does not overwrite an
+					-- existing group, so echoing the table back unchanged is
+					-- a silent no-op on exactly the groups that needed it.
+					def.default = nil
+					vim.api.nvim_set_hl(0, name, def)
+				end
+			end
+		end
+
 		require("bufferline").setup({
 			options = {
 				-- Error and warning counts per tab, from the language
@@ -60,6 +99,25 @@ return {
 					},
 				},
 			},
+		})
+
+		match_normal_background()
+
+		-- Re-swept on buffer events as well as on :colorscheme, because the
+		-- group list is not fixed. bufferline creates the per-filetype icon
+		-- highlights lazily - BufferLineDevIconClojure and its Selected twin
+		-- appear the first time a Clojure buffer is drawn in the bar - so a
+		-- sweep at setup catches only the filetypes already open, and every
+		-- new one afterwards would arrive wearing the scheme's background.
+		--
+		-- Cheap enough for these events: a few hundred table reads, once per
+		-- buffer shown, not per keystroke. Scheduled so it runs after
+		-- bufferline has rendered and the new groups actually exist.
+		vim.api.nvim_create_autocmd({ "ColorScheme", "BufAdd", "BufWinEnter" }, {
+			group = vim.api.nvim_create_augroup("JwaBufferlineHl", { clear = true }),
+			callback = function()
+				vim.schedule(match_normal_background)
+			end,
 		})
 	end,
 }
