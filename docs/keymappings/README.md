@@ -41,6 +41,7 @@ These are defined in `lua/jwa/keymappings/`, one file per page:
 - [rust](lsp/rust.md) - rust-analyzer extras
 - [ocaml](lsp/ocaml.md) - OCaml editing commands and the utop REPL
 - [haskell](lsp/haskell.md) - HLS subcommands and Hoogle hover
+- [csharp](lsp/csharp.md) - Roslyn for C#, Razor and Blazor
 - [elixir](lsp/elixir.md) - Mix tasks and pipe rewriting
 - [clojure](lsp/clojure.md) - the REPL-driven workflow: evaluate, test, refresh, inspect
 - [fennel](lsp/fennel.md) - evaluation inside Neovim's own runtime, no REPL process at all

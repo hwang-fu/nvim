@@ -16,10 +16,10 @@
 --       and replaces the contents while preserving the cursor. Each external
 --       formatter gets its own autocmd so the pattern stays specific.
 --
--- Not every language formats on save. Rust, OCaml, Haskell and Clojure are
--- deliberately off, with a manual command each (:RustFmt, :OCamlFmt,
--- :HaskellFmt, :ClojureFmt, all in after/ftplugin/) so a save never rewrites
--- the buffer under you.
+-- Not every language formats on save. Rust, OCaml, Haskell, Clojure and C#
+-- are deliberately off, with a manual command each (:RustFmt, :OCamlFmt,
+-- :HaskellFmt, :ClojureFmt, :CSharpFmt, all in after/ftplugin/) so a save
+-- never rewrites the buffer under you.
 --
 -- check_formatter_binaries() also lives in this module. The format_with_cmd
 -- helper is silent on failure by design (a non-zero exit is treated as "leave
@@ -41,6 +41,9 @@
 --   require("jwa.lsp.format").format_clojure_buffer()
 --     Formats the current Clojure buffer through clojure-lsp (cljfmt).
 --     Called by :ClojureFmt.
+--   require("jwa.lsp.format").format_csharp_buffer()
+--     Formats the current C# or Razor buffer through Roslyn, sorting using
+--     directives at the same time. Called by :CSharpFmt.
 -- ============================================================================
 
 local M = {}
@@ -220,6 +223,39 @@ function M.format_clojure_buffer()
     vim.lsp.buf.format({
         async = false,
         name = CLOJURE_CLIENT,
+    })
+end
+
+-- ----------------------------------------------------------------------------
+-- C# / Razor formatting, on demand (2026-09-08, user request).
+--
+-- Joins Rust, OCaml, Haskell and Clojure on the manual path - though unlike
+-- those four it never had a save-time handler to remove: C# arrived after the
+-- on-demand pattern was already the house style.
+--
+-- The Roslyn server does the formatting, and its settings in
+-- lsp/servers/roslyn.lua also turn on dotnet_organize_imports_on_format, so
+-- this sorts using directives at the same time.
+--
+-- Same no-client warning as the two above, and it earns its keep here more
+-- than anywhere else: Roslyn will not attach until it has resolved a solution
+-- or project, so a stray .cs file outside any project genuinely has no server
+-- and would otherwise fail in silence.
+-- ----------------------------------------------------------------------------
+local CSHARP_CLIENT = "roslyn"
+
+function M.format_csharp_buffer()
+    if vim.tbl_isempty(vim.lsp.get_clients({ bufnr = 0, name = CSHARP_CLIENT })) then
+        vim.notify(
+            "CSharpFmt: no Roslyn client attached to this buffer, nothing to format",
+            vim.log.levels.WARN
+        )
+        return
+    end
+
+    vim.lsp.buf.format({
+        async = false,
+        name = CSHARP_CLIENT,
     })
 end
 

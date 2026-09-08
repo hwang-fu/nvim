@@ -20,7 +20,7 @@
 | `[d` | Previous diagnostic (built in) |
 | `]d` | Next diagnostic (built in) |
 
-Formatting runs automatically on save for most languages; `lua/jwa/lsp/format.lua` defines which formatter each one uses. Rust, OCaml, Haskell and Clojure are deliberately left out and have a manual command each instead - [`:RustFmt`](rust.md), [`:OCamlFmt`](ocaml.md), [`:HaskellFmt`](haskell.md) and [`:ClojureFmt`](clojure.md) - so a save never rewrites those buffers under you. Each of the four formats and then writes the file, so asking for a format is still a single action.
+Formatting runs automatically on save for most languages; `lua/jwa/lsp/format.lua` defines which formatter each one uses. Rust, OCaml, Haskell, Clojure and C# are deliberately left out and have a manual command each instead - [`:RustFmt`](rust.md), [`:OCamlFmt`](ocaml.md), [`:HaskellFmt`](haskell.md), [`:ClojureFmt`](clojure.md) and [`:CSharpFmt`](csharp.md) - so a save never rewrites those buffers under you. Each of the five formats and then writes the file, so asking for a format is still a single action.
 
 Messages a server pushes on its own - a formatter refusing a file it cannot parse, a project failing to load - arrive as a single yellow line and never interrupt what you are doing. Server **errors** are shown at warning level deliberately: an error-level message echoed while a save was in flight used to abort the write itself, so the file stayed unsaved behind the error text. Long messages are cut to fit one line. Diagnostics are untouched by this - a real fault still marks the offending line in the buffer, which is where the detail belongs. The handler is in `lua/jwa/lsp/init.lua`.
 
@@ -45,6 +45,7 @@ Languages with tooling beyond the common keys have their own page:
 - [rust](rust.md) - `:RustLsp` extras, `:RustFmt`, hover with actions
 - [ocaml](ocaml.md) - Merlin commands, typed holes, the utop REPL
 - [haskell](haskell.md) - `:Haskell` subcommands, Hoogle-aware hover
+- [csharp](csharp.md) - Roslyn, Blazor and Razor, `:CSharpFmt`
 - [elixir](elixir.md) - `:Mix`, pipe rewriting, Phoenix scaffolding
 - [lisp](lisp.md) - buffer evaluation with conjure; SLIME for Common Lisp (the lisps use the common keys above for LSP itself)
 

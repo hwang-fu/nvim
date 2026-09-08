@@ -60,6 +60,13 @@
 --                             at all. See lsp/servers/tsgo.lua.
 --
 -- Servers NOT in SERVERS by design:
+--   * roslyn                - owned by the roslyn.nvim plugin (see
+--                             plugins/spec/roslyn.lua and lsp/servers/
+--                             roslyn.lua). The plugin picks the solution
+--                             target and starts the client itself; the
+--                             server module only registers settings
+--                             through vim.lsp.config, from the spec's
+--                             `init` hook.
 --   * rust_analyzer         - owned by the rustaceanvim plugin (see
 --                             plugins/spec/rustaceanvim.lua and lsp/servers/
 --                             rust_analyzer.lua). rustaceanvim does its

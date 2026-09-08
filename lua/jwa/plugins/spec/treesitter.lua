@@ -53,6 +53,10 @@ return {
 			"json", "yaml", "toml", "bash", "dockerfile",
 			"proto", "make", "perl", "fortran",
 			"java", "cmake",
+			-- C# and Blazor. `razor` parses the .razor / .cshtml mix of
+			-- markup and C#; both are needed for a Blazor component to
+			-- highlight all the way through.
+			"c_sharp", "razor",
 		}
 		local installed = {}
 		for _, lang in ipairs(require("nvim-treesitter").get_installed()) do
