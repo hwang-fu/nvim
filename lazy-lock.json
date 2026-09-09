@@ -1,5 +1,6 @@
 {
-  "SchemaStore.nvim": { "branch": "main", "commit": "2224119e0794fa979d435a7390fa6278877bf3ae" },
+  "Coqtail": { "branch": "main", "commit": "c5ab7d8127ebfb7e18f124efdfc568e1a59c5cc1" },
+  "SchemaStore.nvim": { "branch": "main", "commit": "10c76a652d7b1a81bacf5449df76e6e83d367bff" },
   "arm-syntax-vim": { "branch": "master", "commit": "84ee5c476bbfde87dd6b5fb9f6f207fbce335a73" },
   "blink.cmp": { "branch": "main", "commit": "78336bc89ee5365633bcf754d93df01678b5c08f" },
   "bufferline.nvim": { "branch": "main", "commit": "655133c3b4c3e5e05ec549b9f8cc2894ac6f51b3" },
@@ -10,7 +11,7 @@
   "elixir-tools.nvim": { "branch": "main", "commit": "b51b48edc668924a6b2f6610f9a0aff34741d20e" },
   "fhir.nvim": { "branch": "main", "commit": "b3ba10c8287a6f26fe173122ce1c54e8566e4656" },
   "flash.nvim": { "branch": "main", "commit": "5f0f270fdc7c5b0c21d903ee85b9cb06f2ac636a" },
-  "gitsigns.nvim": { "branch": "main", "commit": "5be654f2232c10ddcad19c1607a67b6b4b78fc29" },
+  "gitsigns.nvim": { "branch": "main", "commit": "f2421c550618d257048afa650413d9e542ddbe67" },
   "glance.nvim": { "branch": "master", "commit": "5a8eab1c1c48bfa19a33b556328a3c553138366e" },
   "gruvbox.nvim": { "branch": "main", "commit": "154eb5ff5b96d0641307113fa385eaf0d36d9796" },
   "haskell-tools.nvim": { "branch": "main", "commit": "2493ed5ac22bff87b10b5fc4c7fdbf0f9ea180b2" },
