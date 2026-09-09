@@ -46,6 +46,7 @@ These are defined in `lua/jwa/keymappings/`, one file per page:
 - [clojure](lsp/clojure.md) - the REPL-driven workflow: evaluate, test, refresh, inspect
 - [fennel](lsp/fennel.md) - evaluation inside Neovim's own runtime, no REPL process at all
 - [lisp](lsp/lisp.md) - evaluating Lisp code from the buffer
+- [rocq](lsp/rocq.md) - stepping through Coq/Rocq proofs, with goal and info panels
 - [crates](crates.md) - Cargo.toml dependency commands
 - [fhir](fhir.md) - FHIR resource tooling
 

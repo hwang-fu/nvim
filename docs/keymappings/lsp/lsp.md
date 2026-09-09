@@ -48,5 +48,6 @@ Languages with tooling beyond the common keys have their own page:
 - [csharp](csharp.md) - Roslyn, Blazor and Razor, `:CSharpFmt`
 - [elixir](elixir.md) - `:Mix`, pipe rewriting, Phoenix scaffolding
 - [lisp](lisp.md) - buffer evaluation with conjure; SLIME for Common Lisp (the lisps use the common keys above for LSP itself)
+- [rocq](rocq.md) - interactive proofs with Coqtail. The exception on this list: no language server attaches to `.v` buffers, so none of the keys above apply there
 
 Every other language (Go, Python, C, Java, CMake, Erlang, Clojure, Racket, Fennel, and the rest) uses exactly the keys above.

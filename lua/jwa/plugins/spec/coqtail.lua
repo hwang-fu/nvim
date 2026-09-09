@@ -1,0 +1,42 @@
+-- Interactive Rocq (Coq) proofs: Coqtail (2026-09-10, user request).
+--
+-- Rocq is the one language here that is not edited so much as *executed*. A
+-- proof is a sequence of tactics, each transforming a goal state, and the
+-- question while writing one is always "what is the goal right now" - which no
+-- amount of syntax highlighting answers. Coqtail runs a Rocq process, feeds it
+-- the buffer one sentence at a time under your control, and shows the
+-- resulting goals and messages in two side panels.
+--
+-- Chosen over the LSP route deliberately. coq-lsp exists and is installed in
+-- the opam switch, and the rest of this config would have preferred it -
+-- same keys as the other twenty servers, diagnostics through the same
+-- pipeline. Two things decided against it:
+--
+--   * Continuous checking re-verifies the file on every edit. A single Qed can
+--     take seconds; step-through only checks as far as you have gone, which is
+--     why most Coq work is still done that way rather than out of nostalgia.
+--   * coq-lsp's own capability table still answers "No" to references, code
+--     actions, semantic tokens and inlay hints, so the LSP integration would
+--     have bought less uniformity than it looks like from the outside.
+--
+-- Requirements, all already satisfied on this machine:
+--
+--   * Python 3 with pynvim - Coqtail's engine is Python, talking to Neovim
+--     through the python3 provider (`:checkhealth provider` shows it).
+--   * `coqidetop` on PATH - NOT part of the `rocq` binary. Rocq speaks its
+--     IDE protocol through a separate XML server, packaged in opam as
+--     `coqide-server`; `rocq` itself has no ide subcommand. Coqtail launches
+--     `coqidetop` by name (its python/xmlInterface.py), so without that
+--     package it fails at startup with nothing obviously wrong in the config.
+--
+-- No lazy-load trigger. Coqtail ships the ftdetect, syntax and indent files
+-- for Rocq as well as the proof interface, and those have to be in place
+-- before the first .v buffer is read rather than after it.
+--
+-- Filetype note: ".v" is claimed by Verilog, Rocq and V alike. This config
+-- used to map it to Verilog outright; that override was removed in
+-- lua/jwa/lsp/init.lua so Neovim's own content-based detector can decide, and
+-- the comment there explains what it looks at.
+return {
+	"whonore/Coqtail",
+}

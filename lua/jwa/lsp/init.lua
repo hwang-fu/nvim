@@ -157,7 +157,22 @@ local function setup_filetypes()
 
         extension = {
             -- Verilog / SystemVerilog
-            v = "verilog",
+            --
+            -- ".v" is deliberately ABSENT (2026-09-10). Three languages
+            -- claim that extension - Verilog, Rocq/Coq, and V - and Neovim
+            -- already tells them apart by reading the file: its detect.v()
+            -- scans the first 500 lines for the shape of each
+            -- (runtime/lua/vim/filetype/detect.lua). Mapping ".v" here
+            -- overrode that with a guess, which was harmless while only
+            -- Verilog mattered and became wrong the moment Rocq arrived -
+            -- every proof file opened as Verilog.
+            --
+            -- Verified both ways on this machine: a file starting with
+            -- `Require Import List.` resolves to `coq`, one starting with
+            -- a `timescale directive and `module` resolves to `verilog`.
+            -- If the heuristic ever guesses wrong on a real file, the
+            -- escape hatch is `vim.g.filetype_v`, which detect.v() checks
+            -- before looking at content at all.
             vh = "verilog",
             sv = "systemverilog",
             svh = "systemverilog",
