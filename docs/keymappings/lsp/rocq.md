@@ -74,6 +74,21 @@ These answer in the Info panel, using the term under the cursor (or the visual s
 
 **`.v` is a contested extension.** Verilog, Rocq and V all use it. This config no longer forces it to Verilog - Neovim reads the first 500 lines and decides, which gets both right. If it ever guesses wrong on a real file, `vim.g.filetype_v` overrides it outright.
 
+## Symbols
+
+`forall` is drawn as the quantifier glyph and `exists` as its partner, so a statement reads closer to how it would be written on paper. It is on by default.
+
+**Nothing is rewritten.** `conceallevel` is a window option, so the file on disk still says `forall`, and so do the buffer, `grep`, the git diff, and what Rocq reads. Open the same file in two splits with different settings and the text is identical in both - only the drawing differs.
+
+| Command | Effect |
+|---------|--------|
+| `:RocqUnconceal` | Show the file as written, in this window |
+| `:RocqConceal` | Back to symbols |
+
+You rarely need either, because the line you are working on un-conceals itself. `concealcursor` is set to `n`, which means the cursor line joins the concealing **only in normal mode**: start typing or select a region and that line snaps back to `forall` while everything around it stays symbolic. That matters more than it sounds - a concealed word occupies one cell instead of six, so while it is drawn as a symbol the cursor's real column stops matching where it appears.
+
+The symbol table is in `after/syntax/coq.vim` and is deliberately two entries long: long enough to find out whether concealing suits you, short enough that nothing has to be unlearned if it does not. Note the hard limit before extending it - Vim's `cchar` accepts exactly **one** character, so any substitution needing two or more is not expressible at all.
+
 ## Why not an LSP
 
 Every other language here is driven by a language server, and `coq-lsp` exists - it is even installed in the opam switch. It was not chosen, for two reasons.
