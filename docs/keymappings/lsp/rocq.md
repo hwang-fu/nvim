@@ -105,7 +105,7 @@ These answer in the Info panel, using the term under the cursor (or the visual s
 
 ## Symbols
 
-Ten pieces of ASCII are drawn as the symbols they stand for, so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
+Nine pieces of ASCII are drawn as the symbols they stand for, so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
 
 | Written | Drawn | Codepoint |
 |---------|-------|-----------|
@@ -116,11 +116,10 @@ Ten pieces of ASCII are drawn as the symbols they stand for, so a statement read
 | `/\` | logical AND | U+2227 |
 | `~` | the not sign | U+00AC |
 | `<>` | not equal to | U+2260 |
-| `<->` | long left-right arrow | U+27F7 |
 | `True` | verum / top | U+22A4 |
 | `False` | falsum / bottom | U+22A5 |
 
-`<=` is deliberately not in the table and keeps its ASCII. `<>` and `<->` cannot be confused with each other - one needs a `>` immediately after the `<`, the other a hyphen - so neither eats the other.
+`<=` and `<->` are deliberately not in the table and keep their ASCII; `<->` was drawn as U+27F7 for a few hours on 2026-09-13 and taken back out. Neither is at risk from `<>`, which matches only a `<` with a `>` immediately after it.
 
 ### Fonts
 
@@ -130,7 +129,9 @@ A substitution is only as good as the font behind it. Where the terminal font la
 
 Measuring the installed fonts against this table is what set two of its entries. The **n-ary** operators U+22C0 and U+22C1 were the first choice for `/\` and `\/`, and almost nothing carries them - of every monospaced family on this machine, only Iosevka and FreeMono did. The **binary** connectives U+2227 and U+2228 are what Rocq's operators actually mean, and they are additionally present in DejaVu Sans Mono, JetBrains Mono, Fira Code and Noto Sans Mono, so the swap cost nothing and widened the field considerably.
 
-With the table as it now stands, Fira Code, Iosevka, DejaVu Sans Mono, JetBrains Mono and FreeMono each carry all ten; Hack misses only falsum. The terminal's own default font need not carry any of them, because kitty's `symbol_map` in `~/.config/kitty/modules/fonts.conf` routes exactly these ten codepoints to one font that does.
+With the table as it now stands, Fira Code, Iosevka, DejaVu Sans Mono, JetBrains Mono, Noto Sans Mono and FreeMono each carry all nine; Hack misses only falsum. The terminal's own default font need not carry any of them, because kitty's `symbol_map` in `~/.config/kitty/modules/fonts.conf` routes exactly these codepoints to one font that does - Fira Code, at the time of writing.
+
+Size is a separate question from coverage, and worth measuring rather than eyeballing: at the same point size, different families draw the same symbol at noticeably different heights relative to their own capitals. Rendering each candidate's glyph and comparing its ink height against the terminal font's `A` is enough to rank them.
 
 `True` and `False` are matched **case-sensitively**, so the `bool` constructors `true` and `false` are left as they are - only the two `Prop`-level constants become symbols. An identifier that merely contains the word, such as `True_is_true`, is one word to Vim and is not touched either.
 

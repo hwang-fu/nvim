@@ -75,11 +75,11 @@ let s:words = [
 " '\~' is escaped for a different reason: a bare ~ in a Vim pattern means "the
 " previous substitute string", not a tilde, so matching Rocq's negation needs
 " the backslash.
-" '<>' and '<->' need no escaping at all: < and > are literal in a Vim pattern,
-" and it is \< and \> that are the word boundaries. The two cannot collide
-" either - one needs a > immediately after the <, the other a hyphen - so the
-" order they appear in here does not matter. '<=' is deliberately absent and
-" keeps its ASCII.
+" '<>' needs no escaping at all: < and > are literal in a Vim pattern, and it
+" is \< and \> that are the word boundaries. It matches only a < with a >
+" immediately after it, so the neighbouring operators '<=' and '<->' are
+" untouched - both are deliberately absent and keep their ASCII, '<->' having
+" been tried as U+27F7 and dropped on 2026-09-13.
 " U+2228 and U+2227 are the BINARY connectives, which is what Rocq's \/ and /\
 " are. The n-ary forms U+22C1 and U+22C0 were used first and swapped out on
 " 2026-09-13: they are the large operators for taking a disjunction over a
@@ -92,7 +92,6 @@ let s:ops = [
       \ ['/\\', 0x2227],
       \ ['\~', 0x00AC],
       \ ['<>', 0x2260],
-      \ ['<->', 0x27F7],
       \ ]
 
 let s:n = 0
