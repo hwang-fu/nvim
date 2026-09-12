@@ -30,7 +30,7 @@ Start with `<leader>cc`, then it is three keys:
 | `<leader>ck` | `RocqUndo` | Take one back. The checked region shrinks, and Rocq forgets it |
 | `<leader>cl` | `RocqToLine` | Jump the checked region to the cursor - forward or backward, whichever is needed |
 
-`<leader>cl` is the one you will use most: put the cursor where you are working and let Rocq catch up. `{n}` prefixes work too, so `5<leader>cj` sends five sentences.
+`<leader>cl` is the one you will use most: put the cursor where you are working and let Rocq catch up.
 
 Two more for finding your place after scrolling:
 
@@ -38,6 +38,33 @@ Two more for finding your place after scrolling:
 |-----|---------|--------------|
 | `<leader>cG` | `RocqJumpToEnd` | Cursor to the end of the checked region |
 | `<leader>cE` | `RocqJumpToError` | Cursor to where Rocq objected |
+
+And three that sit outside the rhythm:
+
+| Key | Command | What it does |
+|-----|---------|--------------|
+| `<leader>cT` | `RocqToTop` | Rewind the whole file - the checked region goes back to nothing |
+| *(no mapping)* | `RocqOmitToLine` | Like `RocqToLine`, but **skips the proof bodies** rather than checking them. Much faster when you only want to reach a later point in a long file and do not care whether the proofs behind you still go through |
+| `<leader>cd` | `RocqToggleDebug` | Coqtail's own debug log, on and off |
+
+## Counts
+
+**Pressing a key on its own runs it once.** That is already the default; nothing extra is needed, and most of the time it is what you want.
+
+A count is an **optional prefix typed before the key**, exactly like `5j` or `3dd` in ordinary Vim - the digits come first, ahead of the Space that starts `<leader>`. So `5<leader>cj` is typed `5`, `Space`, `c`, `j`.
+
+Two different defaults are in play, and the difference matters:
+
+| Key | On its own | With a count |
+|-----|------------|--------------|
+| `<leader>cj` | send 1 sentence | `5<leader>cj` sends 5 |
+| `<leader>ck` | take 1 back | `3<leader>ck` takes 3 back |
+| `<leader>cgg` | scroll to goal 1 | `3<leader>cgg` scrolls to goal 3 |
+| `<leader>cl` | move to the **line the cursor is on** | `42<leader>cl` moves to line 42 |
+
+The first three count *sentences* or *goals* and fall back to **1**. `<leader>cl` counts *lines* and falls back to **0**, which Coqtail reads as "wherever the cursor is" - that is why the bare key does the useful thing rather than jumping to line 1.
+
+The commands take a count the same way, in front of the name: `:5RocqNext`, `:3RocqUndo`, `:42RocqToLine`.
 
 ## Asking Rocq questions
 
