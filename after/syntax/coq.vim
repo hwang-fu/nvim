@@ -63,9 +63,14 @@ let s:words = [
 " backslash is literal, so '\\/' is the three characters \ \ / - a regex
 " meaning "an escaped backslash, then a slash", which matches Rocq's \/ - and
 " '/\\' matches /\ the same way round.
+"
+" '\~' is escaped for a different reason: a bare ~ in a Vim pattern means "the
+" previous substitute string", not a tilde, so matching Rocq's negation needs
+" the backslash.
 let s:ops = [
       \ ['\\/', 0x22C1],
       \ ['/\\', 0x22C0],
+      \ ['\~', 0x00AC],
       \ ]
 
 let s:n = 0

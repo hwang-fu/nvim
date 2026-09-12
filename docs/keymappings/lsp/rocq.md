@@ -105,7 +105,7 @@ These answer in the Info panel, using the term under the cursor (or the visual s
 
 ## Symbols
 
-Four pieces of ASCII are drawn as the symbols they stand for, so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
+Five pieces of ASCII are drawn as the symbols they stand for, so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
 
 | Written | Drawn | Codepoint |
 |---------|-------|-----------|
@@ -113,6 +113,7 @@ Four pieces of ASCII are drawn as the symbols they stand for, so a statement rea
 | `exists` | the existential quantifier | U+2203 |
 | `\/` | n-ary logical OR | U+22C1 |
 | `/\` | n-ary logical AND | U+22C0 |
+| `~` | the not sign | U+00AC |
 
 **Nothing is rewritten.** `conceallevel` is a window option, so the file on disk still says `forall`, and so do the buffer, `grep`, the git diff, and what Rocq reads. Open the same file in two splits with different settings and the text is identical in both - only the drawing differs.
 
