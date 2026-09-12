@@ -74,10 +74,17 @@ let s:words = [
 " '\~' is escaped for a different reason: a bare ~ in a Vim pattern means "the
 " previous substitute string", not a tilde, so matching Rocq's negation needs
 " the backslash.
+" '<>' and '<->' need no escaping at all: < and > are literal in a Vim pattern,
+" and it is \< and \> that are the word boundaries. The two cannot collide
+" either - one needs a > immediately after the <, the other a hyphen - so the
+" order they appear in here does not matter. '<=' is deliberately absent and
+" keeps its ASCII.
 let s:ops = [
       \ ['\\/', 0x22C1],
       \ ['/\\', 0x22C0],
       \ ['\~', 0x00AC],
+      \ ['<>', 0x2260],
+      \ ['<->', 0x27F7],
       \ ]
 
 let s:n = 0

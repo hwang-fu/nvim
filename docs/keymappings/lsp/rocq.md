@@ -105,7 +105,7 @@ These answer in the Info panel, using the term under the cursor (or the visual s
 
 ## Symbols
 
-Seven pieces of ASCII are drawn as the symbols they stand for, so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
+Nine pieces of ASCII are drawn as the symbols they stand for, so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
 
 | Written | Drawn | Codepoint |
 |---------|-------|-----------|
@@ -114,8 +114,12 @@ Seven pieces of ASCII are drawn as the symbols they stand for, so a statement re
 | `\/` | n-ary logical OR | U+22C1 |
 | `/\` | n-ary logical AND | U+22C0 |
 | `~` | the not sign | U+00AC |
+| `<>` | not equal to | U+2260 |
+| `<->` | long left-right arrow | U+27F7 |
 | `True` | verum / top | U+22A4 |
 | `False` | falsum / bottom | U+22A5 |
+
+`<=` is deliberately not in the table and keeps its ASCII. `<>` and `<->` cannot be confused with each other - one needs a `>` immediately after the `<`, the other a hyphen - so neither eats the other.
 
 `True` and `False` are matched **case-sensitively**, so the `bool` constructors `true` and `false` are left as they are - only the two `Prop`-level constants become symbols. An identifier that merely contains the word, such as `True_is_true`, is one word to Vim and is not touched either.
 
