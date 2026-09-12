@@ -61,6 +61,7 @@ let s:words = [
       \ ['exists', 0x2203],
       \ ['True', 0x22A4],
       \ ['False', 0x22A5],
+      \ ['fun', 0x03BB],
       \ ]
 
 " Operator-shaped: these have to be MATCHES, because they are not words.

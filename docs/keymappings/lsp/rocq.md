@@ -105,12 +105,13 @@ These answer in the Info panel, using the term under the cursor (or the visual s
 
 ## Symbols
 
-Nine pieces of ASCII are drawn as the symbols they stand for, so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
+Ten pieces of ASCII are drawn as the symbols they stand for, so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
 
 | Written | Drawn | Codepoint |
 |---------|-------|-----------|
 | `forall` | the universal quantifier | U+2200 |
 | `exists` | the existential quantifier | U+2203 |
+| `fun` | lambda | U+03BB |
 | `\/` | n-ary logical OR | U+22C1 |
 | `/\` | n-ary logical AND | U+22C0 |
 | `~` | the not sign | U+00AC |
@@ -120,6 +121,12 @@ Nine pieces of ASCII are drawn as the symbols they stand for, so a statement rea
 | `False` | falsum / bottom | U+22A5 |
 
 `<=` is deliberately not in the table and keeps its ASCII. `<>` and `<->` cannot be confused with each other - one needs a `>` immediately after the `<`, the other a hyphen - so neither eats the other.
+
+### Fonts
+
+A substitution is only as good as the font behind it. Where the terminal font lacks a codepoint the terminal silently falls back to some other installed font, and the glyph arrives at the wrong weight and size - the usual symptom is a symbol that looks shrunken next to the letters around it.
+
+`fc-list ":charset=<hex>" family` answers whether a font has one, so a candidate can be checked before it goes in the table rather than after it looks wrong on screen. Of everything installed on this machine, only the **Iosevka** families (and FreeMono) carry all ten of the above; `IosevkaTerm Nerd Font Mono` is the terminal-proportioned one. Nerd Font *Symbols* does not help here - it covers the icon Private Use Area, not the mathematical blocks.
 
 `True` and `False` are matched **case-sensitively**, so the `bool` constructors `true` and `false` are left as they are - only the two `Prop`-level constants become symbols. An identifier that merely contains the word, such as `True_is_true`, is one word to Vim and is not touched either.
 
