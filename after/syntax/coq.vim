@@ -51,9 +51,16 @@
 " Word-shaped: declared as KEYWORDS so they outrank Coqtail's own. Keywords
 " match whole words by 'iskeyword' on their own, so no \< \> is needed - and
 " none can be written, because a keyword is a literal word, not a pattern.
+" `True` and `False` are the Prop-level constants, not the bool constructors
+" `true` and `false`. Coqtail sets `syn case match` (syntax/coq.vim), so these
+" keywords are case-sensitive and the lowercase bool values are left alone -
+" which is the distinction that matters, since only the capitalised pair are
+" propositions and therefore the ones worth drawing as verum and falsum.
 let s:words = [
       \ ['forall', 0x2200],
       \ ['exists', 0x2203],
+      \ ['True', 0x22A4],
+      \ ['False', 0x22A5],
       \ ]
 
 " Operator-shaped: these have to be MATCHES, because they are not words.

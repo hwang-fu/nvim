@@ -105,7 +105,7 @@ These answer in the Info panel, using the term under the cursor (or the visual s
 
 ## Symbols
 
-Five pieces of ASCII are drawn as the symbols they stand for, so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
+Seven pieces of ASCII are drawn as the symbols they stand for, so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
 
 | Written | Drawn | Codepoint |
 |---------|-------|-----------|
@@ -114,6 +114,10 @@ Five pieces of ASCII are drawn as the symbols they stand for, so a statement rea
 | `\/` | n-ary logical OR | U+22C1 |
 | `/\` | n-ary logical AND | U+22C0 |
 | `~` | the not sign | U+00AC |
+| `True` | verum / top | U+22A4 |
+| `False` | falsum / bottom | U+22A5 |
+
+`True` and `False` are matched **case-sensitively**, so the `bool` constructors `true` and `false` are left as they are - only the two `Prop`-level constants become symbols. An identifier that merely contains the word, such as `True_is_true`, is one word to Vim and is not touched either.
 
 **Nothing is rewritten.** `conceallevel` is a window option, so the file on disk still says `forall`, and so do the buffer, `grep`, the git diff, and what Rocq reads. Open the same file in two splits with different settings and the text is identical in both - only the drawing differs.
 
@@ -132,6 +136,14 @@ The symbol tables are in `after/syntax/coq.vim`. There are **two** of them, and 
 Every rule in both tables carries `containedin=ALL`, and that is load-bearing rather than decorative. Coqtail wraps almost every interesting position in a region with an explicit `contains=` list, and a region only ever matches the items that list names; without `containedin=ALL` the rules are created, appear in `:syntax list`, and never fire. That is exactly what the first version of this file did between 2026-09-12 and 2026-09-13: it concealed nothing.
 
 One hard limit before extending either table - Vim's `cchar` accepts exactly **one** character, so any substitution needing two or more is not expressible at all.
+
+### Colour
+
+A replacement character is **always** painted with the `Conceal` highlight group. The syntax item's own group is ignored, so `hi link rocqConcealed1 ...` does nothing - verified by linking one of them to `Todo` and watching the drawn cell keep reporting `Conceal`.
+
+That would normally mean every symbol turning up in whatever grey `Conceal` happens to be. `after/ftplugin/coq.lua` avoids it with `winhighlight`, which remaps a highlight group **for one window**: `Conceal:coqKwd` makes the glyphs render in Coqtail's keyword colour here and changes nothing in any other filetype. `coqKwd` is the right target because it is what Coqtail paints all seven substitutions with in the first place, so a symbol keeps the colour its ASCII had.
+
+The catch is inherent rather than a shortcut: `Conceal` is one group per window, so all seven necessarily share a colour. Giving them different ones is not expressible through syntax concealment at all.
 
 ## Why not an LSP
 

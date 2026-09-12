@@ -28,6 +28,25 @@
 vim.opt_local.conceallevel = 2
 vim.opt_local.concealcursor = "n"
 
+-- Give the concealed glyphs their original colour (2026-09-13, user request).
+--
+-- A cchar is ALWAYS painted with the `Conceal` highlight group; the syntax
+-- item's own group is ignored. Verified rather than assumed: linking
+-- rocqConcealed1 to Todo left the drawn cell reporting hi_name = "Conceal",
+-- and recolouring Conceal changed the glyph immediately. So `hi link` on our
+-- own groups can never work here - the only lever is Conceal itself.
+--
+-- Conceal is one global group, which would mean recolouring every concealed
+-- character in every filetype. 'winhighlight' is the way out: it remaps a
+-- highlight group for THIS WINDOW only, so Conceal renders as coqKwd here and
+-- is untouched everywhere else. coqKwd is the right target because it is what
+-- Coqtail highlights all five substitutions with - forall, exists, \/, /\ and
+-- ~ all resolve to it - so the glyph keeps exactly the colour the ASCII had.
+--
+-- Appended rather than assigned, in case something else has already put an
+-- entry in this window's list.
+vim.opt_local.winhighlight:append("Conceal:coqKwd")
+
 vim.api.nvim_buf_create_user_command(0, "RocqConceal", function()
     vim.wo.conceallevel = 2
 end, {
@@ -45,4 +64,5 @@ end, {
 -- ftplugin and Coqtail's own registered for undo survives.
 local undo = vim.b.undo_ftplugin
 vim.b.undo_ftplugin = (undo and undo ~= "" and undo .. " | " or "")
-    .. "delcommand RocqConceal | delcommand RocqUnconceal | setlocal conceallevel< concealcursor<"
+    .. "delcommand RocqConceal | delcommand RocqUnconceal"
+    .. " | setlocal conceallevel< concealcursor< winhighlight<"
