@@ -508,15 +508,38 @@ local function setup_format_on_save()
     })
 
     -- Verilog / SystemVerilog: verible-verilog-format
+    --
+    -- Gated on FILETYPE, not on a "*.v" glob, and the difference is not
+    -- cosmetic. ".v" belongs to Verilog, Rocq and V alike; since 2026-09-10
+    -- this config lets Neovim decide between them by reading the file, so the
+    -- extension stopped being evidence of anything. A glob here sent Rocq
+    -- proofs through a Verilog formatter.
+    --
+    -- What that looked like is worth recording, because nothing failed
+    -- loudly. verible echoes its input, appends its diagnostic to STDOUT, and
+    -- exits 0:
+    --
+    --     $ printf 'Module Foo.\n' | verible-verilog-format -
+    --     Module Foo.
+    --     -: <stdin>:1:12: syntax error at token "."
+    --     $ echo $?
+    --     0
+    --
+    -- So format_with_cmd's exit-code guard saw success and wrote the lot back
+    -- into the buffer. Every save fed the error lines in again and added one
+    -- more, growing the file by a line at a time with no error anywhere.
+    --
+    -- Same dispatch as the shfmt entry below, for the same reason: Neovim's
+    -- filetype detection already knows what the file is, and asking it is
+    -- always better than guessing from the name.
     vim.api.nvim_create_autocmd("BufWritePre", {
         group = format_group,
-        pattern = {
-            "*.v",
-            "*.sv",
-            "*.svh",
-            "*.vh",
-        },
+        pattern = "*",
         callback = function()
+            local ft = vim.bo.filetype
+            if ft ~= "verilog" and ft ~= "systemverilog" then
+                return
+            end
             format_with_cmd({
                 "verible-verilog-format",
                 "-",
