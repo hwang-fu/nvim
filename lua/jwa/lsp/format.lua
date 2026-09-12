@@ -1,33 +1,35 @@
 -- ============================================================================
 -- Format on save.
 --
--- Two flavors of formatter live here:
+-- ONE BufWritePre autocmd does the work, over a FORMATTERS table keyed by
+-- filetype (in setup_format_on_save, where the choice of key is explained).
+-- An entry says how to format, in one of three ways:
 --
---   (a) LSP-driven formatters    - handled by a single BufWritePre autocmd
---       below, which calls vim.lsp.buf.format() synchronously. Languages in
---       its `pattern` list rely on whatever rust-analyzer / gopls / pyright
---       (etc.) returns. Synchronous on save is intentional: you want the
---       formatted version to land on disk, not a stale buffer.
+--   (a) lsp = true   - vim.lsp.buf.format() synchronously, leaving the answer
+--       to whatever gopls / jdtls / tsgo returns. Synchronous is intentional:
+--       you want the formatted version to land on disk, not a stale buffer.
 --
---   (b) External CLI formatters  - for tools the LSP does not expose
+--   (b) cmd = {...}  - an external CLI, for tools the LSP does not expose
 --       (fprettify, dune format-dune-file, ruff format, stylua, raco fmt,
---       verible-verilog-format, prettier-plugin-nginx, shfmt). The
---       run_formatter() helper below pipes the buffer through stdin / stdout
---       and replaces the contents while preserving the cursor. Each external
---       formatter gets its own autocmd so the pattern stays specific.
+--       verible-verilog-format, shfmt). The run_formatter() helper below
+--       pipes the buffer through stdin / stdout and replaces the contents
+--       while preserving the cursor.
+--
+--   (c) fn = f       - a handler with a condition of its own (Elixir needs a
+--       Mix project; nginx needs the buffer's real path).
 --
 -- Not every language formats on save. Rust, OCaml, Haskell, Clojure and C#
 -- are deliberately off, with a manual command each (:RustFmt, :OCamlFmt,
 -- :HaskellFmt, :ClojureFmt, :CSharpFmt, all in after/ftplugin/) so a save
 -- never rewrites the buffer under you.
 --
--- check_formatter_binaries() also lives in this module. The format_with_cmd
--- helper is silent on failure by design (a non-zero exit is treated as "leave
--- the buffer alone"), which means a *missing* external binary is equally
--- silent: every save in that language becomes a no-op with no warning. The
--- check runs once at VimEnter and reports any external CLI that is not on
--- $PATH on this machine. LSP-driven formatters are NOT checked here -- LSP
--- failures surface through the LSP layer already.
+-- check_formatter_binaries() also lives in this module. run_formatter() is
+-- silent on failure by design (a non-zero exit is treated as "leave the
+-- buffer alone"), which means a *missing* external binary is equally silent:
+-- every save in that language becomes a no-op with no warning. The check runs
+-- once at VimEnter and reports any external CLI that is not on $PATH on this
+-- machine. LSP-driven formatters are NOT checked here -- LSP failures surface
+-- through the LSP layer already.
 --
 -- Public API:
 --   require("jwa.lsp.format").setup()
@@ -53,17 +55,17 @@ local M = {}
 -- formatting on save is the standing behavior for every covered
 -- filetype; the :FormatOnSave / :FormatNotOnSave commands (defined at
 -- the end of setup_format_on_save) flip this for the session - useful
--- in foreign codebases whose files should stay byte-identical. All
--- write-time entry points consult it: the LSP-driven callback, the
--- Elixir handler, and format_with_cmd (every CLI formatter).
+-- in foreign codebases whose files should stay byte-identical. The save
+-- handler checks it once, before it looks anything up, so it covers every
+-- entry in the table at once.
 -- ----------------------------------------------------------------------------
 local format_on_save_enabled = true
 
 -- ----------------------------------------------------------------------------
 -- Pipe the current buffer through an external formatter and replace the
--- contents in-place. Used by every CLI formatter in section (b) below through
--- the format_with_cmd() wrapper, and directly by on-demand entry points that
--- must run whatever the format-on-save switch currently says.
+-- contents in-place. Used by every `cmd` row of the FORMATTERS table below,
+-- and directly by on-demand entry points that must run whatever the
+-- format-on-save switch currently says.
 --
 -- Behavior contract:
 --   * On success (exit 0): replace buffer contents with the formatter's
@@ -260,396 +262,223 @@ function M.format_csharp_buffer()
 end
 
 -- ============================================================================
--- 1. Format-on-save autocmds
+-- 1. Format on save
 -- ============================================================================
 
 local function setup_format_on_save()
-    -- All format-on-save autocmds below belong to a single named group. The
-    -- `clear = true` flag wipes any previously-registered members before the
-    -- new ones are added, so re-running this function (e.g. via `:luafile`
-    -- on this module, or any plugin-manager reload) replaces the existing
-    -- handlers rather than stacking duplicates on top of them.
+    -- The save handler belongs to a named group. The `clear = true` flag
+    -- wipes any previously-registered member before the new one is added, so
+    -- re-running this function (e.g. via `:luafile` on this module, or any
+    -- plugin-manager reload) replaces the existing handler rather than
+    -- stacking a duplicate on top of it.
     local format_group = vim.api.nvim_create_augroup("FormatOnSave", { clear = true })
 
     -- ------------------------------------------------------------------------
-    -- (a) LSP-driven formatters
-    -- ------------------------------------------------------------------------
-    vim.api.nvim_create_autocmd("BufWritePre", {
-        group = format_group,
-        pattern = {
-            "*.go",
-            -- "*.rs", -- format-on-save disabled; uncomment to re-enable rustfmt
-            -- "*.clj" / "*.cljs" / "*.cljc" / "*.edn" were here until
-            -- 2026-09-06. Clojure joined Rust, OCaml and Haskell on the
-            -- on-demand path: :ClojureFmt -> M.format_clojure_buffer()
-            -- near the top of this file.
-            "*.toml",
-            "*.json",
-            "*.jsonc",
-            "*.yml",
-            "*.yaml",
-            "*.proto",
-            "*.js",
-            "*.jsx",
-            "*.ts",
-            "*.tsx",
-            -- "*.ml" / "*.mli" were here until 2026-08-29. OCaml no
-            -- longer formats on save at all: it is on demand through
-            -- :OCamlFmt, which still makes the same two-path choice.
-            -- See M.format_ocaml_buffer() near the top of this file.
-            "*.pl",
-            "*.pm",
-            -- Java: the Eclipse formatter inside jdtls (2026-08-28).
-            "*.java",
-            -- "*.ex" / "*.exs" / "*.heex" moved to their own autocmd
-            -- below (2026-08-16): ElixirLS only attaches inside a Mix
-            -- project, so the Elixir handler warns instead of silently
-            -- no-oping when there is no mix.exs up-tree.
-            -- "*.erl" / "*.hrl" were here until 2026-08-14. ELP does not
-            -- implement textDocument/formatting (verified; see
-            -- lsp/servers/elp.lua), so LSP format-on-save was a silent
-            -- no-op for Erlang the whole time. Erlang now formats via
-            -- the external erlfmt CLI in section (b) below.
-            -- "*.hs" / "*.lhs" were here until 2026-08-29, alongside the
-            -- OCaml pair. Haskell is on demand now too, through
-            -- :HaskellFmt -> M.format_haskell_buffer() near the top of
-            -- this file.
-        },
-        callback = function()
-            if not format_on_save_enabled then
-                return
-            end
-            vim.lsp.buf.format({
-                async = false,
-            })
-        end,
-    })
-
-    -- ------------------------------------------------------------------------
-    -- (a2) Elixir: LSP formatting, gated on being inside a Mix project.
+    -- The formatter table: filetype -> how to format it.
     --
-    -- ElixirLS (started by elixir-tools) only attaches when a mix.exs
-    -- exists somewhere up-tree; on a stray .ex/.exs script NO server
-    -- attaches, so the generic handler above would run vim.lsp.buf.format
-    -- as a silent no-op - the file saves unformatted with no hint why
-    -- (verified 2026-08-16; the same silent-no-op trap Erlang fell into
-    -- with ELP). This handler makes the situation explicit: inside a Mix
-    -- project it formats exactly like the generic handler; outside, it
-    -- skips the call and warns ONCE PER BUFFER (a buffer-local flag -
-    -- warning on every save of a scratch script would be nagging).
-    -- ------------------------------------------------------------------------
-    vim.api.nvim_create_autocmd("BufWritePre", {
-        group = format_group,
-        pattern = { "*.ex", "*.exs", "*.heex" },
-        callback = function(args)
-            if not format_on_save_enabled then
-                return
-            end
-            if vim.fs.root(args.buf, "mix.exs") then
-                vim.lsp.buf.format({
-                    async = false,
-                })
-                return
-            end
-            if not vim.b[args.buf].jwa_no_mix_warned then
-                vim.b[args.buf].jwa_no_mix_warned = true
-                vim.notify(
-                    "Elixir: no Mix project up-tree; format-on-save skipped (ElixirLS needs mix.exs)",
-                    vim.log.levels.WARN
-                )
-            end
-        end,
-    })
-
-    -- ------------------------------------------------------------------------
-    -- (b) External CLI formatters
+    -- ONE BufWritePre autocmd reads this; there is no per-language autocmd.
+    -- That is a deliberate change from ten near-identical handlers, made for
+    -- two reasons.
+    --
+    -- Matching on FILETYPE rather than on a filename glob. Neovim has already
+    -- decided what the file is - by extension where that settles it, by
+    -- content or shebang where it does not - and asking it is strictly better
+    -- than a second guess from the name. Globs were wrong about ".v" (Verilog,
+    -- Rocq and V all claim it, and a Rocq proof went through a Verilog
+    -- formatter for two days), and were only ever right about ".py" and
+    -- ".bashrc" by accident of what happens to have an extension. The three
+    -- handlers that already gated on filetype - shell, nginx, python - did so
+    -- with a paragraph each explaining why; this makes that the rule instead
+    -- of the exception.
+    --
+    -- A table rather than code. Coverage for :FormatNotOnSave is now "is this
+    -- filetype a key", not an introspection pass over the autocmd group
+    -- matching globs against the buffer's tail AND its full path. Adding a
+    -- formatter is a row.
+    --
+    -- Each entry says how, exactly one way:
+    --   lsp = true   ask the attached language server
+    --   cmd = {...}  pipe the buffer through this command (stdin -> stdout)
+    --   fn  = f      anything with a condition of its own
+    --
+    -- Languages absent from this table on purpose format on demand instead,
+    -- through the :RustFmt / :OCamlFmt / :HaskellFmt / :ClojureFmt /
+    -- :CSharpFmt commands in after/ftplugin/. The functions behind them are
+    -- near the top of this file.
     -- ------------------------------------------------------------------------
 
-    -- Save-time wrapper around run_formatter(). Every CLI formatter on a
-    -- BufWritePre goes through here, so the :FormatNotOnSave switch has one
-    -- place to bite. On-demand entry points call run_formatter directly:
-    -- that switch is about saving, not about an explicit request.
-    local function format_with_cmd(cmd)
-        if not format_on_save_enabled then
+    -- Elixir formats through the LSP like the entries above it, but only
+    -- inside a Mix project: ElixirLS attaches nowhere else, so on a stray
+    -- .ex script the plain LSP call was a silent no-op - the file saved
+    -- unformatted with no hint why (the same trap Erlang fell into with ELP,
+    -- verified 2026-08-16). This makes the situation explicit, warning ONCE
+    -- PER BUFFER; warning on every save of a scratch script would nag.
+    local function format_elixir(args)
+        if vim.fs.root(args.buf, "mix.exs") then
+            vim.lsp.buf.format({ async = false })
             return
         end
-        run_formatter(cmd)
+        if not vim.b[args.buf].jwa_no_mix_warned then
+            vim.b[args.buf].jwa_no_mix_warned = true
+            vim.notify(
+                "Elixir: no Mix project up-tree; format-on-save skipped (ElixirLS needs mix.exs)",
+                vim.log.levels.WARN
+            )
+        end
     end
 
-    -- Fortran: fprettify
-    vim.api.nvim_create_autocmd("BufWritePre", {
-        group = format_group,
-        pattern = {
-            "*.f90",
-            "*.f95",
-            "*.f03",
-            "*.f08",
-            "*.F90",
-            "*.F95",
-            "*.F03",
-            "*.F08",
-        },
-        callback = function()
-            format_with_cmd({
+    -- prettier wants the real path to pick up .prettierrc and to report
+    -- errors against something recognisable, so this one is built per call.
+    local function format_nginx()
+        run_formatter({
+            "prettier",
+            "--plugin=prettier-plugin-nginx",
+            "--parser=nginx",
+            "--stdin-filepath",
+            vim.api.nvim_buf_get_name(0),
+        })
+    end
+
+    -- shfmt flags, chosen once and shared by sh and bash:
+    --   -i 2  indent two spaces. Shell nests deeply (if/then/fi inside
+    --         for/do/done inside case/esac); two keeps multi-level
+    --         constructs inside an 80-column terminal, and matches the
+    --         2-space lean applied to lisp / yaml / json / typescript by the
+    --         LispIndent augroup in jwa/init.lua.
+    --   -ci   indent the bodies of case arms. Without it they sit at the same
+    --         column as `case`, which is the single most common complaint
+    --         about shfmt's defaults.
+    --   -bn   binary operators (&&, ||) start the next line rather than end
+    --         the previous one. Long conditionals scan better and a single
+    --         clause can be commented out.
+    --   -sr   space after redirect operators: `> file`, not `>file`.
+    --
+    -- Deliberately NOT passed:
+    --   -s    semantic rewrites (${var} -> $var and friends). Too invasive
+    --         for a save-time formatter - it edits code you did not ask it
+    --         to. `shfmt -s -d <file>` previews them on demand.
+    --   -ln   forcing a dialect. Omitting it lets shfmt read the shebang,
+    --         which is right for a gate that covers both sh and bash.
+    --
+    -- No "-": shfmt reads stdin when given no file argument, unlike most of
+    -- the commands here.
+    local SHFMT = { "shfmt", "-i", "2", "-ci", "-bn", "-sr" }
+
+    local FORMATTERS = {
+        -- --- Through the language server ---------------------------------
+        go = { lsp = true },
+        toml = { lsp = true },
+        json = { lsp = true },
+        jsonc = { lsp = true },
+        yaml = { lsp = true },
+        proto = { lsp = true },
+        javascript = { lsp = true },
+        javascriptreact = { lsp = true },
+        typescript = { lsp = true },
+        typescriptreact = { lsp = true },
+        perl = { lsp = true },
+        -- Java: the Eclipse formatter inside jdtls (2026-08-28).
+        java = { lsp = true },
+
+        elixir = { fn = format_elixir },
+        heex = { fn = format_elixir },
+
+        -- --- Through an external CLI --------------------------------------
+        fortran = {
+            cmd = {
                 "fprettify",
                 "--indent=2",
                 "--whitespace=3",
                 "--strict-indent",
                 "--line-length=132",
-            })
-        end,
-    })
-
-    -- dune
-    vim.api.nvim_create_autocmd("BufWritePre", {
-        group = format_group,
-        pattern = { "dune", "dune-project" },
-        callback = function()
-            format_with_cmd({ "dune", "format-dune-file" })
-        end,
-    })
-
-    -- nginx
-    vim.api.nvim_create_autocmd("BufWritePre", {
-        group = format_group,
-        callback = function()
-            if vim.bo.filetype == "nginx" then
-                format_with_cmd({
-                    "prettier",
-                    "--plugin=prettier-plugin-nginx",
-                    "--parser=nginx",
-                    "--stdin-filepath",
-                    vim.api.nvim_buf_get_name(0),
-                })
-            end
-        end,
-    })
-
-    -- Python: ruff
-    --
-    -- Dispatch by filetype rather than `*.py` glob so we also catch:
-    --   * shebang-only scripts in ~/bin/ (e.g. `#!/usr/bin/env python3` with
-    --     no extension) -- Neovim inspects the shebang during filetype
-    --     detection and labels them `python`.
-    --   * `.pyi` type stub files, which are syntactically Python and which
-    --     ruff knows how to format, but which `*.py` would miss.
-    --   * `.pyw` Windows Python launchers, on the off chance you ever cross
-    --     paths with one.
-    --
-    -- Cost: this callback runs on every BufWritePre and the filetype check
-    -- bails immediately for non-Python files. That's microseconds per save,
-    -- which we're happily trading for never having to extend the pattern
-    -- list again.
-    vim.api.nvim_create_autocmd("BufWritePre", {
-        group = format_group,
-        callback = function()
-            if vim.bo.filetype ~= "python" then
-                return
-            end
-            format_with_cmd({
-                "ruff",
-                "format",
-                "-",
-            })
-        end,
-    })
-
-    -- Lua: stylua
-    vim.api.nvim_create_autocmd("BufWritePre", {
-        group = format_group,
-        pattern = {
-            "*.lua",
+            },
         },
-        callback = function()
-            format_with_cmd({
-                "stylua",
-                "-",
-            })
-        end,
-    })
 
-    -- CMake: gersemi (2026-08-28). Reads stdin with "-"; style is
-    -- gersemi's own opinionated default. Deliberately a CLI formatter,
-    -- not cmake-language-server's - see lsp/servers/cmake_ls.lua.
-    vim.api.nvim_create_autocmd("BufWritePre", {
-        group = format_group,
-        pattern = {
-            "CMakeLists.txt",
-            "*.cmake",
-        },
-        callback = function()
-            format_with_cmd({
-                "gersemi",
-                "-",
-            })
-        end,
-    })
+        dune = { cmd = { "dune", "format-dune-file" } },
 
-    -- Racket: raco fmt (bare invocation reads stdin; do NOT add "-",
-    -- raco fmt would treat it as a literal filename).
-    --
-    -- Requires the `fmt` PACKAGE (`raco pkg install fmt`), which the
-    -- binary checker below cannot see - it only probes for `raco`
-    -- itself, and a missing (or version-orphaned; see the note in
-    -- lsp/servers/racket_langserver.lua) package makes every .rkt save
-    -- a silent no-op. That exact failure went unnoticed from the
-    -- checker's introduction until 2026-08-14.
-    vim.api.nvim_create_autocmd("BufWritePre", {
-        group = format_group,
-        pattern = {
-            "*.rkt",
-        },
-        callback = function()
-            format_with_cmd({
-                "raco",
-                "fmt",
-            })
-        end,
-    })
+        nginx = { fn = format_nginx },
 
-    -- Verilog / SystemVerilog: verible-verilog-format
-    --
-    -- Gated on FILETYPE, not on a "*.v" glob, and the difference is not
-    -- cosmetic. ".v" belongs to Verilog, Rocq and V alike; since 2026-09-10
-    -- this config lets Neovim decide between them by reading the file, so the
-    -- extension stopped being evidence of anything. A glob here sent Rocq
-    -- proofs through a Verilog formatter.
-    --
-    -- What that looked like is worth recording, because nothing failed
-    -- loudly. verible echoes its input, appends its diagnostic to STDOUT, and
-    -- exits 0:
-    --
-    --     $ printf 'Module Foo.\n' | verible-verilog-format -
-    --     Module Foo.
-    --     -: <stdin>:1:12: syntax error at token "."
-    --     $ echo $?
-    --     0
-    --
-    -- So format_with_cmd's exit-code guard saw success and wrote the lot back
-    -- into the buffer. Every save fed the error lines in again and added one
-    -- more, growing the file by a line at a time with no error anywhere.
-    --
-    -- Same dispatch as the shfmt entry below, for the same reason: Neovim's
-    -- filetype detection already knows what the file is, and asking it is
-    -- always better than guessing from the name.
+        -- Filetype, not "*.py", catches three things a glob would miss:
+        -- shebang-only scripts in ~/bin with no extension, .pyi type stubs,
+        -- and .pyw launchers.
+        python = { cmd = { "ruff", "format", "-" } },
+
+        lua = { cmd = { "stylua", "-" } },
+
+        -- gersemi (2026-08-28), reading stdin with "-", in its own
+        -- opinionated style. Deliberately a CLI formatter rather than
+        -- cmake-language-server's - see lsp/servers/cmake_ls.lua.
+        cmake = { cmd = { "gersemi", "-" } },
+
+        -- `raco fmt` reads stdin when given NO argument; adding "-" would
+        -- make it look for a file called "-".
+        --
+        -- Needs the `fmt` PACKAGE (`raco pkg install fmt`), which the binary
+        -- check below cannot see - it probes for `raco` itself. A missing or
+        -- version-orphaned package makes every .rkt save a silent no-op, and
+        -- that exact failure went unnoticed from the check's introduction
+        -- until 2026-08-14.
+        racket = { cmd = { "raco", "fmt" } },
+
+        -- ".v" is why this whole table is keyed on filetype. verible echoes
+        -- its input, appends its diagnostic to STDOUT and exits 0, so feeding
+        -- it a Rocq proof passed the exit-code guard and wrote error text
+        -- into the buffer - one more line on every save, with nothing
+        -- reported anywhere.
+        verilog = { cmd = { "verible-verilog-format", "-" } },
+        systemverilog = { cmd = { "verible-verilog-format", "-" } },
+
+        -- Only sh and bash. shfmt parses POSIX sh, bash and mksh; it does
+        -- NOT handle zsh-specific syntax like `=foo` glob qualifiers, and
+        -- would silently mangle a zsh script. Note Neovim labels .bashrc as
+        -- `sh`, not `bash`, unless vim.g.is_bash is set - harmless, because
+        -- shfmt reads the dialect from the shebang and this key is only a
+        -- coarse "is this shell" gate.
+        sh = { cmd = SHFMT },
+        bash = { cmd = SHFMT },
+
+        -- erlfmt (WhatsApp's; "-" reads stdin), installed at
+        -- ~/.local/bin/erlfmt via `rebar3 escriptize`. Here rather than on
+        -- the LSP path because ELP advertises no formatting capability
+        -- (verified 2026-08-14, see lsp/servers/elp.lua) and the old "*.erl"
+        -- LSP entries silently did nothing. The filetype covers source,
+        -- headers, and the two Erlang-term config shapes erlfmt officially
+        -- formats - .app.src and rebar.config both resolve to `erlang`.
+        erlang = { cmd = { "erlfmt", "-" } },
+    }
+
+    -- True when saving this buffer would reformat it. One lookup: the table
+    -- IS the coverage list, so :FormatNotOnSave cannot drift out of step with
+    -- what actually runs, and a formatter added later is accounted for by
+    -- existing.
+    local function buffer_has_format_on_save(buf)
+        return FORMATTERS[vim.bo[buf].filetype] ~= nil
+    end
+
+    -- The one handler. The enable flag is checked before the lookup: when
+    -- format-on-save is off there is nothing to decide.
     vim.api.nvim_create_autocmd("BufWritePre", {
         group = format_group,
         pattern = "*",
-        callback = function()
-            local ft = vim.bo.filetype
-            if ft ~= "verilog" and ft ~= "systemverilog" then
+        callback = function(args)
+            if not format_on_save_enabled then
                 return
             end
-            format_with_cmd({
-                "verible-verilog-format",
-                "-",
-            })
-        end,
-    })
 
-    -- Shell (bash / POSIX sh): shfmt
-    --
-    -- Dispatch:
-    --   We intentionally do NOT use a `pattern` glob here, because shell-script
-    --   files come in too many naming conventions for a glob list to be
-    --   reliable: `*.sh` and `*.bash` cover the obvious cases, but dotfiles
-    --   like `.bashrc` / `.bash_profile` / `.profile` don't have a suffix,
-    --   shebang-only scripts (`~/bin/deploy` with `#!/usr/bin/env bash` and
-    --   no extension) have no suffix at all, and there are quirky names like
-    --   `PKGBUILD`. Maintaining that list is a losing game.
-    --
-    --   Instead we mirror the nginx entry above: pattern = "*" (all files),
-    --   then gate inside the callback on `vim.bo.filetype`. Neovim's built-in
-    --   filetype detection already understands shell dotfiles + shebang
-    --   inspection, so we get correct coverage for free.
-    --
-    --   Why only `sh` and `bash` (not `zsh` / `fish` / `csh`):
-    --     shfmt's parser supports POSIX sh, bash, and mksh -- it does NOT
-    --     handle zsh-specific syntax like `=foo` glob qualifiers or `**`
-    --     recursive globs in zsh's style. Running shfmt on a zsh script
-    --     might silently mangle it, so we exclude that filetype.
-    --
-    --   Note: Neovim labels `.bashrc` as filetype `sh` (NOT `bash`) unless
-    --   `vim.g.is_bash` is set. shfmt detects the actual dialect from the
-    --   shebang line, so passing it a `bash`-flavored file with `ft=sh` is
-    --   still correct -- the filetype check is just a coarse "is this shell"
-    --   gate, not a dialect declaration.
-    --
-    -- Flag choices:
-    --   -i 2  : indent with 2 spaces. Shell nests deeply (if/then/fi inside
-    --           for/do/done inside case/esac), so 2-space keeps multi-level
-    --           constructs readable inside 80-column terminals. Matches the
-    --           2-space lean we already apply to lisp / yaml / json /
-    --           typescript via the LispIndent augroup in jwa/init.lua.
-    --   -ci   : indent the bodies of `case` arms. Without this, case bodies
-    --           sit at the same column as the `case` keyword, which looks
-    --           visually flat and is the single most common complaint about
-    --           shfmt's defaults.
-    --   -bn   : put binary operators (&&, ||) at the START of the next line
-    --           rather than the end of the previous. Makes long conditionals
-    --           easier to scan and easier to comment-out a single clause.
-    --   -sr   : space after redirect operators -- `> file` instead of `>file`.
-    --           Matches modern shell style guides (Google, ShellCheck-friendly).
-    --
-    -- Deliberately NOT enabled:
-    --   -s    : semantic simplifications (e.g. ${var} -> $var when safe).
-    --           Too invasive for a save-time formatter -- it edits code you
-    --           didn't ask it to. Run `shfmt -s -d <file>` manually to preview
-    --           those rewrites if you want them on a specific file.
-    --   -ln <dialect> : force a shell dialect. Omitting it lets shfmt infer
-    --           from the shebang -- correct behavior for a mixed sh/bash
-    --           callback that fires on both POSIX and bash files.
-    --
-    -- Note: shfmt reads from stdin by default when no file argument is given,
-    -- so unlike most of the formatters above we don't need to pass `-`.
-    vim.api.nvim_create_autocmd("BufWritePre", {
-        group = format_group,
-        callback = function()
-            local ft = vim.bo.filetype
-            if ft ~= "sh" and ft ~= "bash" then
+            local entry = FORMATTERS[vim.bo[args.buf].filetype]
+            if not entry then
                 return
             end
-            format_with_cmd({
-                "shfmt",
-                "-i",
-                "2",
-                "-ci",
-                "-bn",
-                "-sr",
-            })
+
+            if entry.lsp then
+                vim.lsp.buf.format({ async = false })
+            elseif entry.cmd then
+                run_formatter(entry.cmd)
+            else
+                entry.fn(args)
+            end
         end,
     })
-
-    -- Erlang: erlfmt (WhatsApp's formatter; "-" reads stdin).
-    --
-    -- Lives here rather than in the LSP list because ELP advertises no
-    -- formatting capability (verified 2026-08-14; see the note in
-    -- lsp/servers/elp.lua) - the old "*.erl" LSP entries silently did
-    -- nothing. erlfmt is installed at ~/.local/bin/erlfmt, built from
-    -- the WhatsApp repo with `rebar3 escriptize`.
-    --
-    -- Besides source and headers, erlfmt officially formats the two
-    -- Erlang-term config shapes, so both are included: "*.app.src"
-    -- (application resource files) and "rebar.config".
-    vim.api.nvim_create_autocmd("BufWritePre", {
-        group = format_group,
-        pattern = {
-            "*.erl",
-            "*.hrl",
-            "*.app.src",
-            "rebar.config",
-        },
-        callback = function()
-            format_with_cmd({
-                "erlfmt",
-                "-",
-            })
-        end,
-    })
-
-    -- OCaml has no BufWritePre entry of any kind. Since 2026-08-29 it
-    -- formats on demand only, through :OCamlFmt -> M.format_ocaml_buffer(),
-    -- defined near the top of this file where its two paths are explained.
 
     -- ------------------------------------------------------------------------
     -- :FormatOnSave / :FormatNotOnSave (2026-08-28, user request).
@@ -660,37 +489,7 @@ local function setup_format_on_save()
     -- no format-on-save wiring stays SILENT (the flag still changes -
     -- it is global); flipping it from a covered buffer echoes a yellow
     -- WarningMsg line, kept in :messages.
-    --
-    -- Coverage detection interrogates this very autocmd group, so every
-    -- future formatter is accounted for automatically. Two pattern
-    -- families need care:
-    --   * the "*"-pattern handlers (shell, nginx) gate on FILETYPE
-    --     inside their callbacks - mirrored here explicitly;
-    --   * everything else is a filename glob, matched against both the
-    --     buffer's tail (dune, CMakeLists.txt) and full path.
     -- ------------------------------------------------------------------------
-    local function buffer_has_format_on_save(buf)
-        local name = vim.api.nvim_buf_get_name(buf)
-        local tail = vim.fn.fnamemodify(name, ":t")
-        for _, au in ipairs(vim.api.nvim_get_autocmds({
-            group = format_group,
-            event = "BufWritePre",
-        })) do
-            if au.pattern == "*" then
-                local ft = vim.bo[buf].filetype
-                if ft == "sh" or ft == "bash" or ft == "nginx" then
-                    return true
-                end
-            else
-                local re = vim.fn.glob2regpat(au.pattern)
-                if vim.fn.match(tail, re) >= 0 or vim.fn.match(name, re) >= 0 then
-                    return true
-                end
-            end
-        end
-        return false
-    end
-
     local function set_format_on_save(on)
         format_on_save_enabled = on
         if buffer_has_format_on_save(0) then
@@ -713,7 +512,7 @@ end
 -- ============================================================================
 -- 2. Formatter binary presence check
 --
--- The format_with_cmd() helper above is silent on failure by design: a
+-- The run_formatter() helper above is silent on failure by design: a
 -- non-zero exit from the formatter is interpreted as "leave the buffer
 -- untouched," which correctly handles cases like shfmt rejecting a
 -- half-typed script in the middle of an edit.
@@ -738,9 +537,9 @@ end
 -- ============================================================================
 
 -- Each entry pairs the binary the autocmd shells out to with a short
--- human-readable label. Order matches the order of the formatter blocks
--- inside setup_format_on_save() so this list is easy to keep in sync if
--- a new formatter is added. MODULE-LEVEL (2026-08-19) because the
+-- human-readable label. Order matches the `cmd` rows of the FORMATTERS
+-- table inside setup_format_on_save() so this list is easy to keep in sync
+-- if a new formatter is added. MODULE-LEVEL (2026-08-19) because the
 -- :checkhealth jwa report (lua/jwa/health.lua) reads the same
 -- list - one list, two consumers, no drift.
 M.FORMATTER_BINARIES = {
@@ -751,7 +550,7 @@ M.FORMATTER_BINARIES = {
     { cmd = "stylua", label = "Lua" },
     -- Binary-level probe only: cannot see whether the `fmt` package
     -- is installed for the CURRENT Racket version (see the comment
-    -- on the Racket autocmd above).
+    -- on the `racket` row above).
     { cmd = "raco", label = "Racket" },
     { cmd = "verible-verilog-format", label = "Verilog / SystemVerilog" },
     { cmd = "shfmt", label = "shell (sh, bash)" },
