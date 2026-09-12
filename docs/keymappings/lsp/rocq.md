@@ -66,6 +66,8 @@ These answer in the Info panel, using the term under the cursor (or the visual s
 
 ## Things worth knowing before they surprise you
 
+**Every key on this page is normal or visual mode only.** Coqtail maps nine of its commands in **insert** mode as well, and that half is switched off here (`g:coqtail_noimap`, set in `lua/jwa/plugins/spec/coqtail.lua`). The reason is that `<leader>` is Space: an insert-mode `<Space>cj` makes every space you type the prefix of a mapping, so Vim waits the full `'timeoutlen'` - a whole second - before committing it, and typing a proof stalls on every word boundary. Nothing on this page changes, because stepping a proof from insert mode was never useful.
+
 **`CTRL-C` is bound to `RocqInterrupt`** in Rocq buffers - it sends SIGINT to Rocq, which is what you want when a tactic is spinning, and is not what your fingers expect. To free it: `map <leader>ci <Plug>RocqInterrupt` before Coqtail loads.
 
 **Undo is not free.** `<leader>ck` makes Rocq forget the sentence, which for anything nontrivial means re-checking on the way forward. Rewinding across a long proof and replaying it is genuinely slow; `<leader>cl` to the line you care about is usually cheaper than stepping.

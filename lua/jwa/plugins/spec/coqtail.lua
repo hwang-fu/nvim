@@ -37,6 +37,32 @@
 -- used to map it to Verilog outright; that override was removed in
 -- lua/jwa/lsp/init.lua so Neovim's own content-based detector can decide, and
 -- the comment there explains what it looks at.
+--
+-- coqtail_noimap (2026-09-13). Coqtail installs its default mappings under
+-- `g:coqtail_map_prefix`, which defaults to "<leader>c" (autoload/coqtail.vim,
+-- in coqtail#define_mappings) - and <leader> is SPACE here, set in
+-- jwa/init.lua. Nine of its commands are mapped in INSERT mode as well as
+-- normal - Next, Undo, ToLine, ToTop, JumpToEnd, JumpToError, RestorePanels,
+-- GotoGoalStart, GotoGoalEnd - so every .v buffer carried `imap <buffer>
+-- <Space>cj` and eight siblings.
+--
+-- The consequence is that a space typed in insert mode is the prefix of nine
+-- mappings, so Vim waits the full 'timeoutlen' (1000ms, never overridden in
+-- this config) before committing it: every space in a proof stalled about a
+-- second. It is invisible to `:profile` because nothing runs during the stall
+-- - Vim is waiting for the next key, not executing anything - and unaffected
+-- by turning off syntax, indent, matchparen, conceal or the completion engine,
+-- which is what made it expensive to find.
+--
+-- Switched off rather than re-prefixed: stepping a proof from insert mode is
+-- not something anyone does, and dropping the insert half leaves every normal-
+-- and visual-mode key in docs/keymappings/lsp/rocq.md exactly as documented.
+--
+-- Third time a plugin's default prefix has collided with the space leader
+-- here; see the same note on plugins/spec/ocaml.lua and plugins/spec/lisp.lua.
 return {
 	"whonore/Coqtail",
+	init = function()
+		vim.g.coqtail_noimap = 1
+	end,
 }
