@@ -80,9 +80,16 @@ let s:words = [
 " either - one needs a > immediately after the <, the other a hyphen - so the
 " order they appear in here does not matter. '<=' is deliberately absent and
 " keeps its ASCII.
+" U+2228 and U+2227 are the BINARY connectives, which is what Rocq's \/ and /\
+" are. The n-ary forms U+22C1 and U+22C0 were used first and swapped out on
+" 2026-09-13: they are the large operators for taking a disjunction over a
+" family, and almost no monospaced font carries them - of everything installed
+" on this machine only Iosevka and FreeMono did, while the binary pair is in
+" DejaVu, JetBrains Mono, Fira Code and Noto Sans Mono as well. Correct symbol
+" and a far wider choice of font, so there was nothing to trade off.
 let s:ops = [
-      \ ['\\/', 0x22C1],
-      \ ['/\\', 0x22C0],
+      \ ['\\/', 0x2228],
+      \ ['/\\', 0x2227],
       \ ['\~', 0x00AC],
       \ ['<>', 0x2260],
       \ ['<->', 0x27F7],

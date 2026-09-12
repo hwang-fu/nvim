@@ -112,8 +112,8 @@ Ten pieces of ASCII are drawn as the symbols they stand for, so a statement read
 | `forall` | the universal quantifier | U+2200 |
 | `exists` | the existential quantifier | U+2203 |
 | `fun` | lambda | U+03BB |
-| `\/` | n-ary logical OR | U+22C1 |
-| `/\` | n-ary logical AND | U+22C0 |
+| `\/` | logical OR | U+2228 |
+| `/\` | logical AND | U+2227 |
 | `~` | the not sign | U+00AC |
 | `<>` | not equal to | U+2260 |
 | `<->` | long left-right arrow | U+27F7 |
@@ -126,7 +126,11 @@ Ten pieces of ASCII are drawn as the symbols they stand for, so a statement read
 
 A substitution is only as good as the font behind it. Where the terminal font lacks a codepoint the terminal silently falls back to some other installed font, and the glyph arrives at the wrong weight and size - the usual symptom is a symbol that looks shrunken next to the letters around it.
 
-`fc-list ":charset=<hex>" family` answers whether a font has one, so a candidate can be checked before it goes in the table rather than after it looks wrong on screen. Of everything installed on this machine, only the **Iosevka** families (and FreeMono) carry all ten of the above; `IosevkaTerm Nerd Font Mono` is the terminal-proportioned one. Nerd Font *Symbols* does not help here - it covers the icon Private Use Area, not the mathematical blocks.
+`fc-list ":charset=<hex>" family` answers whether a font has one, so a candidate can be checked before it goes in the table rather than after it looks wrong on screen. Nerd Font *Symbols* never helps here - it covers the icon Private Use Area, not the mathematical blocks.
+
+Measuring the installed fonts against this table is what set two of its entries. The **n-ary** operators U+22C0 and U+22C1 were the first choice for `/\` and `\/`, and almost nothing carries them - of every monospaced family on this machine, only Iosevka and FreeMono did. The **binary** connectives U+2227 and U+2228 are what Rocq's operators actually mean, and they are additionally present in DejaVu Sans Mono, JetBrains Mono, Fira Code and Noto Sans Mono, so the swap cost nothing and widened the field considerably.
+
+With the table as it now stands, Fira Code, Iosevka, DejaVu Sans Mono, JetBrains Mono and FreeMono each carry all ten; Hack misses only falsum. The terminal's own default font need not carry any of them, because kitty's `symbol_map` in `~/.config/kitty/modules/fonts.conf` routes exactly these ten codepoints to one font that does.
 
 `True` and `False` are matched **case-sensitively**, so the `bool` constructors `true` and `false` are left as they are - only the two `Prop`-level constants become symbols. An identifier that merely contains the word, such as `True_is_true`, is one word to Vim and is not touched either.
 
