@@ -43,6 +43,20 @@ The second row is why the command exists in this shape: ocamlformat refuses to r
 
 `:FormatNotOnSave` does not affect `:OCamlFmt` - that switch silences saves, and this is an explicit request. `dune` and `dune-project` files are unaffected as well: they still format on save through `dune format-dune-file`.
 
+## Symbols
+
+`fun` is drawn as a lambda, so an anonymous function reads the way it is written on paper. It is on by default in every `.ml` and `.mli` buffer.
+
+**Nothing is rewritten.** `conceallevel` is a window option, so the file on disk still says `fun`, and so do the buffer, `grep`, the git diff, and what the compiler reads. `:setlocal conceallevel=0` shows the file as written in one window; `=2` puts the symbol back.
+
+The line you are working on un-conceals itself. `concealcursor` is set to `n`, so the cursor line joins the concealing **only in normal mode** - start typing or select a region and that line snaps back to `fun` while everything around it stays symbolic. That matters more than it sounds, because a concealed word occupies one cell instead of three, so while it is drawn as a symbol the cursor's real column stops matching where it appears.
+
+`function` is never touched, and neither is an identifier that merely contains the word, such as `funny` or `fun_of`. The rule is declared as a `:syn keyword`, which matches whole words by `'iskeyword'` and needs no pattern to get that right.
+
+Two things about the implementation are worth knowing before changing it, because both look wrong and are not. It lives in `after/ftplugin/ocaml.lua` rather than in `after/syntax/ocaml.vim`, where the equivalent Rocq rule lives: OCaml is highlighted by treesitter here, `'syntax'` is consequently **empty** in these buffers, and an `after/syntax` file is therefore never sourced at all. And the definition is deferred through `vim.schedule`, because this ftplugin and the treesitter starter both run on `FileType`, treesitter's runs second, and setting `'syntax'` clears every syntax item the buffer had - defining the rule inline leaves the buffer with none.
+
+Concealment still works with `'syntax'` empty, which is the part that reads like a contradiction. Concealing is not painting: it belongs to the syntax engine's own machinery, which is live as soon as any `:syn` item exists for the buffer. Treesitter supplies every colour, and this supplies the one substitution.
+
 ## The REPL float
 
 `\r` opens utop in a floating terminal. Inside a dune project it runs `dune utop .` from the project root, so your own libraries are built and loaded; elsewhere it falls back to plain utop. Toggling the float away only hides it - the session keeps running per project until utop exits (`#quit` or `Ctrl-D`). To scroll or copy from the float, `Ctrl-\ Ctrl-N` leaves terminal mode and `i` returns.
