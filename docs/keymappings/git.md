@@ -6,7 +6,11 @@ Three tools split the work: gitsigns edits hunks inside the buffer, lazygit oper
 
 *Defined in `lua/jwa/plugins/spec/gitsigns.lua`; the keys exist only in git-tracked buffers.*
 
-A hunk is one contiguous block of changed lines. Lowercase keys act on the hunk under the cursor, uppercase on the whole buffer.
+A hunk is one contiguous block of changed lines. Lowercase keys act under the cursor, uppercase on the whole buffer.
+
+**Staging works by line, not by hunk.** `<leader>hs` takes the cursor line in normal mode and the selection in visual mode, so the two are one action at different widths. That is the granularity that gets used when splitting a commit; a whole hunk is still one keystroke away by selecting it first with `vih`, or by `:Gitsigns stage_hunk` with no range, which is what the unranged call means. Resetting is deliberately not symmetric - `<leader>hr` still takes the whole hunk in normal mode, because it is the destructive one and is usually meant to discard a change entire.
+
+Lines with no change in them are **ignored rather than refused**, so an over-wide selection is safe and a selection with nothing in it is a silent no-op. There is no message either way; the feedback is the sign column switching to the staged signs.
 
 The index is git's name for the staging area: the snapshot being assembled for the next commit. Staging (`git add`, or `<leader>hs` here) copies changes from your working file into it. The gutter signs and the diffs below all compare the buffer against the index - which is why signs disappear the moment a change is staged.
 
@@ -14,7 +18,7 @@ The index is git's name for the staging area: the snapshot being assembled for t
 |-----|--------|
 | `]h` | Jump to the next hunk |
 | `[h` | Jump to the previous hunk |
-| `<leader>hs` | Stage the hunk; pressing again unstages. In visual mode, stage only the selected lines |
+| `<leader>hs` | Stage the current line; pressing again unstages. In visual mode, stage only the selected lines |
 | `<leader>hr` | Reset the hunk to the index version. In visual mode, only the selected lines |
 | `<leader>hS` / `<leader>hR` | Stage / reset the entire buffer |
 | `<leader>hp` / `<leader>hi` | Preview the hunk in a float / inline as virtual text |

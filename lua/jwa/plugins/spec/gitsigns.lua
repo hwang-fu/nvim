@@ -27,11 +27,13 @@
 --
 -- Keymap quick reference. All maps are buffer-local and exist only in
 -- git-tracked buffers (created by on_attach below). Mnemonics:
--- h = hunk, t = toggle; lowercase acts on the hunk under the cursor,
--- uppercase on the whole buffer. <leader> is space.
+-- h = hunk, t = toggle; lowercase acts under the cursor, uppercase on
+-- the whole buffer. <leader> is space. The one place "under the cursor"
+-- means the LINE rather than the hunk is <leader>hs, for the reason on
+-- the mapping itself.
 --
 --   ]h / [h       jump to next / previous hunk
---   <leader>hs    stage hunk (press again to unstage)
+--   <leader>hs    stage the current line (press again to unstage)
 --                 visual: stage only the selected lines
 --   <leader>hr    reset hunk to index version (recover with u)
 --                 visual: reset only the selected lines
@@ -171,13 +173,41 @@ return {
 				end, "Git: previous hunk")
 
 				-- Stage / reset. stage_hunk on an already-staged
-				-- hunk un-stages it (it is a toggle). reset_hunk
-				-- rewrites the lines back to the index version --
-				-- destructive to unstaged edits, but recoverable
-				-- with plain undo (u) since it edits the buffer.
-				-- The visual variants act on the selected lines
-				-- only, for splitting a hunk into finer pieces.
-				map("n", "<leader>hs", gitsigns.stage_hunk, "Git: stage hunk (toggles)")
+				-- line or hunk un-stages it (it is a toggle, and
+				-- that holds for a line range too -- verified,
+				-- not assumed). reset_hunk rewrites the lines
+				-- back to the index version -- destructive to
+				-- unstaged edits, but recoverable with plain undo
+				-- (u) since it edits the buffer.
+				--
+				-- <leader>hs stages by LINE, not by hunk
+				-- (2026-09-15, user request): normal mode takes
+				-- the cursor line, visual mode the selection, so
+				-- the two modes are the same action at different
+				-- widths rather than two different granularities.
+				-- Line-at-a-time is the granularity that actually
+				-- gets used when splitting a commit, and a hunk
+				-- is reachable by selecting it (vih) or by
+				-- :Gitsigns stage_hunk with no range, which is
+				-- what the unranged call still means.
+				--
+				-- Lines with no change in them are ignored rather
+				-- than refused, so an over-wide selection is safe
+				-- and an empty one is a silent no-op -- also
+				-- verified. The only feedback is the sign column
+				-- switching to the staged set.
+				--
+				-- <leader>hr is deliberately left on the whole
+				-- hunk in normal mode. Reset is the destructive
+				-- one, and its usual use is discarding an entire
+				-- change rather than a line of it; the visual
+				-- variant below still narrows it when needed.
+				map("n", "<leader>hs", function()
+					gitsigns.stage_hunk({
+						vim.fn.line("."),
+						vim.fn.line("."),
+					})
+				end, "Git: stage this line (toggles)")
 				map("n", "<leader>hr", gitsigns.reset_hunk, "Git: reset hunk to index")
 				map("v", "<leader>hs", function()
 					gitsigns.stage_hunk({
