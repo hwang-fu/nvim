@@ -48,14 +48,15 @@
 "      ones with :syn match.
 " ----------------------------------------------------------------------------
 
-" Word-shaped: declared as KEYWORDS so they outrank Coqtail's own. Keywords
-" match whole words by 'iskeyword' on their own, so no \< \> is needed - and
-" none can be written, because a keyword is a literal word, not a pattern.
-" `True` and `False` are the Prop-level constants, not the bool constructors
-" `true` and `false`. Coqtail sets `syn case match` (syntax/coq.vim), so these
-" keywords are case-sensitive and the lowercase bool values are left alone -
-" which is the distinction that matters, since only the capitalised pair are
-" propositions and therefore the ones worth drawing as verum and falsum.
+" Declared as KEYWORDS so they outrank Coqtail's own, which is the only thing
+" that can. Keywords match whole words by 'iskeyword' on their own, so no
+" \< \> is needed - and none can be written, because a keyword is a literal
+" word, not a pattern.
+"
+" Only the two quantifiers are here, and the reason the constants are not is
+" below. These two are safe as bare words because both are RESERVED in Rocq:
+" neither can be a module name, so neither can turn up as a component of a
+" qualified name the way an ordinary identifier can.
 "
 " `fun` is deliberately absent. It was drawn as a lambda here between
 " 2026-09-13 and 2026-09-15 and taken back out; OCaml still does it, in
@@ -63,11 +64,10 @@
 let s:words = [
       \ ['forall', 0x2200],
       \ ['exists', 0x2203],
-      \ ['True', 0x22A4],
-      \ ['False', 0x22A5],
       \ ]
 
-" Operator-shaped: these have to be MATCHES, because they are not words.
+" Everything that needs a pattern: the operators, which are not words at all,
+" and the two Prop constants, which are words but need a guard.
 "
 " The patterns read oddly because Vim's regex escape is the same character
 " Rocq uses in the operators themselves. In a single-quoted Vim string a
@@ -90,11 +90,36 @@ let s:words = [
 " on this machine only Iosevka and FreeMono did, while the binary pair is in
 " DejaVu, JetBrains Mono, Fira Code and Noto Sans Mono as well. Correct symbol
 " and a far wider choice of font, so there was nothing to trade off.
+"
+" `True` and `False` are matches rather than keywords because a keyword cannot
+" carry a guard, and they need one. Unlike the quantifiers they are ordinary
+" identifiers - Coq.Init.Logic.True - so they turn up inside QUALIFIED NAMES,
+" and `a.True.b` was being drawn as `a.verum.b` (reported 2026-09-15). A dot is
+" not in 'iskeyword', so to Vim the `True` in `a.True.b` is a whole word and a
+" keyword matched it happily.
+"
+" The two guards, and why they are not symmetric:
+"   \%(\.\)\@<!   not preceded by a dot. A leading dot is unambiguous - it can
+"                 only be a qualifier separator - so this alone kills
+"                 `a.True.b` and `Nat.True`.
+"   \%(\.\k\)\@!  not followed by a dot that itself starts an identifier. A
+"                 TRAILING dot is ambiguous in Rocq: `.` before whitespace or
+"                 end of line ends a sentence, and `Lemma l : True.` must still
+"                 be drawn, while `.` before an identifier character separates
+"                 a qualifier and must not. The lookahead draws exactly that
+"                 line.
+"
+" Nothing has to be done about case: Coqtail sets `syn case match`
+" (syntax/coq.vim), so these never touch the bool constructors `true` and
+" `false`. That distinction is the point - only the capitalised pair are
+" propositions, and so only they are worth drawing as verum and falsum.
 let s:ops = [
       \ ['\\/', 0x2228],
       \ ['/\\', 0x2227],
       \ ['\~', 0x00AC],
       \ ['<>', 0x2260],
+      \ ['\%(\.\)\@<!\<True\>\%(\.\k\)\@!', 0x22A4],
+      \ ['\%(\.\)\@<!\<False\>\%(\.\k\)\@!', 0x22A5],
       \ ]
 
 let s:n = 0

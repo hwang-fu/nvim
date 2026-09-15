@@ -134,6 +134,8 @@ Size is a separate question from coverage, and worth measuring rather than eyeba
 
 `True` and `False` are matched **case-sensitively**, so the `bool` constructors `true` and `false` are left as they are - only the two `Prop`-level constants become symbols. An identifier that merely contains the word, such as `True_is_true`, is one word to Vim and is not touched either.
 
+They are also left alone inside a **qualified name**: `a.True.b` and `Nat.False` stay as written, because a component of a dotted path is a reference to something in a module rather than the constant itself. A sentence-ending dot is a different thing and still works - `Lemma l : True.` is drawn with the symbol. The two cases are told apart by what follows the dot, since Rocq itself does the same: a `.` before whitespace or end of line ends a sentence, a `.` before an identifier character separates a qualifier.
+
 **Nothing is rewritten.** `conceallevel` is a window option, so the file on disk still says `forall`, and so do the buffer, `grep`, the git diff, and what Rocq reads. Open the same file in two splits with different settings and the text is identical in both - only the drawing differs.
 
 | Command | Effect |
@@ -146,7 +148,7 @@ You rarely need either, because the line you are working on un-conceals itself. 
 The symbol tables are in `after/syntax/coq.vim`. There are **two** of them, and which one a new substitution belongs in is not a style choice - it decides whether the rule works at all:
 
 - **Word-shaped** substitutions (`forall`, `exists`) are declared with `:syn keyword`. They have to be, because Coqtail declares `forall` as a keyword too, and in Vim a keyword outranks a match no matter which was defined last. Only another keyword can override it.
-- **Operator-shaped** substitutions (`\/`, `/\`) are declared with `:syn match`, since they are not words. Match-against-match is settled by definition order, and an `after/syntax` file is sourced after the syntax file it augments, so ours wins.
+- **Everything else** is declared with `:syn match`. That covers the operators, which are not words at all, and also `True` and `False`, which are words but need a **guard** a keyword cannot carry: unlike the reserved quantifiers they are ordinary identifiers, so they appear inside qualified names, and a bare keyword drew `a.True.b` as `a.verum.b`. Match-against-match is settled by definition order, and an `after/syntax` file is sourced after the syntax file it augments, so ours wins.
 
 Every rule in both tables carries `containedin=ALL`, and that is load-bearing rather than decorative. Coqtail wraps almost every interesting position in a region with an explicit `contains=` list, and a region only ever matches the items that list names; without `containedin=ALL` the rules are created, appear in `:syntax list`, and never fire. That is exactly what the first version of this file did between 2026-09-12 and 2026-09-13: it concealed nothing.
 
