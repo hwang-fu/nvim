@@ -98,23 +98,41 @@ let s:words = [
 " not in 'iskeyword', so to Vim the `True` in `a.True.b` is a whole word and a
 " keyword matched it happily.
 "
-" The two guards, and why they are not symmetric:
-"   \%(\.\)\@<!   not preceded by a dot. A leading dot is unambiguous - it can
-"                 only be a qualifier separator - so this alone kills
-"                 `a.True.b` and `Nat.True`.
-"   \%(\.\k\)\@!  not followed by a dot that itself starts an identifier. A
-"                 TRAILING dot is ambiguous in Rocq: `.` before whitespace or
-"                 end of line ends a sentence, and `Lemma l : True.` must still
-"                 be drawn, while `.` before an identifier character separates
-"                 a qualifier and must not. The lookahead draws exactly that
-"                 line.
+" The two guards, and why they are not symmetric.
+"
+" LEADING - `\%(\.\)\@<!\<` - the name must start a word and must not be
+" preceded by a dot. A leading dot is unambiguous: it can only be a qualifier
+" separator, so this alone kills `a.True.b` and `Nat.True`.
+"
+" TRAILING - `\%('*\%(\k\|\.\k\)\@!\)\@=` - after the name, allow any number of
+" apostrophes, then require that what follows is neither an identifier
+" character nor a dot that itself starts an identifier. Three separate things
+" are being said at once:
+"
+"   * `beta'` and `beta''` ARE drawn (2026-09-15, user request), as the letter
+"     followed by the apostrophes: only the name is matched, so only the name
+"     is replaced. This is the whole reason the guard is a lookahead and not
+"     the plain `\>` it used to be - an apostrophe is in 'iskeyword' here, so
+"     `beta'` is ONE word and `\>` refused it.
+"   * `beta'x` is NOT drawn. The apostrophes must end the identifier. A name
+"     like `beta'x` is its own thing rather than a derived `beta`, and reading
+"     it as one would be wrong; the negative lookahead after `'*` is what draws
+"     that line. `beta_conv`, `beta1` and `betax` fall out the same way.
+"   * A TRAILING dot stays ambiguous in Rocq and has to be treated as such:
+"     `.` before whitespace or end of line ends a sentence, so
+"     `Lemma l : True.` must still be drawn, while `.` before an identifier
+"     character separates a qualifier and must not. Hence `\.\k` rather than
+"     a bare `\.`.
+"
+" Note the doubled apostrophe in the string below: inside a single-quoted Vim
+" string `''` is one literal apostrophe, so `''*` is the regex `'*`.
 "
 " Nothing has to be done about case: Coqtail sets `syn case match`
 " (syntax/coq.vim), so these never touch the bool constructors `true` and
 " `false`. That distinction is the point - only the capitalised pair are
 " propositions, and so only they are worth drawing as verum and falsum.
 let s:pre = '\%(\.\)\@<!\<'
-let s:post = '\>\%(\.\k\)\@!'
+let s:post = '\%(''*\%(\k\|\.\k\)\@!\)\@='
 
 " The three turnstiles (2026-09-15, user request): |- entails, |= models, and
 " ||- forces. A bar is literal in a Vim pattern - it is \| that means
@@ -160,10 +178,10 @@ let s:ops = [
 "
 " They carry the same guard as True and False, and for the same reason: unlike
 " the reserved quantifiers these are ordinary identifiers, so `M.alpha` and
-" `Setoid.gamma` must stay as written. Identifiers that merely contain a letter
-" name are safe without any help - 'iskeyword' here is `@,48-57,192-255,_,'`,
-" so `alpha_conv`, `beta'` and `gamma1` are each a single word and \< \> never
-" splits them.
+" `Setoid.gamma` must stay as written, while `alpha_conv`, `gamma1` and
+" `alphabet` are names in their own right and are left alone. `beta'` and
+" `beta''` are the one shape that IS drawn, as the letter plus its apostrophes;
+" see the guard above for why that needed a lookahead rather than `\>`.
 let s:greek = ['alpha', 'beta', 'gamma', 'delta', 'epsilon', 'zeta', 'eta',
       \ 'theta', 'iota', 'kappa', 'lambda', 'mu', 'nu', 'xi', 'omicron', 'pi',
       \ 'rho', 'sigma', 'tau', 'upsilon', 'phi', 'chi', 'psi', 'omega']

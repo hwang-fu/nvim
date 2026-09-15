@@ -141,6 +141,22 @@ Size is a separate question from coverage, and worth measuring rather than eyeba
 
 They are also left alone inside a **qualified name**: `a.True.b` and `Nat.False` stay as written, because a component of a dotted path is a reference to something in a module rather than the constant itself. A sentence-ending dot is a different thing and still works - `Lemma l : True.` is drawn with the symbol. The two cases are told apart by what follows the dot, since Rocq itself does the same: a `.` before whitespace or end of line ends a sentence, a `.` before an identifier character separates a qualifier.
 
+### Primed names
+
+A name followed only by apostrophes **is** drawn, as the symbol plus the apostrophes: `beta'` becomes the small letter with a prime after it, `alpha''` with two, and `True'` likewise. The convention that `x'` is "another `x`" survives the substitution, which is the point.
+
+The apostrophes have to end the identifier. `beta'x` is left as written, because a name like that is its own thing rather than a derived `beta`, and reading it as a primed beta would be wrong. Everything else that merely *contains* a name is left alone for the same reason: `beta_conv`, `beta1`, `betax` and `alphabet` are all untouched.
+
+This is why the guard is a lookahead rather than a plain word boundary. `'iskeyword'` in a Rocq buffer is `@,48-57,192-255,_,'` - the apostrophe is a word character - so `beta'` is a *single word* to Vim, and `\>` refused to match after `beta`. The lookahead says "apostrophes are allowed here, anything else that could continue an identifier is not", which a word boundary cannot express.
+
+| Written | Drawn |
+|---------|-------|
+| `beta` | the letter |
+| `beta'`, `beta''` | the letter, then the apostrophes |
+| `beta'x` | as written |
+| `beta_conv`, `beta1`, `betax` | as written |
+| `M.beta`, `M.beta'` | as written |
+
 ### Greek letters
 
 All twenty-four letter names are drawn as the letter, in both cases - `alpha` becomes the small letter, `Alpha` the capital, and so on through `omega` and `Omega`. The names are the ordinary spellings:
@@ -150,11 +166,11 @@ alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu
 nu xi omicron pi rho sigma tau upsilon phi chi psi omega
 ```
 
-They carry the same qualified-name guard as `True` and `False`, for the same reason - `M.alpha` and `Setoid.gamma` stay as written. An identifier that merely *contains* a name needs no guard at all, because `'iskeyword'` in a Rocq buffer is `@,48-57,192-255,_,'`: `alpha_conv`, `beta'`, `gamma1` and `alphabet` are each a single word to Vim, and a word boundary never splits them.
+They carry the same qualified-name guard as `True` and `False`, for the same reason - `M.alpha` and `Setoid.gamma` stay as written - and the same **primed-name** rule described below.
 
 The forty-eight rules are **generated** from the name list in `after/syntax/coq.vim` rather than written out, so a codepoint can only be got wrong in one place instead of forty-eight. Both Greek blocks run in the order above, which makes the codepoint the index - with one irregularity worth knowing before editing the list: U+03A2 is unassigned and U+03C2 is *final* sigma, the word-ending form, which is not what a mathematical sigma means. Both blocks therefore shift by one from sigma onward, and because they shift at the same index a single correction covers both.
 
-This is much the largest group here, and it is worth knowing it costs almost nothing. Measured with `:syntime` over sixty full redraws of a 449-line proof file, every syntax rule in the buffer together came to 14ms per redraw of the *whole file*, with the slowest of the new rules averaging a microsecond per call. A real redraw only covers the visible window.
+This is much the largest group here, and it is worth knowing it costs almost nothing. Measured with `:syntime` over sixty full redraws of a 449-line proof file, every syntax rule in the buffer together came to 15ms per redraw of the *whole file*, with the slowest of the new rules averaging a microsecond per call. A real redraw only covers the visible window. Adding the primed-name lookahead to all fifty guarded rules moved that total by about eight percent, which is the scale to expect from anything added here.
 
 **Nothing is rewritten.** `conceallevel` is a window option, so the file on disk still says `forall`, and so do the buffer, `grep`, the git diff, and what Rocq reads. Open the same file in two splits with different settings and the text is identical in both - only the drawing differs.
 
