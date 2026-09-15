@@ -113,14 +113,49 @@ let s:words = [
 " (syntax/coq.vim), so these never touch the bool constructors `true` and
 " `false`. That distinction is the point - only the capitalised pair are
 " propositions, and so only they are worth drawing as verum and falsum.
+let s:pre = '\%(\.\)\@<!\<'
+let s:post = '\>\%(\.\k\)\@!'
+
 let s:ops = [
       \ ['\\/', 0x2228],
       \ ['/\\', 0x2227],
       \ ['\~', 0x00AC],
       \ ['<>', 0x2260],
-      \ ['\%(\.\)\@<!\<True\>\%(\.\k\)\@!', 0x22A4],
-      \ ['\%(\.\)\@<!\<False\>\%(\.\k\)\@!', 0x22A5],
+      \ [s:pre . 'True' . s:post, 0x22A4],
+      \ [s:pre . 'False' . s:post, 0x22A5],
       \ ]
+
+" The 24 Greek letters, both cases (2026-09-15, user request): `alpha` is drawn
+" as the small letter and `Alpha` as the capital, and so on through `omega`.
+"
+" Generated rather than listed, because forty-eight literal rows would be a
+" transcription exercise with forty-eight chances to put a codepoint one off.
+" Both Greek blocks run in the order below, so the codepoint is the index.
+"
+" The one irregularity is the pair of holes at sigma. U+03A2 is unassigned, and
+" U+03C2 is FINAL sigma - the form Greek uses at the end of a word, which is
+" not what a mathematical sigma means. Both blocks therefore shift by one from
+" index 17 onward, and both shift at the same index, so a single correction
+" covers the two of them.
+"
+" They carry the same guard as True and False, and for the same reason: unlike
+" the reserved quantifiers these are ordinary identifiers, so `M.alpha` and
+" `Setoid.gamma` must stay as written. Identifiers that merely contain a letter
+" name are safe without any help - 'iskeyword' here is `@,48-57,192-255,_,'`,
+" so `alpha_conv`, `beta'` and `gamma1` are each a single word and \< \> never
+" splits them.
+let s:greek = ['alpha', 'beta', 'gamma', 'delta', 'epsilon', 'zeta', 'eta',
+      \ 'theta', 'iota', 'kappa', 'lambda', 'mu', 'nu', 'xi', 'omicron', 'pi',
+      \ 'rho', 'sigma', 'tau', 'upsilon', 'phi', 'chi', 'psi', 'omega']
+
+let s:i = 0
+for s:name in s:greek
+  let s:skip = s:i >= 17 ? 1 : 0
+  let s:Name = toupper(s:name[0]) . s:name[1:]
+  call add(s:ops, [s:pre . s:Name . s:post, 0x0391 + s:i + s:skip])
+  call add(s:ops, [s:pre . s:name . s:post, 0x03B1 + s:i + s:skip])
+  let s:i += 1
+endfor
 
 let s:n = 0
 for [s:word, s:code] in s:words
@@ -136,3 +171,4 @@ for [s:pattern, s:code] in s:ops
 endfor
 
 unlet! s:words s:ops s:n s:word s:pattern s:code
+unlet! s:pre s:post s:greek s:i s:skip s:name s:Name

@@ -105,7 +105,7 @@ These answer in the Info panel, using the term under the cursor (or the visual s
 
 ## Symbols
 
-Eight pieces of ASCII are drawn as the symbols they stand for, so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
+Eight pieces of ASCII are drawn as the symbols they stand for, plus the twenty-four Greek letter names in both cases ([below](#greek-letters)), so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
 
 | Written | Drawn | Codepoint |
 |---------|-------|-----------|
@@ -135,6 +135,21 @@ Size is a separate question from coverage, and worth measuring rather than eyeba
 `True` and `False` are matched **case-sensitively**, so the `bool` constructors `true` and `false` are left as they are - only the two `Prop`-level constants become symbols. An identifier that merely contains the word, such as `True_is_true`, is one word to Vim and is not touched either.
 
 They are also left alone inside a **qualified name**: `a.True.b` and `Nat.False` stay as written, because a component of a dotted path is a reference to something in a module rather than the constant itself. A sentence-ending dot is a different thing and still works - `Lemma l : True.` is drawn with the symbol. The two cases are told apart by what follows the dot, since Rocq itself does the same: a `.` before whitespace or end of line ends a sentence, a `.` before an identifier character separates a qualifier.
+
+### Greek letters
+
+All twenty-four letter names are drawn as the letter, in both cases - `alpha` becomes the small letter, `Alpha` the capital, and so on through `omega` and `Omega`. The names are the ordinary spellings:
+
+```
+alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu
+nu xi omicron pi rho sigma tau upsilon phi chi psi omega
+```
+
+They carry the same qualified-name guard as `True` and `False`, for the same reason - `M.alpha` and `Setoid.gamma` stay as written. An identifier that merely *contains* a name needs no guard at all, because `'iskeyword'` in a Rocq buffer is `@,48-57,192-255,_,'`: `alpha_conv`, `beta'`, `gamma1` and `alphabet` are each a single word to Vim, and a word boundary never splits them.
+
+The forty-eight rules are **generated** from the name list in `after/syntax/coq.vim` rather than written out, so a codepoint can only be got wrong in one place instead of forty-eight. Both Greek blocks run in the order above, which makes the codepoint the index - with one irregularity worth knowing before editing the list: U+03A2 is unassigned and U+03C2 is *final* sigma, the word-ending form, which is not what a mathematical sigma means. Both blocks therefore shift by one from sigma onward, and because they shift at the same index a single correction covers both.
+
+This is much the largest group here, and it is worth knowing it costs almost nothing. Measured with `:syntime` over sixty full redraws of a 449-line proof file, every syntax rule in the buffer together came to 14ms per redraw of the *whole file*, with the slowest of the new rules averaging a microsecond per call. A real redraw only covers the visible window.
 
 **Nothing is rewritten.** `conceallevel` is a window option, so the file on disk still says `forall`, and so do the buffer, `grep`, the git diff, and what Rocq reads. Open the same file in two splits with different settings and the text is identical in both - only the drawing differs.
 
