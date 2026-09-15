@@ -105,7 +105,7 @@ These answer in the Info panel, using the term under the cursor (or the visual s
 
 ## Symbols
 
-Fourteen pieces of ASCII are drawn as the symbols they stand for, plus the twenty-four Greek letter names in both cases ([below](#greek-letters)), so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
+Seventeen pieces of ASCII are drawn as the symbols they stand for, plus the twenty-four Greek letter names in both cases ([below](#greek-letters)), so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
 
 | Written | Drawn | Codepoint |
 |---------|-------|-----------|
@@ -121,16 +121,23 @@ Fourteen pieces of ASCII are drawn as the symbols they stand for, plus the twent
 | `->` | rightwards arrow | U+2192 |
 | `<->` | left-right arrow | U+2194 |
 | `=>` | rightwards double arrow | U+21D2 |
+| `\|->` | arrow from bar - maps to | U+21A6 |
 | `True` | verum / top | U+22A4 |
 | `False` | falsum / bottom | U+22A5 |
+| `Aleph` | alef | U+2135 |
+| `Beth` | bet | U+2136 |
 
-`<=`, `>=` and `fun` are deliberately not in the table and keep their ASCII. `fun` was drawn as a lambda for two days and taken back out; OCaml does still do it, see [ocaml](ocaml.md).
+`<=`, `>=`, `:=` and `fun` are deliberately not in the table and keep their ASCII. `fun` was drawn as a lambda for two days and taken back out; OCaml does still do it, see [ocaml](ocaml.md). `:=` is the interesting absence and is explained at the end of this section.
 
-**Overlapping pairs resolve to the longest**, which matters twice here: `||-` is one forces sign rather than a bar followed by a right tack, and `<->` is one left-right arrow rather than a bracket followed by `->`. That falls out of the scan running left to right - at the first character only the long rule can match, and it consumes all of it - but `|-` and `->` each also carry a lookbehind refusing the character that would precede them in the longer form, so the outcome depends on neither the order of the table nor on anything a later rule might do.
+**Overlapping operators resolve to the longest**, which matters three times here: `||-` is one forces sign rather than a bar and a right tack, `<->` is one left-right arrow rather than a bracket and an arrow, and `|->` is one arrow-from-bar rather than either of the two shorter rules inside it. Two different mechanisms are doing that work, and the difference matters if you extend the table.
+
+Where the longer rule starts an **earlier column** - `||-` against `|-`, `<->` against `->` - the scan settles it by itself: it runs left to right, reaches the first character, matches the longest thing available and consumes all of it. Where two rules start at the **same column** - `|->` against `|-` - it does not: Vim then takes the rule *defined last*, which would make the result depend on where the next row happens to be inserted. Every rule that can be a prefix or a suffix of another therefore carries an explicit guard, and the order of the table is free.
 
 Ordinary uses of the same characters are untouched, because every rule needs its two or three characters **adjacent**: `| Z` in a `match` branch, `x || y`, `a <= b`, `a >= b` and the `-` `+` `*` bullets that open a proof step are all left as written.
 
 `<->` is worth one note for anyone extending the table. It was first drawn as U+27F7, the *long* left-right arrow, and that was wrong for a terminal: the glyph is designed about two ems wide and arrived squeezed into a single cell. U+2194 is the single-width one.
+
+**`:=` cannot be done, and the reason is structural rather than a matter of effort.** It was added and removed on the same day. The `:=` that opens a definition body is not an ordinary token: it is the *start match of a region*, and Coqtail reaches that region through `nextgroup` rather than by letting it compete. A `nextgroup` target is forced, so a rule of ours is never offered the column at all - the same mechanism the number sets above exploit deliberately, here working against us. Coqtail has at least eleven such regions, opening the bodies of `Definition`, `Instance`, `Fixpoint`, `Ltac`, `Notation`, `Module`, `Obligation`, `Coercion` and `Inductive`. A `:=` in ordinary term position *did* conceal, which is the worst of both outcomes: the common occurrence would have stayed ASCII while the rare one became a symbol. Getting it properly would mean redefining those eleven regions in `after/syntax/coq.vim`, which is forking Coqtail's syntax file in all but name.
 
 ### Fonts
 

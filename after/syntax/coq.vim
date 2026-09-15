@@ -131,6 +131,12 @@ let s:words = [
 " (syntax/coq.vim), so these never touch the bool constructors `true` and
 " `false`. That distinction is the point - only the capitalised pair are
 " propositions, and so only they are worth drawing as verum and falsum.
+"
+" `Aleph` and `Beth` (2026-09-16, user request) are the cardinal symbols and
+" ride on exactly the same two guards, being ordinary identifiers like the
+" constants above rather than reserved words. Only the capitalised spellings
+" are drawn, again because `syn case match` is in force - a variable named
+" `aleph` is left alone.
 let s:pre = '\%(\.\)\@<!\<'
 let s:post = '\%(''*\%(\k\|\.\k\)\@!\)\@='
 
@@ -152,29 +158,66 @@ let s:post = '\%(''*\%(\k\|\.\k\)\@!\)\@='
 " the SECOND bar of `||-` would draw a bar followed by a right tack instead of
 " the single forces sign.
 "
-" The three arrows (2026-09-16, user request) overlap the same way and take the
-" same answer: `<->` contains `->`, the scan reaches the `<` first and consumes
-" all three characters, and the lookbehind on `->` makes that independent of
-" the scan rather than dependent on it. `<->` is back after a day out - it was
-" tried as U+27F7, the LONG left-right arrow, and dropped because that glyph is
-" drawn about two ems wide and was squeezed into one cell; U+2194 is the
-" single-width one and is what should have been used in the first place.
+" The arrows (2026-09-16, user request) overlap in two different ways, and only
+" one of them the scan can settle on its own.
+"
+" `<->` contains `->` but starts a column EARLIER, so the scan reaches the `<`
+" first, matches the longer rule and consumes all three characters. Same shape
+" as the turnstiles above.
+"
+" `|->` contains BOTH `|-` and `->`, and this is the case that needs real care,
+" because `|->` and `|-` begin at the SAME column. Where two items start
+" together Vim takes the LAST DEFINED, not the longest - the one rule that has
+" saved every other overlap here does not apply. Relying on the order of this
+" list would make the result depend on where somebody inserts the next row, so
+" all three carry explicit guards instead and the order is free:
+"
+"   |->   no guard needed, nothing longer contains it
+"   |-    must not be preceded by | (that is ||-) and must not be
+"         FOLLOWED by > (that is |->)
+"   ->    must not be preceded by < or | (those are <-> and |->)
+"
+" `<->` is back after a day out. It was tried as U+27F7, the LONG left-right
+" arrow, and dropped because that glyph is drawn about two ems wide and arrived
+" squeezed into one cell; U+2194 is the single-width one and is what should
+" have been used in the first place.
 "
 " `=>` needs no guard. Nothing else in this table ends in it, and Rocq has no
 " `<=>`.
+"
+" `:=` is deliberately ABSENT, and the reason is worth recording so it is not
+" tried a third time. It was added on 2026-09-16 and removed the same day,
+" because it can only ever be drawn in HALF the places it appears. The `:=`
+" that opens a definition body is not an ordinary token: it is the start match
+" of a region, reached through `nextgroup` -
+"
+"     coqDef ... nextgroup=coqDefContents1                 (syntax/coq.vim:345)
+"     coqDefContents1 ... matchgroup=... start=":="        (syntax/coq.vim:348)
+"
+" - and a nextgroup target is forced rather than competed for, so a rule here
+" is never offered the column, exactly as with the \zs problem solved for the
+" number sets above. Coqtail has at least eleven such regions: Definition,
+" Instance, Fixpoint, Ltac, Notation, Module, Obligation, Coercion, Inductive
+" and more. A `:=` in ordinary term position DID conceal, which is the worst
+" of both: the most common occurrence stayed ASCII while the rarer one became
+" a symbol. Uniform ASCII beats that. Getting it would mean redefining those
+" eleven regions here, forking Coqtail's syntax file in all but name.
 let s:ops = [
       \ ['\\/', 0x2228],
       \ ['/\\', 0x2227],
       \ ['\~', 0x00AC],
       \ ['<>', 0x2260],
       \ ['||-', 0x22A9],
-      \ ['\%(|\)\@<!|-', 0x22A2],
+      \ ['|->', 0x21A6],
+      \ ['\%(|\)\@<!|-\%(>\)\@!', 0x22A2],
       \ ['|=', 0x22A8],
       \ ['<->', 0x2194],
-      \ ['\%(<\)\@<!->', 0x2192],
+      \ ['\%([<|]\)\@<!->', 0x2192],
       \ ['=>', 0x21D2],
       \ [s:pre . 'True' . s:post, 0x22A4],
       \ [s:pre . 'False' . s:post, 0x22A5],
+      \ [s:pre . 'Aleph' . s:post, 0x2135],
+      \ [s:pre . 'Beth' . s:post, 0x2136],
       \ ]
 
 " The 24 Greek letters, both cases (2026-09-15, user request): `alpha` is drawn
