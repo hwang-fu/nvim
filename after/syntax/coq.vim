@@ -132,11 +132,27 @@ let s:words = [
 " `false`. That distinction is the point - only the capitalised pair are
 " propositions, and so only they are worth drawing as verum and falsum.
 "
-" `Aleph` and `Beth` (2026-09-16, user request) are the cardinal symbols and
-" ride on exactly the same two guards, being ordinary identifiers like the
-" constants above rather than reserved words. Only the capitalised spellings
-" are drawn, again because `syn case match` is in force - a variable named
-" `aleph` is left alone.
+" The cardinals (2026-09-16, user request) ride on exactly the same two guards,
+" being ordinary identifiers like the constants above rather than reserved
+" words. Only the capitalised spellings are drawn, again because
+" `syn case match` is in force - a variable named `alef` is left alone.
+"
+" The codepoints are U+2135-U+2138, the four HEBREW LETTERLIKE SYMBOLS from the
+" Letterlike Symbols block, NOT the Hebrew letters themselves at U+05D0-U+05D3.
+" They look nearly identical and are not interchangeable here, for two reasons
+" that both matter in a terminal:
+"
+"   * Bidirectionality. The letterlike symbols are bidi class L; the Hebrew
+"     letters are class R, and a right-to-left character dropped into a line of
+"     left-to-right code makes the surrounding text reorder itself on screen.
+"   * Fonts. STIX Two Math carries all four letterlike symbols and none of the
+"     Hebrew letters, so the Hebrew spellings would fall out of the symbol
+"     routing set up for everything else and land in whatever Hebrew-capable
+"     font fontconfig reaches for.
+"
+" That block holds exactly four: alef, bet, gimel and dalet. There is no
+" samekh - U+2139 is the information source sign - so a `Samech` rule could
+" only use the Hebrew letter and would carry both problems above.
 let s:pre = '\%(\.\)\@<!\<'
 let s:post = '\%(''*\%(\k\|\.\k\)\@!\)\@='
 
@@ -158,32 +174,12 @@ let s:post = '\%(''*\%(\k\|\.\k\)\@!\)\@='
 " the SECOND bar of `||-` would draw a bar followed by a right tack instead of
 " the single forces sign.
 "
-" The arrows (2026-09-16, user request) overlap in two different ways, and only
-" one of them the scan can settle on its own.
-"
-" `<->` contains `->` but starts a column EARLIER, so the scan reaches the `<`
-" first, matches the longer rule and consumes all three characters. Same shape
-" as the turnstiles above.
-"
-" `|->` contains BOTH `|-` and `->`, and this is the case that needs real care,
-" because `|->` and `|-` begin at the SAME column. Where two items start
-" together Vim takes the LAST DEFINED, not the longest - the one rule that has
-" saved every other overlap here does not apply. Relying on the order of this
-" list would make the result depend on where somebody inserts the next row, so
-" all three carry explicit guards instead and the order is free:
-"
-"   |->   no guard needed, nothing longer contains it
-"   |-    must not be preceded by | (that is ||-) and must not be
-"         FOLLOWED by > (that is |->)
-"   ->    must not be preceded by < or | (those are <-> and |->)
-"
-" `<->` is back after a day out. It was tried as U+27F7, the LONG left-right
-" arrow, and dropped because that glyph is drawn about two ems wide and arrived
-" squeezed into one cell; U+2194 is the single-width one and is what should
-" have been used in the first place.
-"
-" `=>` needs no guard. Nothing else in this table ends in it, and Rocq has no
-" `<=>`.
+" `|-` also refuses a FOLLOWING `>`, which is about `|->` rather than about any
+" rule here: `->`, `<->`, `=>` and `|->` were all drawn as arrows on 2026-09-16
+" and taken back out the same day (user request). With them gone the guard
+" still earns its place, because without it `|->` would come out as a right
+" tack followed by a bare `>` - half substituted, which is worse than the plain
+" ASCII it now stays as.
 "
 " `:=` is deliberately ABSENT, and the reason is worth recording so it is not
 " tried a third time. It was added on 2026-09-16 and removed the same day,
@@ -208,16 +204,14 @@ let s:ops = [
       \ ['\~', 0x00AC],
       \ ['<>', 0x2260],
       \ ['||-', 0x22A9],
-      \ ['|->', 0x21A6],
       \ ['\%(|\)\@<!|-\%(>\)\@!', 0x22A2],
       \ ['|=', 0x22A8],
-      \ ['<->', 0x2194],
-      \ ['\%([<|]\)\@<!->', 0x2192],
-      \ ['=>', 0x21D2],
       \ [s:pre . 'True' . s:post, 0x22A4],
       \ [s:pre . 'False' . s:post, 0x22A5],
-      \ [s:pre . 'Aleph' . s:post, 0x2135],
-      \ [s:pre . 'Beth' . s:post, 0x2136],
+      \ [s:pre . 'Alef' . s:post, 0x2135],
+      \ [s:pre . 'Bet' . s:post, 0x2136],
+      \ [s:pre . 'Gimel' . s:post, 0x2137],
+      \ [s:pre . 'Dalet' . s:post, 0x2138],
       \ ]
 
 " The 24 Greek letters, both cases (2026-09-15, user request): `alpha` is drawn
