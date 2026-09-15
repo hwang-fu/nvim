@@ -56,12 +56,15 @@
 " keywords are case-sensitive and the lowercase bool values are left alone -
 " which is the distinction that matters, since only the capitalised pair are
 " propositions and therefore the ones worth drawing as verum and falsum.
+"
+" `fun` is deliberately absent. It was drawn as a lambda here between
+" 2026-09-13 and 2026-09-15 and taken back out; OCaml still does it, in
+" after/ftplugin/ocaml.lua.
 let s:words = [
       \ ['forall', 0x2200],
       \ ['exists', 0x2203],
       \ ['True', 0x22A4],
       \ ['False', 0x22A5],
-      \ ['fun', 0x03BB],
       \ ]
 
 " Operator-shaped: these have to be MATCHES, because they are not words.

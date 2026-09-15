@@ -105,13 +105,12 @@ These answer in the Info panel, using the term under the cursor (or the visual s
 
 ## Symbols
 
-Nine pieces of ASCII are drawn as the symbols they stand for, so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
+Eight pieces of ASCII are drawn as the symbols they stand for, so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
 
 | Written | Drawn | Codepoint |
 |---------|-------|-----------|
 | `forall` | the universal quantifier | U+2200 |
 | `exists` | the existential quantifier | U+2203 |
-| `fun` | lambda | U+03BB |
 | `\/` | logical OR | U+2228 |
 | `/\` | logical AND | U+2227 |
 | `~` | the not sign | U+00AC |
@@ -119,7 +118,7 @@ Nine pieces of ASCII are drawn as the symbols they stand for, so a statement rea
 | `True` | verum / top | U+22A4 |
 | `False` | falsum / bottom | U+22A5 |
 
-`<=` and `<->` are deliberately not in the table and keep their ASCII; `<->` was drawn as U+27F7 for a few hours on 2026-09-13 and taken back out. Neither is at risk from `<>`, which matches only a `<` with a `>` immediately after it.
+`<=`, `<->` and `fun` are deliberately not in the table and keep their ASCII. The last two were tried and taken back out - `<->` as U+27F7, `fun` as a lambda - and neither `<=` nor `<->` is at risk from `<>`, which matches only a `<` with a `>` immediately after it. OCaml does still draw `fun` as a lambda; see [ocaml](ocaml.md).
 
 ### Fonts
 
