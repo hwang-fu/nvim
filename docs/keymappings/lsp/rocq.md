@@ -105,7 +105,7 @@ These answer in the Info panel, using the term under the cursor (or the visual s
 
 ## Symbols
 
-Eight pieces of ASCII are drawn as the symbols they stand for, plus the twenty-four Greek letter names in both cases ([below](#greek-letters)), so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
+Eleven pieces of ASCII are drawn as the symbols they stand for, plus the twenty-four Greek letter names in both cases ([below](#greek-letters)), so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
 
 | Written | Drawn | Codepoint |
 |---------|-------|-----------|
@@ -115,10 +115,15 @@ Eight pieces of ASCII are drawn as the symbols they stand for, plus the twenty-f
 | `/\` | logical AND | U+2227 |
 | `~` | the not sign | U+00AC |
 | `<>` | not equal to | U+2260 |
+| `\|-` | right tack - entails | U+22A2 |
+| `\|=` | double turnstile - models | U+22A8 |
+| `\|\|-` | forces | U+22A9 |
 | `True` | verum / top | U+22A4 |
 | `False` | falsum / bottom | U+22A5 |
 
 `<=`, `<->` and `fun` are deliberately not in the table and keep their ASCII. The last two were tried and taken back out - `<->` as U+27F7, `fun` as a lambda - and neither `<=` nor `<->` is at risk from `<>`, which matches only a `<` with a `>` immediately after it. OCaml does still draw `fun` as a lambda; see [ocaml](ocaml.md).
+
+The turnstiles overlap, and the longest wins: `||-` is drawn as a single forces sign rather than a bar followed by a right tack. That falls out of the scan running left to right - at the first bar only `||-` can match, and it consumes all three characters - but `|-` also carries a lookbehind that refuses a preceding bar, so the outcome does not depend on the order of the table or on anything a later rule might do. Ordinary uses of the bar are untouched: `| Z` in a `match` branch and `x || y` are both left alone, since every rule needs the two characters adjacent.
 
 ### Fonts
 

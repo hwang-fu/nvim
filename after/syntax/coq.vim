@@ -116,11 +116,31 @@ let s:words = [
 let s:pre = '\%(\.\)\@<!\<'
 let s:post = '\>\%(\.\k\)\@!'
 
+" The three turnstiles (2026-09-15, user request): |- entails, |= models, and
+" ||- forces. A bar is literal in a Vim pattern - it is \| that means
+" alternation - so none of the three needs escaping.
+"
+" `||-` CONTAINS `|-`, and that overlap is worth being explicit about because
+" the usual tie-break does not apply to it. Vim settles two matches that begin
+" at the SAME column by taking the last defined; these begin one column apart,
+" so that rule never comes into play. What actually decides it is that scanning
+" runs left to right: at the first bar only `||-` can match, it consumes all
+" three characters, and scanning resumes past them, so the `|-` inside is never
+" reached.
+"
+" That is already right, and the lookbehind on `|-` is here anyway. It costs
+" nothing, and it makes the outcome independent of the order of this list and
+" of whatever a later rule might do to the scan - without it, a `|-` reached at
+" the SECOND bar of `||-` would draw a bar followed by a right tack instead of
+" the single forces sign.
 let s:ops = [
       \ ['\\/', 0x2228],
       \ ['/\\', 0x2227],
       \ ['\~', 0x00AC],
       \ ['<>', 0x2260],
+      \ ['||-', 0x22A9],
+      \ ['\%(|\)\@<!|-', 0x22A2],
+      \ ['|=', 0x22A8],
       \ [s:pre . 'True' . s:post, 0x22A4],
       \ [s:pre . 'False' . s:post, 0x22A5],
       \ ]
