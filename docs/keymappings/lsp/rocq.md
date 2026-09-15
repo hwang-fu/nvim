@@ -141,6 +141,26 @@ Size is a separate question from coverage, and worth measuring rather than eyeba
 
 They are also left alone inside a **qualified name**: `a.True.b` and `Nat.False` stay as written, because a component of a dotted path is a reference to something in a module rather than the constant itself. A sentence-ending dot is a different thing and still works - `Lemma l : True.` is drawn with the symbol. The two cases are told apart by what follows the dot, since Rocq itself does the same: a `.` before whitespace or end of line ends a sentence, a `.` before an identifier character separates a qualifier.
 
+### Number sets
+
+Thirteen names for the standard number sets are drawn as their double-struck letters, with superscripts and subscripts where the name carries them:
+
+| Written | Drawn | | Written | Drawn |
+|---------|-------|-|---------|-------|
+| `Nat` | double-struck N | | `Rational` | double-struck Q |
+| `NatWithZero` | N with subscript zero | | `PosRational` | Q with superscript plus |
+| `Integer` | double-struck Z | | `NegRational` | Q with superscript minus |
+| `PosInteger` | Z with superscript plus | | `Real` | double-struck R |
+| `NegInteger` | Z with superscript minus | | `PosReal` | R with superscript plus |
+| `NonNegInteger` | Z, superscript plus, subscript zero | | `NegReal` | R with superscript minus |
+| `Complex` | double-struck C | | | |
+
+Eight of the thirteen need **more than one glyph**, and `cchar` accepts exactly one. The way round it is to stop thinking of a rule as covering a word: the word is cut into as many adjacent pieces as there are glyphs, and each piece gets its own one-character rule. Vim draws one replacement per concealed region and keeps neighbouring regions from different groups separate, so the pieces arrive side by side. Where the cut falls is arbitrary, because the glyphs appear in the order the *pieces* do rather than in any order the word implies.
+
+The pieces are chained with `contained` and `nextgroup`, which is worth knowing if you ever extend the table, because the two obvious alternatives both fail. `\zs` does nothing here at all: it moves where a match is reported, not where the engine starts trying it, so a second rule still has to begin matching at a column the first rule already consumed, and only the leading glyph ever appears. A look-behind is correct but expensive - any `\@<=` drops Vim onto its backtracking engine and is then attempted at every column whether it can match or not, which measured 13 microseconds a call against 1 for a plain word rule and **doubled the whole buffer's syntax cost**. Bounding the look-behind with `\@N<=` changed nothing, so the cost is the engine choice rather than the scan distance. Chaining with `nextgroup` has neither problem and brought the total back to within seven percent of where it started.
+
+Substring collisions need no special handling, which is worth stating because it looks like they should: `Integer` inside `PosInteger` is not matched, since there is no word boundary after the `s`, and `Nat` inside `NatWithZero` is not matched, since the trailing guard rejects the `W`. Both fall out of guards that are there for other reasons.
+
 ### Primed names
 
 A name followed only by apostrophes **is** drawn, as the symbol plus the apostrophes: `beta'` becomes the small letter with a prime after it, `alpha''` with two, and `True'` likewise. The convention that `x'` is "another `x`" survives the substitution, which is the point.

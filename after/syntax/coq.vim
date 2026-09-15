@@ -195,6 +195,101 @@ for s:name in s:greek
   let s:i += 1
 endfor
 
+" ----------------------------------------------------------------------------
+" The number sets (2026-09-16, user request): Nat as the double-struck N,
+" PosInteger as Z with a superscript plus, and so on.
+"
+" Eight of the thirteen want TWO OR THREE glyphs, and 'cchar' accepts exactly
+" one. The way round it is to stop thinking of a rule as covering a word: cut
+" the word into as many adjacent pieces as there are glyphs, and give each
+" piece its own one-character rule. Vim draws one cchar per concealed region,
+" and neighbouring regions from different groups stay separate, so the pieces
+" come out side by side. Where the cut falls is arbitrary - the glyphs appear
+" in the order the pieces do, not in any order the word implies - so the
+" tables below cut wherever leaves a readable pair of chunks.
+"
+" The pieces are chained with `contained` + `nextgroup`, which is the mechanism
+" Vim has for exactly this and is worth arriving at deliberately, because the
+" two obvious alternatives both fail:
+"
+"   \zs does not work at all. It moves where a match is REPORTED, not where
+"   the engine starts trying it, so a second rule written `\<PosInteg\zser`
+"   still has to begin matching at the P - a column the first rule has already
+"   consumed. It never fires and only the leading glyph appears.
+"
+"   A look-behind works but is expensive. `\%(\<PosInteg\)\@<=er` does begin
+"   matching at the e and is correct, but any \@<= drops Vim onto its
+"   backtracking engine, and the rule is then attempted at every column of
+"   every line whether or not it can match: measured at 13 microseconds a call
+"   against 1 for a plain word rule, which doubled the whole buffer's syntax
+"   cost. Bounding the look-behind with \@N<= changed nothing, so the cost is
+"   the engine choice and not the scan distance.
+"
+" `contained` + `nextgroup` has neither problem: a contained item is never
+" tried on its own, and nextgroup offers it only at the column where the
+" previous piece ended. It also makes the guards unnecessary on every piece
+" but the first - piece one already requires the whole word and its trailing
+" guard through \ze, so by the time piece two is offered, `M.PosInteger` and
+" `PosIntegerX` have both already been refused.
+"
+" Substring collisions need no special handling, which is worth stating
+" because it looks like they should. `Integer` inside `PosInteger` is not
+" matched, since \< finds no word boundary after the s; `Nat` inside
+" `NatWithZero` is not matched, since the trailing guard rejects the W that
+" follows. Both fall out of guards that are there for other reasons.
+"
+"          word, cut into pieces            one codepoint per piece
+let s:sets = [
+      \ [['Nat'],                          [0x2115]],
+      \ [['NatWithZer', 'o'],              [0x2115, 0x2080]],
+      \ [['Integer'],                      [0x2124]],
+      \ [['PosInteg', 'er'],               [0x2124, 0x207A]],
+      \ [['NegInteg', 'er'],               [0x2124, 0x207B]],
+      \ [['NonNegInte', 'g', 'er'],        [0x2124, 0x207A, 0x2080]],
+      \ [['Rational'],                     [0x211A]],
+      \ [['PosRation', 'al'],              [0x211A, 0x207A]],
+      \ [['NegRation', 'al'],              [0x211A, 0x207B]],
+      \ [['Complex'],                      [0x2102]],
+      \ [['Real'],                         [0x211D]],
+      \ [['PosRe', 'al'],                  [0x211D, 0x207A]],
+      \ [['NegRe', 'al'],                  [0x211D, 0x207B]],
+      \ ]
+
+" Emitted back to front so every nextgroup target exists before it is named,
+" and numbered per set so two sets that share a chunk spelling - "al" ends
+" both PosRational and PosReal - can never chain into each other's tail.
+let s:s = 0
+for [s:chunks, s:codes] in s:sets
+  let s:s += 1
+  let s:k = len(s:chunks) - 1
+  while s:k >= 0
+    let s:after = join(s:chunks[s:k + 1 :], '')
+
+    if s:k == 0
+      " Piece one carries both guards, and through \ze it also requires the
+      " rest of the word and the trailing guard to follow. Everything the
+      " later pieces would otherwise have to re-check is settled right here.
+      let s:pat = s:pre . s:chunks[0]
+      let s:opts = 'containedin=ALL'
+    else
+      let s:pat = s:chunks[s:k]
+      let s:opts = 'contained'
+    endif
+
+    if s:after !=# ''
+      let s:pat .= '\ze' . s:after
+      let s:opts .= printf(' nextgroup=rocqNumSet%d_%d', s:s, s:k + 1)
+    endif
+    if s:k == 0
+      let s:pat .= s:post
+    endif
+
+    execute printf('syntax match rocqNumSet%d_%d "%s" conceal %s cchar=%s',
+          \ s:s, s:k, s:pat, s:opts, nr2char(s:codes[s:k]))
+    let s:k -= 1
+  endwhile
+endfor
+
 let s:n = 0
 for [s:word, s:code] in s:words
   let s:n += 1
@@ -210,3 +305,4 @@ endfor
 
 unlet! s:words s:ops s:n s:word s:pattern s:code
 unlet! s:pre s:post s:greek s:i s:skip s:name s:Name
+unlet! s:sets s:chunks s:codes s:s s:k s:after s:pat s:opts
