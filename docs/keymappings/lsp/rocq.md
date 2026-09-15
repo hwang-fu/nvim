@@ -105,7 +105,7 @@ These answer in the Info panel, using the term under the cursor (or the visual s
 
 ## Symbols
 
-Eleven pieces of ASCII are drawn as the symbols they stand for, plus the twenty-four Greek letter names in both cases ([below](#greek-letters)), so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
+Fourteen pieces of ASCII are drawn as the symbols they stand for, plus the twenty-four Greek letter names in both cases ([below](#greek-letters)), so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
 
 | Written | Drawn | Codepoint |
 |---------|-------|-----------|
@@ -118,12 +118,19 @@ Eleven pieces of ASCII are drawn as the symbols they stand for, plus the twenty-
 | `\|-` | right tack - entails | U+22A2 |
 | `\|=` | double turnstile - models | U+22A8 |
 | `\|\|-` | forces | U+22A9 |
+| `->` | rightwards arrow | U+2192 |
+| `<->` | left-right arrow | U+2194 |
+| `=>` | rightwards double arrow | U+21D2 |
 | `True` | verum / top | U+22A4 |
 | `False` | falsum / bottom | U+22A5 |
 
-`<=`, `<->` and `fun` are deliberately not in the table and keep their ASCII. The last two were tried and taken back out - `<->` as U+27F7, `fun` as a lambda - and neither `<=` nor `<->` is at risk from `<>`, which matches only a `<` with a `>` immediately after it. OCaml does still draw `fun` as a lambda; see [ocaml](ocaml.md).
+`<=`, `>=` and `fun` are deliberately not in the table and keep their ASCII. `fun` was drawn as a lambda for two days and taken back out; OCaml does still do it, see [ocaml](ocaml.md).
 
-The turnstiles overlap, and the longest wins: `||-` is drawn as a single forces sign rather than a bar followed by a right tack. That falls out of the scan running left to right - at the first bar only `||-` can match, and it consumes all three characters - but `|-` also carries a lookbehind that refuses a preceding bar, so the outcome does not depend on the order of the table or on anything a later rule might do. Ordinary uses of the bar are untouched: `| Z` in a `match` branch and `x || y` are both left alone, since every rule needs the two characters adjacent.
+**Overlapping pairs resolve to the longest**, which matters twice here: `||-` is one forces sign rather than a bar followed by a right tack, and `<->` is one left-right arrow rather than a bracket followed by `->`. That falls out of the scan running left to right - at the first character only the long rule can match, and it consumes all of it - but `|-` and `->` each also carry a lookbehind refusing the character that would precede them in the longer form, so the outcome depends on neither the order of the table nor on anything a later rule might do.
+
+Ordinary uses of the same characters are untouched, because every rule needs its two or three characters **adjacent**: `| Z` in a `match` branch, `x || y`, `a <= b`, `a >= b` and the `-` `+` `*` bullets that open a proof step are all left as written.
+
+`<->` is worth one note for anyone extending the table. It was first drawn as U+27F7, the *long* left-right arrow, and that was wrong for a terminal: the glyph is designed about two ems wide and arrived squeezed into a single cell. U+2194 is the single-width one.
 
 ### Fonts
 

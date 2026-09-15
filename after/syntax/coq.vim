@@ -151,6 +151,17 @@ let s:post = '\%(''*\%(\k\|\.\k\)\@!\)\@='
 " of whatever a later rule might do to the scan - without it, a `|-` reached at
 " the SECOND bar of `||-` would draw a bar followed by a right tack instead of
 " the single forces sign.
+"
+" The three arrows (2026-09-16, user request) overlap the same way and take the
+" same answer: `<->` contains `->`, the scan reaches the `<` first and consumes
+" all three characters, and the lookbehind on `->` makes that independent of
+" the scan rather than dependent on it. `<->` is back after a day out - it was
+" tried as U+27F7, the LONG left-right arrow, and dropped because that glyph is
+" drawn about two ems wide and was squeezed into one cell; U+2194 is the
+" single-width one and is what should have been used in the first place.
+"
+" `=>` needs no guard. Nothing else in this table ends in it, and Rocq has no
+" `<=>`.
 let s:ops = [
       \ ['\\/', 0x2228],
       \ ['/\\', 0x2227],
@@ -159,6 +170,9 @@ let s:ops = [
       \ ['||-', 0x22A9],
       \ ['\%(|\)\@<!|-', 0x22A2],
       \ ['|=', 0x22A8],
+      \ ['<->', 0x2194],
+      \ ['\%(<\)\@<!->', 0x2192],
+      \ ['=>', 0x21D2],
       \ [s:pre . 'True' . s:post, 0x22A4],
       \ [s:pre . 'False' . s:post, 0x22A5],
       \ ]
