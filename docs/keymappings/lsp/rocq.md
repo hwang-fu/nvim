@@ -105,7 +105,7 @@ These answer in the Info panel, using the term under the cursor (or the visual s
 
 ## Symbols
 
-Fifteen pieces of ASCII are drawn as the symbols they stand for, plus the twenty-four Greek letter names in both cases ([below](#greek-letters)), so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
+Twenty-one pieces of ASCII are drawn as the symbols they stand for, plus the twenty-four Greek letter names in both cases ([below](#greek-letters)), so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
 
 | Written | Drawn | Codepoint |
 |---------|-------|-----------|
@@ -118,8 +118,8 @@ Fifteen pieces of ASCII are drawn as the symbols they stand for, plus the twenty
 | `\|-` | right tack - entails | U+22A2 |
 | `\|=` | double turnstile - models | U+22A8 |
 | `\|\|-` | forces | U+22A9 |
-| `True` | verum / top | U+22A4 |
-| `False` | falsum / bottom | U+22A5 |
+| `True`, `Verum`, `VERUM`, `Truth` | verum / top | U+22A4 |
+| `False`, `Falsum`, `FALSUM`, `Falsehood` | falsum / bottom | U+22A5 |
 | `Alef` | alef | U+2135 |
 | `Bet` | bet | U+2136 |
 | `Gimel` | gimel | U+2137 |
@@ -151,7 +151,9 @@ With the table as it now stands, Fira Code, Iosevka, DejaVu Sans Mono, JetBrains
 
 Size is a separate question from coverage, and worth measuring rather than eyeballing: at the same point size, different families draw the same symbol at noticeably different heights relative to their own capitals. Rendering each candidate's glyph and comparing its ink height against the terminal font's `A` is enough to rank them.
 
-`True` and `False` are matched **case-sensitively**, so the `bool` constructors `true` and `false` are left as they are - only the two `Prop`-level constants become symbols. An identifier that merely contains the word, such as `True_is_true`, is one word to Vim and is not touched either.
+Each of the two constants has **four accepted spellings**, for developments that name them differently: `True`, `Verum`, `VERUM` and `Truth` all become the top symbol, and `False`, `Falsum`, `FALSUM` and `Falsehood` all become the bottom one. They are ordinary extra rows, not a different kind of rule.
+
+All of them are matched **case-sensitively**, and the all-capital pair are listed separately for that reason rather than out of clumsiness. Case sensitivity is what keeps the `bool` constructors `true` and `false` untouched; relaxing it for `VERUM` would take `TRUE`, `tRue` and every other spelling with it. `TRUE` and `FALSE` are therefore *not* drawn, and neither is an identifier that merely contains one of the words - `True_is_true`, `Truthy`, `Falsums` and `VERUMS` are each one word to Vim and are left alone.
 
 They are also left alone inside a **qualified name**: `a.True.b` and `Nat.False` stay as written, because a component of a dotted path is a reference to something in a module rather than the constant itself. A sentence-ending dot is a different thing and still works - `Lemma l : True.` is drawn with the symbol. The two cases are told apart by what follows the dot, since Rocq itself does the same: a `.` before whitespace or end of line ends a sentence, a `.` before an identifier character separates a qualifier.
 

@@ -132,6 +132,23 @@ let s:words = [
 " `false`. That distinction is the point - only the capitalised pair are
 " propositions, and so only they are worth drawing as verum and falsum.
 "
+" `Verum` / `VERUM` / `Truth` and `Falsum` / `FALSUM` / `Falsehood`
+" (2026-09-16, user request) are alternative spellings for the same two
+" symbols, for developments that name the constants differently. Nothing
+" distinguishes them from True and False mechanically; they are extra rows,
+" not a different kind of rule.
+"
+" The all-capital pair have to be their own rows rather than a case-insensitive
+" version of the others, and that is deliberate rather than clumsy: `syn case
+" match` is what keeps the bool constructors `true` and `false` untouched, and
+" relaxing it for these would take `TRUE`, `tRue` and every other spelling with
+" it. Listing the two wanted forms costs two rows and gives up nothing.
+"
+" The request said `Versum`, which is not a term in logic - the counterpart of
+" falsum is VERUM - so it was read as a slip and `Verum` is what is written
+" here. If a development really does spell an identifier `Versum`, that is a
+" row to add rather than a correction to make.
+"
 " The cardinals (2026-09-16, user request) ride on exactly the same two guards,
 " being ordinary identifiers like the constants above rather than reserved
 " words. Only the capitalised spellings are drawn, again because
@@ -207,7 +224,13 @@ let s:ops = [
       \ ['\%(|\)\@<!|-\%(>\)\@!', 0x22A2],
       \ ['|=', 0x22A8],
       \ [s:pre . 'True' . s:post, 0x22A4],
+      \ [s:pre . 'Verum' . s:post, 0x22A4],
+      \ [s:pre . 'VERUM' . s:post, 0x22A4],
+      \ [s:pre . 'Truth' . s:post, 0x22A4],
       \ [s:pre . 'False' . s:post, 0x22A5],
+      \ [s:pre . 'Falsum' . s:post, 0x22A5],
+      \ [s:pre . 'FALSUM' . s:post, 0x22A5],
+      \ [s:pre . 'Falsehood' . s:post, 0x22A5],
       \ [s:pre . 'Alef' . s:post, 0x2135],
       \ [s:pre . 'Bet' . s:post, 0x2136],
       \ [s:pre . 'Gimel' . s:post, 0x2137],
