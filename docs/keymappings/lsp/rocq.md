@@ -105,7 +105,7 @@ These answer in the Info panel, using the term under the cursor (or the visual s
 
 ## Symbols
 
-Twenty-four pieces of ASCII are drawn as the symbols they stand for, plus the twenty-four Greek letter names in both cases ([below](#greek-letters)), so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
+Twenty-five pieces of ASCII are drawn as the symbols they stand for, plus the twenty-four Greek letter names in both cases ([below](#greek-letters)), so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
 
 | Written | Drawn | Codepoint |
 |---------|-------|-----------|
@@ -118,6 +118,7 @@ Twenty-four pieces of ASCII are drawn as the symbols they stand for, plus the tw
 | `^^` | circled plus | U+2295 |
 | `~` | the not sign | U+00AC |
 | `<>` | not equal to | U+2260 |
+| `-/>` | arrow with a stroke - does not imply | U+219B |
 | `\|-` | right tack - entails | U+22A2 |
 | `\|=` | double turnstile - models | U+22A8 |
 | `\|\|-` | forces | U+22A9 |
@@ -128,7 +129,7 @@ Twenty-four pieces of ASCII are drawn as the symbols they stand for, plus the tw
 | `Gimel` | gimel | U+2137 |
 | `Dalet` | dalet | U+2138 |
 
-**The arrows are deliberately absent.** `->`, `<->`, `=>` and `|->` were drawn as arrows for part of 2026-09-16 and taken back out; `<=`, `>=`, `:=` and `fun` are absent too. `fun` is still drawn in OCaml, see [ocaml](ocaml.md), and `:=` is the interesting absence - it is explained at the end of this section.
+**The arrows are deliberately absent, save one.** `->`, `<->`, `=>` and `|->` were drawn as arrows for part of 2026-09-16 and taken back out; `<=`, `>=`, `:=` and `fun` are absent too. The exception is `-/>`: a negation written as a slash through an ASCII arrow is easy to read past, which is exactly what a negation must not be, and unlike the plain arrow it has nothing it can be mistaken for. It does mean the file shows `a -> b` and `a` arrow-with-stroke `b` side by side, which is the price of keeping the common arrow out of the table. `fun` is still drawn in OCaml, see [ocaml](ocaml.md), and `:=` is the interesting absence - it is explained at the end of this section.
 
 **Where two rules overlap, the longer one wins**, which matters twice in the table as it now stands: `||-` is one forces sign rather than a bar followed by a right tack, and `_\/_` is one exclusive-or rather than an underscore, a disjunction and another underscore. That falls out of the scan running left to right - it reaches the first character of the longer rule, matches the longest thing available there and consumes all of it - but `|-` and `\/` each also carry a lookbehind refusing the character that precedes them in the longer form, so the outcome depends on neither the order of the table nor on anything a later rule might do.
 

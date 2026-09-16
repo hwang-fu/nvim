@@ -65,8 +65,13 @@ let s:post = '\%(''*\%(\k\|\.\k\)\@!\)\@='
 " matching Rocq's \/ - and '/\\' the same the other way round. '\~' is escaped
 " because a bare ~ in a Vim pattern means the previous substitute string, and
 " the carets because an unescaped ^ at the start of a pattern anchors to the
-" start of the line. '<>' needs no escaping: it is \< and \> that are the word
-" boundaries.
+" start of the line. '<>' and '-/>' need no escaping: it is \< and \> that are
+" the word boundaries, and the slash is only special as a pattern delimiter,
+" which these patterns do not use.
+"
+" '-/>' is the one arrow in the table, and it is here while '->' is not: the
+" plain arrow was tried and taken back out, but a negated arrow spelled in
+" ASCII is hard to read and there is nothing for it to be confused with.
 "
 " The caret rule refuses a caret on either side, so a run of three or more
 " stays entirely ASCII. Without that `^^^` came out as TWO circled pluses -
@@ -107,6 +112,7 @@ let s:ops = [
       \ ['\~', 0x00AC],
       \ ['\%(\^\)\@<!\^\^\%(\^\)\@!', 0x2295],
       \ ['<>', 0x2260],
+      \ ['-/>', 0x219B],
       \ ['||-', 0x22A9],
       \ ['\%(|\)\@<!|-\%(>\)\@!', 0x22A2],
       \ ['|=', 0x22A8],
