@@ -146,6 +146,17 @@ endfor
 " Letterlike Symbols and are the holes the other rows fill; B is not one of
 " them. nr2char() returns a four-byte single character and cchar accepts it.
 "
+" The three monoids stretch the same machinery further: a whole identifier is
+" drawn as a parenthesised triple, which needs nine or ten pieces and so nine
+" or ten source characters to hang them on. Two of those pieces are a plain
+" SPACE, U+0020, which is worth knowing works - `cchar=` is followed by a
+" space in the generated command either way, and it is fair to expect the
+" parser to swallow it.
+"
+" These cannot collide with the plain `Bool` row above even though they share
+" its first four characters: that row's trailing guard refuses the `_` that
+" follows, so it never matches here in the first place.
+"
 "          word, cut into pieces            one codepoint per piece
 let s:sets = [
       \ [['Bool'],                         [0x1D539]],
@@ -162,6 +173,13 @@ let s:sets = [
       \ [['Real'],                         [0x211D]],
       \ [['PosRe', 'al'],                  [0x211D, 0x207A]],
       \ [['NegRe', 'al'],                  [0x211D, 0x207B]],
+      \
+      \ [['B', 'o', 'o', 'l', '_', 'a', 'n', 'd', '_', 'monoid'],
+      \  [0x28, 0x1D539, 0x2C, 0x20, 0x26, 0x26, 0x2C, 0x20, 0x22A4, 0x29]],
+      \ [['B', 'o', 'o', 'l', '_', 'o', 'r', '_', 'm', 'onoid'],
+      \  [0x28, 0x1D539, 0x2C, 0x20, 0x7C, 0x7C, 0x2C, 0x20, 0x22A5, 0x29]],
+      \ [['B', 'o', 'o', 'l', '_', 'x', 'o', 'r', '_monoid'],
+      \  [0x28, 0x1D539, 0x2C, 0x20, 0x2295, 0x2C, 0x20, 0x22A5, 0x29]],
       \ ]
 
 " Emitted back to front so every nextgroup target exists before it is named,

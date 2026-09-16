@@ -162,7 +162,7 @@ They are also left alone inside a **qualified name**: `a.True.b` and `Nat.False`
 
 ### Number sets
 
-Fourteen type and number-set names are drawn as their double-struck letters, with superscripts and subscripts where the name carries them. `Bool` is listed in the main table above; the thirteen number sets are:
+Fourteen type and number-set names are drawn as their double-struck letters, with superscripts and subscripts where the name carries them, and three more as parenthesised triples ([below](#monoids)). `Bool` is listed in the main table above; the thirteen number sets are:
 
 | Written | Drawn | | Written | Drawn |
 |---------|-------|-|---------|-------|
@@ -173,6 +173,22 @@ Fourteen type and number-set names are drawn as their double-struck letters, wit
 | `NegInteger` | Z with superscript minus | | `PosReal` | R with superscript plus |
 | `NonNegInteger` | Z, superscript plus, subscript zero | | `NegReal` | R with superscript minus |
 | `Complex` | double-struck C | | | |
+
+### Monoids
+
+Three names are drawn as the triple they stand for, rather than as a single symbol:
+
+| Written | Drawn |
+|---------|-------|
+| `Bool_and_monoid` | `(` double-struck B `, &&, ` top `)` |
+| `Bool_or_monoid` | `(` double-struck B `, \|\|, ` bottom `)` |
+| `Bool_xor_monoid` | `(` double-struck B `, ` circled plus `, ` bottom `)` |
+
+These are the same chunking as the number sets, pushed as far as it goes: ten glyphs need ten pieces and therefore ten source characters to hang them on, which a fifteen-character identifier has to spare. Two of the pieces are a plain **space**, which is worth knowing is allowed - `cchar=` is followed by a space in the generated command either way, so it is fair to expect the parser to swallow one.
+
+The parentheses, commas, ampersands and bars are ASCII and so come from the terminal font like any other punctuation, not from the symbol font; only the double-struck B and the two constants are routed. Nothing here can collide with the plain `Bool` row, because that row's trailing guard refuses the `_` that follows it.
+
+### Codepoints outside the basic plane
 
 `Bool` is the one substitution whose codepoint is in the **supplementary plane**, U+1D539 rather than something under U+FFFF. The double-struck alphabet starts at U+1D538, except for C, H, N, P, Q, R and Z, which were encoded earlier in the Letterlike Symbols block and are the holes every number set above fills; B is not one of them, so there is no lower spelling to prefer. Vim takes it either way - `cchar` means one character, not one byte.
 
