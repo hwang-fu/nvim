@@ -30,8 +30,11 @@ let s:words = [
 " The two guards every word-shaped rule carries. Ordinary identifiers, unlike
 " the reserved quantifiers above, turn up inside qualified names.
 "
-"   s:pre   not preceded by a dot. A LEADING dot can only be a qualifier
-"           separator, so this alone kills `a.True.b` and `Nat.True`.
+"   s:pre   not preceded by a dot, and not preceded by a vernacular that takes
+"           a module name. A LEADING dot can only be a qualifier separator, so
+"           that half alone kills `a.True.b` and `Nat.True`. The second half
+"           is for `Module Bool.` and its `End Bool.`, where the word names a
+"           module rather than the type.
 "   s:post  after the name allow apostrophes, then refuse an identifier
 "           character or a dot that starts one. That draws three lines at
 "           once: `beta'` is drawn and `beta'x` is not; `beta_conv` and
@@ -43,7 +46,17 @@ let s:words = [
 " s:post needs a lookahead rather than a plain \>, because an apostrophe is in
 " 'iskeyword' here and `beta'` is therefore ONE word to Vim. Note the doubled
 " apostrophe: in a single-quoted Vim string `''` is one literal apostrophe.
-let s:pre = '\%(\.\)\@<!\<'
+"
+" The module half of s:pre looks redundant against Coqtail, which wraps a
+" module in one region and puts both `Module <name>` and the matching
+" `End <name>` in its matchgroup, where nothing here can reach them - but that
+" holds only while the parser knows the region is open. Coqtail sets
+" `syn sync minlines=50`, so in a module longer than fifty lines the state is
+" lost whenever the screen is reached by a jump rather than by scrolling down,
+" and the End line then drew the symbol or not depending on how the cursor got
+" there. Guarding here is independent of parse state, and it is also the only
+" half that covers a module whose End names something else.
+let s:pre = '\%(\.\|\<\%(Module\|Section\|End\)\%(\s\+\%(Type\|Import\|Export\)\)\?\s\+\)\@<!\<'
 let s:post = '\%(''*\%(\k\|\.\k\)\@!\)\@='
 
 " Operators and guarded words.

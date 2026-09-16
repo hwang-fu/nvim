@@ -160,6 +160,10 @@ All of them are matched **case-sensitively**, and the all-capital pair are liste
 
 They are also left alone inside a **qualified name**: `a.True.b` and `Nat.False` stay as written, because a component of a dotted path is a reference to something in a module rather than the constant itself. A sentence-ending dot is a different thing and still works - `Lemma l : True.` is drawn with the symbol. The two cases are told apart by what follows the dot, since Rocq itself does the same: a `.` before whitespace or end of line ends a sentence, a `.` before an identifier character separates a qualifier.
 
+And left alone once more in **module position** - the word directly after `Module`, `Module Type`, `Section` or `End` names a module rather than the type, so `Module Bool.` and its closing `End Bool.` both stay as written while `(b : Bool)` inside is drawn.
+
+That guard looks redundant and is not. Coqtail wraps a module in a single region and puts `Module <name>` and the matching `End <name>` in its `matchgroup`, which no rule an `after/syntax` file defines can reach - the same wall that keeps `:=` off the table. But it only holds while the parser knows the region is open, and Coqtail sets `syn sync minlines=50`: in a module longer than fifty lines that state is lost whenever the screen is reached by a **jump** rather than by scrolling down from the top, and the `End` line then drew the symbol or not depending on how the cursor had arrived. Guarding here does not depend on parse state at all, and it is also the only half that covers a module whose `End` names something else.
+
 ### Number sets
 
 Fourteen type and number-set names are drawn as their double-struck letters, with superscripts and subscripts where the name carries them, and three more as parenthesised triples ([below](#monoids)). `Bool` is listed in the main table above; the thirteen number sets are:
