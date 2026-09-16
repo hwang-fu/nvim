@@ -150,7 +150,7 @@ A substitution is only as good as the font behind it. Where the terminal font la
 
 Measuring the installed fonts against this table is what set two of its entries. The **n-ary** operators U+22C0 and U+22C1 were the first choice for `/\` and `\/`, and almost nothing carries them - of every monospaced family on this machine, only Iosevka and FreeMono did. The **binary** connectives U+2227 and U+2228 are what Rocq's operators actually mean, and they are additionally present in DejaVu Sans Mono, JetBrains Mono, Fira Code and Noto Sans Mono, so the swap cost nothing and widened the field considerably.
 
-With the table as it now stands, Fira Code, Iosevka, DejaVu Sans Mono, JetBrains Mono, Noto Sans Mono and FreeMono each carry all nine; Hack misses only falsum. The terminal's own default font need not carry any of them, because kitty's `symbol_map` in `~/.config/kitty/modules/fonts.conf` routes exactly these codepoints to one font that does - Fira Code, at the time of writing.
+With the table as it now stands, Fira Code, Iosevka, DejaVu Sans Mono, JetBrains Mono, Noto Sans Mono and FreeMono each carry all nine; Hack misses only falsum. The terminal's own default font need not carry any of them, because the routing happens outside it, in two places that hold the same list and have to be changed together: kitty's `symbol_map` in `~/.config/kitty/modules/fonts.conf`, and `~/.config/fontconfig/conf.d/75-math-symbol-fallback.conf` for Ptyxis and Alacritty, which have no `symbol_map` of their own. Both send the list to **STIX Two Math Big**, a local copy of STIX Two Math that draws larger at the same point size.
 
 Size is a separate question from coverage, and worth measuring rather than eyeballing: at the same point size, different families draw the same symbol at noticeably different heights relative to their own capitals. Rendering each candidate's glyph and comparing its ink height against the terminal font's `A` is enough to rank them.
 
@@ -166,7 +166,7 @@ That guard looks redundant and is not. Coqtail wraps a module in a single region
 
 ### Number sets
 
-Fourteen type and number-set names are drawn as their double-struck letters, with superscripts and subscripts where the name carries them, and three more as parenthesised triples ([below](#monoids)). `Bool` is listed in the main table above; the thirteen number sets are:
+Fourteen type and number-set names are drawn as their double-struck letters, with superscripts and subscripts where the name carries them, and five more as bracketed structures ([below](#algebraic-structures)). `Bool` is listed in the main table above; the thirteen number sets are:
 
 | Written | Drawn | | Written | Drawn |
 |---------|-------|-|---------|-------|
@@ -178,19 +178,21 @@ Fourteen type and number-set names are drawn as their double-struck letters, wit
 | `NonNegInteger` | Z, superscript plus, subscript zero | | `NegReal` | R with superscript minus |
 | `Complex` | double-struck C | | | |
 
-### Monoids
+### Algebraic structures
 
-Three names are drawn as the triple they stand for, rather than as a single symbol:
+Five names are drawn as the structure they stand for - carrier, operation and unit inside **angle brackets** - rather than as a single symbol:
 
 | Written | Drawn |
 |---------|-------|
-| `Bool_and_monoid` | `(` double-struck B `,&&,` top `)` |
-| `Bool_or_monoid` | `(` double-struck B `,\|\|,` bottom `)` |
-| `Bool_xor_monoid` | `(` double-struck B `,` circled plus `,` bottom `)` |
+| `Bool_and_monoid` | left angle, double-struck B `,&&,` top, right angle |
+| `Bool_or_monoid` | left angle, double-struck B `,\|\|,` bottom, right angle |
+| `Bool_xor_monoid` | left angle, double-struck B `,` circled plus `,` bottom, right angle |
+| `NatWithZero_add_monoid` | left angle, double-struck N, subscript zero `,+,0`, right angle |
+| `Nat_add_semigroup` | left angle, double-struck N `,+`, right angle |
 
-These are the same chunking as the number sets, pushed as far as it goes: eight glyphs need eight pieces and therefore eight source characters to hang them on, which a fifteen-character identifier has to spare.
+These are the same chunking as the number sets, pushed as far as it goes: the longest needs eight glyphs and therefore eight pieces and eight source characters to hang them on, which a twenty-two-character identifier has to spare. A semigroup carries no unit, so it is a pair rather than a triple and needs only five.
 
-The parentheses, commas, ampersands and bars are ASCII and so come from the terminal font like any other punctuation, not from the symbol font; only the double-struck B and the two constants are routed. Nothing here can collide with the plain `Bool` row, because that row's trailing guard refuses the `_` that follows it.
+The commas, ampersands, bars, `+` and `0` are ASCII and so come from the terminal font like any other punctuation; only the angle brackets (U+27E8 and U+27E9), the double-struck letters and the two constants are routed to the symbol font. Nothing here can collide with the plain `Bool`, `Nat` or `NatWithZero` rows, because each of those carries a trailing guard that refuses the `_` following it here.
 
 ### Codepoints outside the basic plane
 

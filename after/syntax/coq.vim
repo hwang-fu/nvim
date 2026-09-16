@@ -159,13 +159,17 @@ endfor
 " Letterlike Symbols and are the holes the other rows fill; B is not one of
 " them. nr2char() returns a four-byte single character and cchar accepts it.
 "
-" The three monoids stretch the same machinery further: a whole identifier is
-" drawn as a parenthesised triple, which needs seven or eight pieces and so
-" that many source characters to hang them on.
+" The algebraic structures stretch the same machinery further: a whole
+" identifier is drawn as its carrier, operation and unit inside angle
+" brackets, which needs five to eight pieces and so that many source
+" characters to hang them on. Only the brackets and the carrier come from the
+" symbol font; the comma, `+` and `0` are the ASCII the surrounding text is
+" already drawn in.
 "
-" These cannot collide with the plain `Bool` row above even though they share
-" its first four characters: that row's trailing guard refuses the `_` that
-" follows, so it never matches here in the first place.
+" These cannot collide with the plain rows above even though each shares its
+" first characters with one: `Bool`, `Nat` and `NatWithZero` all have a
+" trailing guard that refuses the `_` following them here, so none of those
+" rows matches in the first place.
 "
 "          word, cut into pieces            one codepoint per piece
 let s:sets = [
@@ -185,11 +189,15 @@ let s:sets = [
       \ [['NegRe', 'al'],                  [0x211D, 0x207B]],
       \
       \ [['B', 'o', 'o', 'l', '_', 'a', 'n', 'd_monoid'],
-      \  [0x28, 0x1D539, 0x2C, 0x26, 0x26, 0x2C, 0x22A4, 0x29]],
+      \  [0x27E8, 0x1D539, 0x2C, 0x26, 0x26, 0x2C, 0x22A4, 0x27E9]],
       \ [['B', 'o', 'o', 'l', '_', 'o', 'r', '_monoid'],
-      \  [0x28, 0x1D539, 0x2C, 0x7C, 0x7C, 0x2C, 0x22A5, 0x29]],
+      \  [0x27E8, 0x1D539, 0x2C, 0x7C, 0x7C, 0x2C, 0x22A5, 0x27E9]],
       \ [['B', 'o', 'o', 'l', '_', 'x', 'or_monoid'],
-      \  [0x28, 0x1D539, 0x2C, 0x2295, 0x2C, 0x22A5, 0x29]],
+      \  [0x27E8, 0x1D539, 0x2C, 0x2295, 0x2C, 0x22A5, 0x27E9]],
+      \ [['N', 'a', 't', 'W', 'i', 't', 'h', 'Zero_add_monoid'],
+      \  [0x27E8, 0x2115, 0x2080, 0x2C, 0x2B, 0x2C, 0x30, 0x27E9]],
+      \ [['N', 'a', 't', '_', 'add_semigroup'],
+      \  [0x27E8, 0x2115, 0x2C, 0x2B, 0x27E9]],
       \ ]
 
 " Emitted back to front so every nextgroup target exists before it is named,
