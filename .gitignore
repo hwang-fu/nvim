@@ -482,6 +482,15 @@ flycheck_*.el
 atlassian-ide-plugin.xml
 fabric.properties
 
+# ---> Neovim
+# lazy.nvim's resolved plugin revisions. Every sync rewrites the whole file, so
+# tracking it turns each routine plugin update into a commit and makes two
+# machines that sync independently conflict on a file neither of them edited by
+# hand. The cost is real and accepted: a fresh clone resolves every plugin to
+# its current head rather than to a known-good set, so a broken upstream is
+# picked up rather than pinned away from.
+lazy-lock.json
+
 # ---> Obsidian
 # Per-vault settings: appearance, enabled community plugins, hotkeys, and the
 # last window layout. Machine-local taste and workspace state - none of it is
