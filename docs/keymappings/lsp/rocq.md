@@ -105,7 +105,7 @@ These answer in the Info panel, using the term under the cursor (or the visual s
 
 ## Symbols
 
-Twenty-two pieces of ASCII are drawn as the symbols they stand for, plus the twenty-four Greek letter names in both cases ([below](#greek-letters)), so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
+Twenty-three pieces of ASCII are drawn as the symbols they stand for, plus the twenty-four Greek letter names in both cases ([below](#greek-letters)), so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
 
 | Written | Drawn | Codepoint |
 |---------|-------|-----------|
@@ -114,6 +114,7 @@ Twenty-two pieces of ASCII are drawn as the symbols they stand for, plus the twe
 | `exists` | the existential quantifier | U+2203 |
 | `\/` | logical OR | U+2228 |
 | `/\` | logical AND | U+2227 |
+| `_\/_` | exclusive OR | U+22BB |
 | `~` | the not sign | U+00AC |
 | `<>` | not equal to | U+2260 |
 | `\|-` | right tack - entails | U+22A2 |
@@ -128,7 +129,7 @@ Twenty-two pieces of ASCII are drawn as the symbols they stand for, plus the twe
 
 **The arrows are deliberately absent.** `->`, `<->`, `=>` and `|->` were drawn as arrows for part of 2026-09-16 and taken back out; `<=`, `>=`, `:=` and `fun` are absent too. `fun` is still drawn in OCaml, see [ocaml](ocaml.md), and `:=` is the interesting absence - it is explained at the end of this section.
 
-**Where two rules overlap, the longer one wins**, which matters once in the table as it now stands: `||-` is one forces sign rather than a bar followed by a right tack. That falls out of the scan running left to right - it reaches the first bar, matches the longest thing available there and consumes all of it - but `|-` also carries a lookbehind refusing a preceding bar, so the outcome depends on neither the order of the table nor on anything a later rule might do.
+**Where two rules overlap, the longer one wins**, which matters twice in the table as it now stands: `||-` is one forces sign rather than a bar followed by a right tack, and `_\/_` is one exclusive-or rather than an underscore, a disjunction and another underscore. That falls out of the scan running left to right - it reaches the first character of the longer rule, matches the longest thing available there and consumes all of it - but `|-` and `\/` each also carry a lookbehind refusing the character that precedes them in the longer form, so the outcome depends on neither the order of the table nor on anything a later rule might do.
 
 That distinction is worth keeping in mind before adding anything, because the scan only settles overlaps where the longer rule starts an **earlier column**. Where two rules would start at the **same** column, Vim takes the one *defined last* instead, which would make the result depend on where the next row happens to be inserted. Any rule that can be a prefix of another needs an explicit guard rather than a position in the list.
 

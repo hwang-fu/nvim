@@ -53,6 +53,10 @@ let s:post = '\%(''*\%(\k\|\.\k\)\@!\)\@='
 " because a bare ~ in a Vim pattern means the previous substitute string.
 " '<>' needs no escaping: it is \< and \> that are the word boundaries.
 "
+" `_\/_` contains `\/` and starts a column earlier, so the scan settles that
+" pair the way it settles `||-` against `|-`; the lookbehind on `\/` is there
+" to keep the outcome independent of this list's order.
+"
 " `||-` and `|-` overlap, and the scan settles it: it runs left to right, so
 " at the first bar only `||-` can match and it consumes all three characters.
 " The lookbehind on `|-` makes that independent of this list's order anyway.
@@ -77,7 +81,8 @@ let s:post = '\%(''*\%(\k\|\.\k\)\@!\)\@='
 " line around them, and STIX carries none of them. The block holds exactly four
 " - there is no samekh.
 let s:ops = [
-      \ ['\\/', 0x2228],
+      \ ['_\\/_', 0x22BB],
+      \ ['\%(_\)\@<!\\/', 0x2228],
       \ ['/\\', 0x2227],
       \ ['\~', 0x00AC],
       \ ['<>', 0x2260],
