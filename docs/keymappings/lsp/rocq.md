@@ -105,7 +105,7 @@ These answer in the Info panel, using the term under the cursor (or the visual s
 
 ## Symbols
 
-Twenty-three pieces of ASCII are drawn as the symbols they stand for, plus the twenty-four Greek letter names in both cases ([below](#greek-letters)), so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
+Twenty-four pieces of ASCII are drawn as the symbols they stand for, plus the twenty-four Greek letter names in both cases ([below](#greek-letters)), so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
 
 | Written | Drawn | Codepoint |
 |---------|-------|-----------|
@@ -115,6 +115,7 @@ Twenty-three pieces of ASCII are drawn as the symbols they stand for, plus the t
 | `\/` | logical OR | U+2228 |
 | `/\` | logical AND | U+2227 |
 | `_\/_` | exclusive OR | U+22BB |
+| `^^` | circled plus | U+2295 |
 | `~` | the not sign | U+00AC |
 | `<>` | not equal to | U+2260 |
 | `\|-` | right tack - entails | U+22A2 |
@@ -133,7 +134,7 @@ Twenty-three pieces of ASCII are drawn as the symbols they stand for, plus the t
 
 That distinction is worth keeping in mind before adding anything, because the scan only settles overlaps where the longer rule starts an **earlier column**. Where two rules would start at the **same** column, Vim takes the one *defined last* instead, which would make the result depend on where the next row happens to be inserted. Any rule that can be a prefix of another needs an explicit guard rather than a position in the list.
 
-`|-` carries a second guard for a rule that no longer exists: it refuses a following `>`, so `|->` stays entirely as ASCII rather than coming out as a right tack and a stray `>`. Half-substituted is worse than not substituted.
+Two rules carry guards for the same reason - **half a substitution reads worse than none**. `|-` refuses a following `>`, so `|->` stays entirely as ASCII rather than coming out as a right tack and a stray `>`. `^^` refuses a caret on either side, so a run of three or more stays ASCII too; without that, `^^^` came out as *two* circled pluses, the engine having found a match at the first caret and another at the second.
 
 Ordinary uses of the same characters are untouched, because every rule needs its characters **adjacent**: `| Z` in a `match` branch, `x || y`, `a <= b`, `a >= b`, `a -> b` and the `-` `+` `*` bullets that open a proof step are all left as written.
 

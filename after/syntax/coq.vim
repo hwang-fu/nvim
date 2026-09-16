@@ -50,8 +50,15 @@ let s:post = '\%(''*\%(\k\|\.\k\)\@!\)\@='
 "
 " '\\/' is the three characters \ \ / - an escaped backslash then a slash,
 " matching Rocq's \/ - and '/\\' the same the other way round. '\~' is escaped
-" because a bare ~ in a Vim pattern means the previous substitute string.
-" '<>' needs no escaping: it is \< and \> that are the word boundaries.
+" because a bare ~ in a Vim pattern means the previous substitute string, and
+" the carets because an unescaped ^ at the start of a pattern anchors to the
+" start of the line. '<>' needs no escaping: it is \< and \> that are the word
+" boundaries.
+"
+" The caret rule refuses a caret on either side, so a run of three or more
+" stays entirely ASCII. Without that `^^^` came out as TWO circled pluses -
+" the engine finds a match at the first caret and another at the second - and
+" half a substitution reads worse than none.
 "
 " `_\/_` contains `\/` and starts a column earlier, so the scan settles that
 " pair the way it settles `||-` against `|-`; the lookbehind on `\/` is there
@@ -85,6 +92,7 @@ let s:ops = [
       \ ['\%(_\)\@<!\\/', 0x2228],
       \ ['/\\', 0x2227],
       \ ['\~', 0x00AC],
+      \ ['\%(\^\)\@<!\^\^\%(\^\)\@!', 0x2295],
       \ ['<>', 0x2260],
       \ ['||-', 0x22A9],
       \ ['\%(|\)\@<!|-\%(>\)\@!', 0x22A2],
