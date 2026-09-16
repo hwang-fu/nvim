@@ -105,10 +105,11 @@ These answer in the Info panel, using the term under the cursor (or the visual s
 
 ## Symbols
 
-Twenty-one pieces of ASCII are drawn as the symbols they stand for, plus the twenty-four Greek letter names in both cases ([below](#greek-letters)), so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
+Twenty-two pieces of ASCII are drawn as the symbols they stand for, plus the twenty-four Greek letter names in both cases ([below](#greek-letters)), so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
 
 | Written | Drawn | Codepoint |
 |---------|-------|-----------|
+| `Bool` | double-struck B | U+1D539 |
 | `forall` | the universal quantifier | U+2200 |
 | `exists` | the existential quantifier | U+2203 |
 | `\/` | logical OR | U+2228 |
@@ -159,7 +160,7 @@ They are also left alone inside a **qualified name**: `a.True.b` and `Nat.False`
 
 ### Number sets
 
-Thirteen names for the standard number sets are drawn as their double-struck letters, with superscripts and subscripts where the name carries them:
+Fourteen type and number-set names are drawn as their double-struck letters, with superscripts and subscripts where the name carries them. `Bool` is listed in the main table above; the thirteen number sets are:
 
 | Written | Drawn | | Written | Drawn |
 |---------|-------|-|---------|-------|
@@ -171,7 +172,9 @@ Thirteen names for the standard number sets are drawn as their double-struck let
 | `NonNegInteger` | Z, superscript plus, subscript zero | | `NegReal` | R with superscript minus |
 | `Complex` | double-struck C | | | |
 
-Eight of the thirteen need **more than one glyph**, and `cchar` accepts exactly one. The way round it is to stop thinking of a rule as covering a word: the word is cut into as many adjacent pieces as there are glyphs, and each piece gets its own one-character rule. Vim draws one replacement per concealed region and keeps neighbouring regions from different groups separate, so the pieces arrive side by side. Where the cut falls is arbitrary, because the glyphs appear in the order the *pieces* do rather than in any order the word implies.
+`Bool` is the one substitution whose codepoint is in the **supplementary plane**, U+1D539 rather than something under U+FFFF. The double-struck alphabet starts at U+1D538, except for C, H, N, P, Q, R and Z, which were encoded earlier in the Letterlike Symbols block and are the holes every number set above fills; B is not one of them, so there is no lower spelling to prefer. Vim takes it either way - `cchar` means one character, not one byte.
+
+Eight of the thirteen number sets need **more than one glyph**, and `cchar` accepts exactly one. The way round it is to stop thinking of a rule as covering a word: the word is cut into as many adjacent pieces as there are glyphs, and each piece gets its own one-character rule. Vim draws one replacement per concealed region and keeps neighbouring regions from different groups separate, so the pieces arrive side by side. Where the cut falls is arbitrary, because the glyphs appear in the order the *pieces* do rather than in any order the word implies.
 
 The pieces are chained with `contained` and `nextgroup`, which is worth knowing if you ever extend the table, because the two obvious alternatives both fail. `\zs` does nothing here at all: it moves where a match is reported, not where the engine starts trying it, so a second rule still has to begin matching at a column the first rule already consumed, and only the leading glyph ever appears. A look-behind is correct but expensive - any `\@<=` drops Vim onto its backtracking engine and is then attempted at every column whether it can match or not, which measured 13 microseconds a call against 1 for a plain word rule and **doubled the whole buffer's syntax cost**. Bounding the look-behind with `\@N<=` changed nothing, so the cost is the engine choice rather than the scan distance. Chaining with `nextgroup` has neither problem and brought the total back to within seven percent of where it started.
 
