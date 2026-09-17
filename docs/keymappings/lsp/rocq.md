@@ -159,7 +159,7 @@ Each of the two constants has **four accepted spellings**, for developments that
 
 All of them are matched **case-sensitively**, and the all-capital pair are listed separately for that reason rather than out of clumsiness. Case sensitivity is what keeps the `bool` constructors `true` and `false` untouched; relaxing it for `VERUM` would take `TRUE`, `tRue` and every other spelling with it. `TRUE` and `FALSE` are therefore *not* drawn, and neither is an identifier that merely contains one of the words - `True_is_true`, `Truthy`, `Falsums` and `VERUMS` are each one word to Vim and are left alone.
 
-They are also left alone inside a **qualified name**: `a.True.b` and `Nat.False` stay as written, because a component of a dotted path is a reference to something in a module rather than the constant itself. A sentence-ending dot is a different thing and still works - `Lemma l : True.` is drawn with the symbol. The two cases are told apart by what follows the dot, since Rocq itself does the same: a `.` before whitespace or end of line ends a sentence, a `.` before an identifier character separates a qualifier.
+They are also left alone inside a **qualified name**: `a.True.b` and `Nat.False` stay as written, because a component of a dotted path is a reference to something in a module rather than the constant itself. A sentence-ending dot is a different thing and still works - `Lemma l : True.` is drawn with the symbol. The two cases are told apart by what follows the dot, since Rocq itself does the same: a `.` before whitespace or end of line ends a sentence, a `.` before an identifier character separates a qualifier. The type and number-set names are the one **exception** and are drawn even with a qualifier after them, for the reason given [below](#number-sets).
 
 And left alone once more in **module position** - the word directly after `Module`, `Module Type`, `Section` or `End` names a module rather than the type, so `Module Bool.` and its closing `End Bool.` both stay as written while `(b : Bool)` inside is drawn.
 
@@ -178,6 +178,10 @@ Fourteen type and number-set names are drawn as their double-struck letters, wit
 | `NegInteger` | Z with superscript minus | | `PosReal` | R with superscript plus |
 | `NonNegInteger` | Z, superscript plus, subscript zero | | `NegReal` | R with superscript minus |
 | `Complex` | double-struck C | | | |
+
+These names, and the five structures below, are the **one group drawn with a qualifier after them**: `Bool.and`, `Nat.add` and `NatWithZero.add` are drawn, where `alpha.b` and `True.b` are not. The reason is that Rocq's convention puts the operations on a type in a module of the same name - `Module Bool.` holds `Bool.and` - so the word before the dot *is* the type, and hiding it there would hide the type in exactly the position where a proof mentions it most. `alpha.b` has the same shape and not the same meaning: there `alpha` names a module that merely happens to be spelled like a letter.
+
+A leading dot is still refused for all of them, so the right-hand side of a path is left alone - `M.Nat` and `Coq.Init.Logic.True` stay as written - and so is a name in module position, `Module Bool.` and its `End Bool.`.
 
 ### Algebraic structures
 

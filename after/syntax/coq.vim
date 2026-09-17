@@ -42,6 +42,14 @@ let s:words = [
 "           Rocq, where `.` before whitespace ends a sentence - so
 "           `Lemma l : True.` is drawn - while `.` before an identifier
 "           character separates a qualifier and is not.
+"   s:setpost  the same, minus the qualifier half. It is used by the type and
+"           number-set names in s:sets and by nothing else, because there the
+"           word before the dot IS the type: Rocq's convention is that the
+"           operations on a type live in a module of the same name, so
+"           `Bool.and` and `Nat.add` are reached through the very word being
+"           drawn. `alpha.b` is not the same shape - there `alpha` names a
+"           module that happens to be spelled like a letter - so the constants
+"           and the Greek letters keep the stricter guard.
 "
 " s:post needs a lookahead rather than a plain \>, because an apostrophe is in
 " 'iskeyword' here and `beta'` is therefore ONE word to Vim. Note the doubled
@@ -58,6 +66,7 @@ let s:words = [
 " half that covers a module whose End names something else.
 let s:pre = '\%(\.\|\<\%(Module\|Section\|End\)\%(\s\+\%(Type\|Import\|Export\)\)\?\s\+\)\@<!\<'
 let s:post = '\%(''*\%(\k\|\.\k\)\@!\)\@='
+let s:setpost = '\%(''*\k\@!\)\@='
 
 " Operators and guarded words.
 "
@@ -231,7 +240,7 @@ for [s:chunks, s:codes] in s:sets
       let s:opts .= printf(' nextgroup=rocqNumSet%d_%d', s:s, s:k + 1)
     endif
     if s:k == 0
-      let s:pat .= s:post
+      let s:pat .= s:setpost
     endif
 
     execute printf('syntax match rocqNumSet%d_%d "%s" conceal %s cchar=%s',
@@ -254,5 +263,5 @@ for [s:pattern, s:code] in s:ops
 endfor
 
 unlet! s:words s:ops s:n s:word s:pattern s:code
-unlet! s:pre s:post s:greek s:i s:skip s:name s:Name
+unlet! s:pre s:post s:setpost s:greek s:i s:skip s:name s:Name
 unlet! s:sets s:chunks s:codes s:s s:k s:after s:pat s:opts
