@@ -105,7 +105,7 @@ These answer in the Info panel, using the term under the cursor (or the visual s
 
 ## Symbols
 
-Thirty-seven pieces of ASCII are drawn as the symbols they stand for, plus the twenty-four Greek letter names in both cases ([below](#greek-letters)), so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
+Fifty-one pieces of ASCII are drawn as the symbols they stand for, plus the twenty-four Greek letter names in both cases ([below](#greek-letters)), so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
 
 | Written | Drawn | Codepoint |
 |---------|-------|-----------|
@@ -124,10 +124,24 @@ Thirty-seven pieces of ASCII are drawn as the symbols they stand for, plus the t
 | `^^` | circled plus | U+2295 |
 | `~` | the not sign | U+00AC |
 | `<>` | not equal to | U+2260 |
+| `~=` | almost equal to | U+2248 |
+| `~==` | approximately equal to | U+2245 |
+| `==` | identical to | U+2261 |
 | `-/>` | arrow with a stroke - does not imply | U+219B |
 | `\|-` | right tack - entails | U+22A2 |
 | `\|=` | double turnstile - models | U+22A8 |
 | `\|\|-` | forces | U+22A9 |
+| `{\|` | left white curly bracket | U+2983 |
+| `\|}` | right white curly bracket | U+2984 |
+| `[\|` | left white square bracket | U+27E6 |
+| `\|]` | right white square bracket | U+27E7 |
+| `(\|` | left white parenthesis | U+2985 |
+| `\|)` | right white parenthesis | U+2986 |
+| `<\|` | white left-pointing triangle | U+25C1 |
+| `\|>` | white right-pointing triangle | U+25B7 |
+| `<\|\|` | left triangle beside a bar | U+29CF |
+| `\|\|>` | bar beside a right triangle | U+29D0 |
+| `::` | proportion | U+2237 |
 | `belongs_to` | element of | U+2208 |
 | `contains_member` | contains as member | U+220B |
 | `does_not_belong_to` | not an element of | U+2209 |
@@ -140,6 +154,12 @@ Thirty-seven pieces of ASCII are drawn as the symbols they stand for, plus the t
 | `Bet` | bet | U+2136 |
 | `Gimel` | gimel | U+2137 |
 | `Dalet` | dalet | U+2138 |
+
+The **bracket pairs** `{|`, `[|` and `(|` with their closing halves need no guard against the three bar rules above: each of those needs its own second character - `-`, `=`, or a second bar - so none can fire on a bar that is followed by a bracket. Nesting works for the same reason, and so does a `||` sitting immediately before a closing half.
+
+The **triangles** do need guards, because they overlap each other rather than the bars. `<|` and `<||` start at the same column, so nothing about the left-to-right scan settles them and only a guard can: `<|` refuses a second bar after it. `|>` inside `||>` starts one column later, which the scan already settles, but it carries the mirror-image guard anyway so the outcome does not depend on rule order - the same pairing as `|-` and `||-`.
+
+The three **equivalences** nest inside each other and inside the negation, so `~`, `~=`, `~==` and `==` only work as a set. `~` refuses a following equals, which keeps it out of the other three; `~=` refuses a second equals, which keeps it out of `~==`; and `==` refuses a tilde, an equals or a `<` before it and an equals or a `>` after it. That last list is not symmetry for its own sake - it is the four spellings a reader would otherwise meet half-drawn: `~==`, `===`, `==>` and `<==`. None of those is in the table, and uniform ASCII beats one symbol with a leftover character stuck to it. A tilde that is *not* part of an equivalence is still the negation, so `~=~` draws as two symbols side by side, and `::` likewise refuses a colon on either side so a run of three stays as written.
 
 The four **membership relations** are words, not operators, and they are drawn where the word stands rather than where the symbol conventionally goes: `belongs_to x s` reads as the element-of sign followed by its two arguments, in prefix position, not as `x` element-of `s`. Concealing replaces text in place and cannot move it, so an infix reading would have to come from a Rocq `Notation` instead.
 

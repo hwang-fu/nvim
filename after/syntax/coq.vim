@@ -76,7 +76,37 @@ let s:setpost = '\%(''*\k\@!\)\@='
 " the carets because an unescaped ^ at the start of a pattern anchors to the
 " start of the line. '<>' and '-/>' need no escaping: it is \< and \> that are
 " the word boundaries, and the slash is only special as a pattern delimiter,
-" which these patterns do not use.
+" which these patterns do not use. The bracket pairs need it in one place only:
+" 'magic' is in force, where a brace counts only as part of \{n,m}, a bar only
+" as part of \|, and a parenthesis only as part of \(\), so all of those are
+" literal - but '[' opens a collection, so '\[|' escapes it. The closing ']',
+" '}' and ')' are literal outside a collection and are left bare.
+"
+" None of the six bracket halves needs a guard against the three bar rules,
+" because each of those needs its own second character - a dash, an equals, or
+" a second bar - so none can fire on a bar followed by a bracket. That also
+" makes the pairs nest, and lets a `||` sit directly before a closing half.
+"
+" The triangles do need guards, because they overlap each other rather than
+" the bars. `<|` and `<||` start at the SAME column, so nothing about the scan
+" order settles them and only a guard can: `<|` refuses a second bar after it.
+" `|>` inside `||>` starts one column later, which the left-to-right scan
+" already settles, but it carries the mirror-image guard anyway so the outcome
+" does not depend on this list's order - the same pairing as `|-` and `||-`.
+"
+" `::` refuses a colon on either side, so a run of three or more stays ASCII
+" rather than drawing one proportion sign and a leftover colon. That is the
+" same treatment `^^` gets, for the same reason.
+"
+" The three equivalences nest inside each other and inside the negation, so
+" all four rows carry guards and the set only works as a set. `~` refuses a
+" following equals, which is what keeps it out of `~=` and `~==`; `~=` refuses
+" a second equals, which is what keeps it out of `~==`; and `==` refuses a
+" tilde, an equals or a less-than before it and an equals or a greater-than
+" after it. That last list is not symmetry for its own sake - it is the four
+" spellings a reader would otherwise meet half-drawn: `~==`, `===`, `==>` and
+" `<==`. None of those four is in the table, and uniform ASCII beats one
+" symbol with a leftover character stuck to it.
 "
 " '-/>' is the one arrow in the table, and it is here while '->' is not: the
 " plain arrow was tried and taken back out, but a negated arrow spelled in
@@ -155,13 +185,27 @@ let s:ops = [
       \ ['_\\/_', 0x22BB],
       \ ['\%(_\)\@<!\\/', 0x2228],
       \ ['/\\', 0x2227],
-      \ ['\~', 0x00AC],
+      \ ['\~\%(=\)\@!', 0x00AC],
+      \ ['\~=\%(=\)\@!', 0x2248],
+      \ ['\~==', 0x2245],
+      \ ['\%(\~\|=\|<\)\@<!==\%(=\|>\)\@!', 0x2261],
       \ ['\%(\^\)\@<!\^\^\%(\^\)\@!', 0x2295],
       \ ['<>', 0x2260],
       \ ['-/>', 0x219B],
       \ ['||-', 0x22A9],
       \ ['\%(|\)\@<!|-\%(>\)\@!', 0x22A2],
       \ ['|=', 0x22A8],
+      \ ['{|', 0x2983],
+      \ ['|}', 0x2984],
+      \ ['\[|', 0x27E6],
+      \ ['|]', 0x27E7],
+      \ ['(|', 0x2985],
+      \ ['|)', 0x2986],
+      \ ['<|\%(|\)\@!', 0x25C1],
+      \ ['\%(|\)\@<!|>', 0x25B7],
+      \ ['<||', 0x29CF],
+      \ ['||>', 0x29D0],
+      \ ['\%(:\)\@<!::\%(:\)\@!', 0x2237],
       \ [s:pre . 'belongs_to' . s:post, 0x2208],
       \ [s:pre . 'contains_member' . s:post, 0x220B],
       \ [s:pre . 'does_not_belong_to' . s:post, 0x2209],
