@@ -181,6 +181,13 @@ endfor
 " symbol font; the comma, `+` and `0` are the ASCII the surrounding text is
 " already drawn in.
 "
+" `List` is drawn with its parameter spelled out as a literal `A`. That is an
+" abbreviation, not a substitution that tracks anything: `List Nat` draws the
+" script L, the brackets and an `A`, and then Nat's own symbol beside them.
+" Following the real argument is not reachable here - the closing bracket
+" needs a source character AFTER the argument to hang on, and the word offers
+" only its own four.
+"
 " These cannot collide with the plain rows above even though each shares its
 " first characters with one: `Bool`, `Nat` and `NatWithZero` all have a
 " trailing guard that refuses the `_` following them here, so none of those
@@ -189,6 +196,7 @@ endfor
 "          word, cut into pieces            one codepoint per piece
 let s:sets = [
       \ [['Bool'],                         [0x1D539]],
+      \ [['L', 'i', 's', 't'],             [0x2112, 0x28, 0x41, 0x29]],
       \ [['Nat'],                          [0x2115]],
       \ [['NatWithZer', 'o'],              [0x2115, 0x2080]],
       \ [['Integer'],                      [0x2124]],

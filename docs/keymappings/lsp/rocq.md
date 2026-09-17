@@ -105,11 +105,12 @@ These answer in the Info panel, using the term under the cursor (or the visual s
 
 ## Symbols
 
-Twenty-five pieces of ASCII are drawn as the symbols they stand for, plus the twenty-four Greek letter names in both cases ([below](#greek-letters)), so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
+Twenty-six pieces of ASCII are drawn as the symbols they stand for, plus the twenty-four Greek letter names in both cases ([below](#greek-letters)), so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
 
 | Written | Drawn | Codepoint |
 |---------|-------|-----------|
 | `Bool` | double-struck B | U+1D539 |
+| `List` | script L, then a literal `(A)` | U+2112 |
 | `forall` | the universal quantifier | U+2200 |
 | `exists` | the existential quantifier | U+2203 |
 | `\/` | logical OR | U+2228 |
@@ -167,7 +168,7 @@ That guard looks redundant and is not. Coqtail wraps a module in a single region
 
 ### Number sets
 
-Fourteen type and number-set names are drawn as their double-struck letters, with superscripts and subscripts where the name carries them, and five more as bracketed structures ([below](#algebraic-structures)). `Bool` is listed in the main table above; the thirteen number sets are:
+Fifteen type and number-set names are drawn as a letter of their own, with superscripts and subscripts where the name carries them, and five more as bracketed structures ([below](#algebraic-structures)). `Bool` and `List` are listed in the main table above; the thirteen number sets are:
 
 | Written | Drawn | | Written | Drawn |
 |---------|-------|-|---------|-------|
@@ -178,6 +179,8 @@ Fourteen type and number-set names are drawn as their double-struck letters, wit
 | `NegInteger` | Z with superscript minus | | `PosReal` | R with superscript plus |
 | `NonNegInteger` | Z, superscript plus, subscript zero | | `NegReal` | R with superscript minus |
 | `Complex` | double-struck C | | | |
+
+`List` is the one entry whose drawing is an **abbreviation** rather than a substitution. The `A` between the brackets is literal and does not follow the real argument: `List Nat` comes out as the script L, the brackets, an `A`, and then `Nat`'s own symbol standing beside them, and `List List Nat` draws the abbreviation twice. Following the argument is not reachable here - the closing bracket would need a source character *after* the argument to hang on, and `List` offers only its own four.
 
 These names, and the five structures below, are the **one group drawn with a qualifier after them**: `Bool.and`, `Nat.add` and `NatWithZero.add` are drawn, where `alpha.b` and `True.b` are not. The reason is that Rocq's convention puts the operations on a type in a module of the same name - `Module Bool.` holds `Bool.and` - so the word before the dot *is* the type, and hiding it there would hide the type in exactly the position where a proof mentions it most. `alpha.b` has the same shape and not the same meaning: there `alpha` names a module that merely happens to be spelled like a letter.
 
