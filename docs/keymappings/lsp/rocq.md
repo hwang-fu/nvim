@@ -105,12 +105,13 @@ These answer in the Info panel, using the term under the cursor (or the visual s
 
 ## Symbols
 
-Thirty-four pieces of ASCII are drawn as the symbols they stand for, plus the twenty-four Greek letter names in both cases ([below](#greek-letters)), so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
+Thirty-five pieces of ASCII are drawn as the symbols they stand for, plus the twenty-four Greek letter names in both cases ([below](#greek-letters)), so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
 
 | Written | Drawn | Codepoint |
 |---------|-------|-----------|
 | `Bool` | double-struck B | U+1D539 |
 | `List` | script L | U+2112 |
+| `Pair` | script P | U+1D4AB |
 | `pi_1` | pi with a subscript one | U+03C0 U+2081 |
 | `pi_2` | pi with a subscript two | U+03C0 U+2082 |
 | `forall` | the universal quantifier | U+2200 |
@@ -222,7 +223,9 @@ The commas, ampersands, bars, `+` and `0` are ASCII and so come from the termina
 
 ### Codepoints outside the basic plane
 
-`Bool` is the one substitution whose codepoint is in the **supplementary plane**, U+1D539 rather than something under U+FFFF. The double-struck alphabet starts at U+1D538, except for C, H, N, P, Q, R and Z, which were encoded earlier in the Letterlike Symbols block and are the holes every number set above fills; B is not one of them, so there is no lower spelling to prefer. Vim takes it either way - `cchar` means one character, not one byte.
+`Bool` and `Pair` are the two substitutions whose codepoints are in the **supplementary plane**, U+1D539 and U+1D4AB rather than something under U+FFFF, and both are there for the same reason. Unicode encoded a scattering of mathematical letters in the Letterlike Symbols block long before it added the full alphabets at U+1D400, so each alphabet now has **holes** where its earlier spelling already lived - and whether a given letter sits in the block or in the hole depends on nothing but which side of that history it fell on.
+
+Double-struck skips C, H, N, P, Q, R and Z, which is why every number set above is under U+FFFF while `Bool` is not. Script skips B, E, F, H, I, L, M and R, which is why `List` is U+2112 down in Letterlike while `Pair` is U+1D4AB up in the block - two script capitals, forty-seven thousand codepoints apart, for no reason visible in the glyphs. Vim takes either: `cchar` means one character, not one byte.
 
 Eight of the thirteen number sets need **more than one glyph**, and `cchar` accepts exactly one. The way round it is to stop thinking of a rule as covering a word: the word is cut into as many adjacent pieces as there are glyphs, and each piece gets its own one-character rule. Vim draws one replacement per concealed region and keeps neighbouring regions from different groups separate, so the pieces arrive side by side. Where the cut falls is arbitrary, because the glyphs appear in the order the *pieces* do rather than in any order the word implies.
 
