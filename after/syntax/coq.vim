@@ -123,14 +123,17 @@ let s:setpost = '\%(''*\k\@!\)\@='
 " the shorter `does_not_contain` this row used to carry - is left alone
 " whole, and would need a row of its own.
 "
-" `All` and `Any` take the DOUBLED operators U+2A07 and U+2A08, and the pair
-" is easy to assign backwards: the two glyphs differ only in which way their
-" wedges point, and at one cell they are near enough identical to swap without
+" `All` and `Any` take the N-ARY operators U+22C0 and U+22C1, and the pair is
+" easy to assign backwards: the two glyphs differ only in which way the wedge
+" points, and at one cell they are near enough identical to swap without
 " noticing. What settles it is how the library defines them - `All` folds with
 " /\ and is Verum on the empty list, `Any` folds with \/ and is Falsum - so
-" All is the AND and Any is the OR. The n-ary U+22C0 and U+22C1 would read the
-" same and are carried by almost nothing, which is the same reason /\ and \/
-" above use the binary pair rather than those.
+" All is the AND and Any is the OR.
+"
+" The doubled U+2A07 and U+2A08 were tried first and dropped on width: in the
+" symbol font they advance 1.51 em against 1.18 for the n-ary pair, which at
+" the cell in use is 1.93 cells against 1.51. Both still overflow, and these
+" two are the widest entries in the table either way.
 "
 " Both are ordinary English words and so can be drawn in prose, the way the
 " bare `contains` was. They are kept anyway because the collision is rarer -
@@ -163,8 +166,8 @@ let s:ops = [
       \ [s:pre . 'contains_member' . s:post, 0x220B],
       \ [s:pre . 'does_not_belong_to' . s:post, 0x2209],
       \ [s:pre . 'does_not_contain_member' . s:post, 0x220C],
-      \ [s:pre . 'All' . s:post, 0x2A07],
-      \ [s:pre . 'Any' . s:post, 0x2A08],
+      \ [s:pre . 'All' . s:post, 0x22C0],
+      \ [s:pre . 'Any' . s:post, 0x22C1],
       \ [s:pre . 'True' . s:post, 0x22A4],
       \ [s:pre . 'Verum' . s:post, 0x22A4],
       \ [s:pre . 'VERUM' . s:post, 0x22A4],
