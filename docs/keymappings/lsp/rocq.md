@@ -124,7 +124,7 @@ Thirty pieces of ASCII are drawn as the symbols they stand for, plus the twenty-
 | `\|=` | double turnstile - models | U+22A8 |
 | `\|\|-` | forces | U+22A9 |
 | `belongs_to` | element of | U+2208 |
-| `contains` | contains as member | U+220B |
+| `contains_member` | contains as member | U+220B |
 | `does_not_belong_to` | not an element of | U+2209 |
 | `does_not_contain` | does not contain as member | U+220C |
 | `True`, `Verum`, `VERUM`, `Truth` | verum / top | U+22A4 |
@@ -136,9 +136,9 @@ Thirty pieces of ASCII are drawn as the symbols they stand for, plus the twenty-
 
 The four **membership relations** are words, not operators, and they are drawn where the word stands rather than where the symbol conventionally goes: `belongs_to x s` reads as the element-of sign followed by its two arguments, in prefix position, not as `x` element-of `s`. Concealing replaces text in place and cannot move it, so an infix reading would have to come from a Rocq `Notation` instead.
 
-Each negation is its own row rather than a prefix rule, and it has to be: an underscore is an identifier character, and a word boundary cannot fall after one, so no rule for `contains` can ever fire inside `does_not_contain`. That is what stops the pair from drawing half of each other - and it is equally why **any other spelling of a negation is left alone whole**. `not_contains`, `contains_not` and `does_not_belong` are all untouched, and each would need a row of its own.
+Each negation is its own row rather than a prefix rule, and it has to be: an underscore is an identifier character, and a word boundary cannot fall after one, so no rule for `contains_member` can ever fire inside `does_not_contain`. That is what stops the pair from drawing half of each other - and it is equally why **any other spelling of a negation is left alone whole**. `not_contains_member`, `contains_not` and `does_not_belong` are all untouched, and each would need a row of its own.
 
-One cost worth knowing before you keep `contains`: it is the only entry that is also an ordinary **English word**, and the rules apply inside comments, so a comment saying that something contains something else is drawn with the set-theory symbol in the middle of the sentence. Nothing else in the table can happen to appear in prose.
+`contains_member` carries its suffix for this table's sake rather than Rocq's. The bare `contains` was tried on 2026-09-17 and taken back out: it is an ordinary **English word**, and since the rules apply inside comments, a sentence saying that one thing contains another came out with the set-theory symbol sitting in the middle of it. Every other entry here is either punctuation or a name nobody writes in running prose, and the suffix is what puts this one in the same position. The name has to match whatever the Rocq source actually calls the relation - concealing draws the identifier, it does not rename it.
 
 **The arrows are deliberately absent, save one.** `->`, `<->`, `=>` and `|->` were drawn as arrows for part of 2026-09-16 and taken back out; `<=`, `>=`, `:=` and `fun` are absent too. The exception is `-/>`: a negation written as a slash through an ASCII arrow is easy to read past, which is exactly what a negation must not be, and unlike the plain arrow it has nothing it can be mistaken for. It does mean the file shows `a -> b` and `a` arrow-with-stroke `b` side by side, which is the price of keeping the common arrow out of the table. `fun` is still drawn in OCaml, see [ocaml](ocaml.md), and `:=` is the interesting absence - it is explained at the end of this section.
 
