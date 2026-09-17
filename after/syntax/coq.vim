@@ -76,16 +76,13 @@ let s:setpost = '\%(''*\k\@!\)\@='
 " the carets because an unescaped ^ at the start of a pattern anchors to the
 " start of the line. '<>' and '-/>' need no escaping: it is \< and \> that are
 " the word boundaries, and the slash is only special as a pattern delimiter,
-" which these patterns do not use. The bracket pairs need it in one place only:
-" 'magic' is in force, where a brace counts only as part of \{n,m}, a bar only
-" as part of \|, and a parenthesis only as part of \(\), so all of those are
-" literal - but '[' opens a collection, so '\[|' escapes it. The closing ']',
-" '}' and ')' are literal outside a collection and are left bare.
+" which these patterns do not use. The bar in '|>' needs none either: 'magic'
+" is in force, where a bar counts only as part of \|.
 "
-" None of the six bracket halves needs a guard against the three bar rules,
-" because each of those needs its own second character - a dash, an equals, or
-" a second bar - so none can fire on a bar followed by a bracket. That also
-" makes the pairs nest, and lets a `||` sit directly before a closing half.
+" The six bracket halves - '{|' '|}' '[|' '|]' '(|' '|)' - were drawn as white
+" brackets for part of 2026-09-17 and removed. They are absent rather than
+" pending: a record literal is punctuation the eye skips, and replacing both
+" of its halves moved every field one column without making the line say more.
 "
 " The two triangles keep their guards even though the doubled spellings they
 " were written against are gone: `<|` refuses a following bar and `|>` refuses
@@ -215,12 +212,6 @@ let s:ops = [
       \ ['||-', 0x22A9],
       \ ['\%(|\)\@<!|-\%(>\)\@!', 0x22A2],
       \ ['|=', 0x22A8],
-      \ ['{|', 0x2983],
-      \ ['|}', 0x2984],
-      \ ['\[|', 0x27E6],
-      \ ['|]', 0x27E7],
-      \ ['(|', 0x2985],
-      \ ['|)', 0x2986],
       \ ['<|\%(|\)\@!', 0x25C1],
       \ ['\%(|\)\@<!|>', 0x25B7],
       \ ['\%(:\)\@<!::\%(:\)\@!', 0x2237],

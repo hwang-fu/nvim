@@ -105,7 +105,7 @@ These answer in the Info panel, using the term under the cursor (or the visual s
 
 ## Symbols
 
-Fifty-six pieces of ASCII are drawn as the symbols they stand for, plus the twenty-four Greek letter names in both cases ([below](#greek-letters)), so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
+Fifty pieces of ASCII are drawn as the symbols they stand for, plus the twenty-four Greek letter names in both cases ([below](#greek-letters)), so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
 
 | Written | Drawn | Codepoint |
 |---------|-------|-----------|
@@ -132,12 +132,6 @@ Fifty-six pieces of ASCII are drawn as the symbols they stand for, plus the twen
 | `\|-` | right tack - entails | U+22A2 |
 | `\|=` | double turnstile - models | U+22A8 |
 | `\|\|-` | forces | U+22A9 |
-| `{\|` | left white curly bracket | U+2983 |
-| `\|}` | right white curly bracket | U+2984 |
-| `[\|` | left white square bracket | U+27E6 |
-| `\|]` | right white square bracket | U+27E7 |
-| `(\|` | left white parenthesis | U+2985 |
-| `\|)` | right white parenthesis | U+2986 |
 | `<\|` | white left-pointing triangle | U+25C1 |
 | `\|>` | white right-pointing triangle | U+25B7 |
 | `::` | proportion | U+2237 |
@@ -160,8 +154,6 @@ Fifty-six pieces of ASCII are drawn as the symbols they stand for, plus the twen
 | `Gimel` | gimel | U+2137 |
 | `Dalet` | dalet | U+2138 |
 
-The **bracket pairs** `{|`, `[|` and `(|` with their closing halves need no guard against the three bar rules above: each of those needs its own second character - `-`, `=`, or a second bar - so none can fire on a bar that is followed by a bracket. Nesting works for the same reason, and so does a `||` sitting immediately before a closing half.
-
 The **triangles** `<|` and `|>` keep guards against a doubled bar even though `<||` and `||>` are not in the table: `<|` refuses a following bar and `|>` refuses a preceding one, so those two spellings stay entirely ASCII rather than coming out as a triangle with a stray bar beside it. That is the same job the guard on `|-` does for `|->`.
 
 `sqrt` and `cbrt` are drawn as the **radical alone**, with the argument beside it rather than under it. Nothing here can draw the bar that would run over the argument in print: a conceal replaces the characters of the word itself and reaches no further, and the argument is ordinary text of unknown length.
@@ -181,6 +173,8 @@ Each negation is its own row rather than a prefix rule, and it has to be: an und
 `All` and `Any` take the **n-ary** operators, and which glyph goes to which word is worth stating because the two differ only in the direction of the wedge and at one cell are near enough identical to swap without noticing. The library settles it: `All` folds with `/\` and is `Verum` on the empty list, `Any` folds with `\/` and is `Falsum`, so `All` is the AND and `Any` is the OR. The doubled U+2A07 and U+2A08 were used first and dropped on **width** - they advance 1.51 em in the symbol font against 1.18 for the n-ary pair, which at the cell in use is 1.93 cells against 1.51. Coverage did not decide it either way: only the routed family has to carry them, and it carries all four.
 
 Both are also ordinary **English words**, so like the bare `contains` they can be drawn inside prose - a comment opening with "All three cases" is drawn with the symbol. They are kept as they are because the collision is rarer: only a capitalised whole word matches, and the qualified `Core.All` and `Data.All` of the umbrella-import convention are already refused by the leading-dot guard.
+
+**The six bracket halves are deliberately absent.** `{|`, `|}`, `[|`, `|]`, `(|` and `|)` were drawn as white brackets for part of 2026-09-17 and taken back out. A record literal is punctuation the eye skips over; replacing both of its halves shifted every field one column and left the line saying no more than before.
 
 **The arrows are deliberately absent, save one.** `->`, `<->`, `=>` and `|->` were drawn as arrows for part of 2026-09-16 and taken back out; `<=`, `>=`, `:=` and `fun` are absent too. The exception is `-/>`: a negation written as a slash through an ASCII arrow is easy to read past, which is exactly what a negation must not be, and unlike the plain arrow it has nothing it can be mistaken for. It does mean the file shows `a -> b` and `a` arrow-with-stroke `b` side by side, which is the price of keeping the common arrow out of the table. `fun` is still drawn in OCaml, see [ocaml](ocaml.md), and `:=` is the interesting absence - it is explained at the end of this section.
 
