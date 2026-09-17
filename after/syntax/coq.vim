@@ -117,10 +117,11 @@ let s:setpost = '\%(''*\k\@!\)\@='
 "
 " Each negated form is its own row rather than a prefix rule, because an
 " underscore is an identifier character and \< cannot match after one: no rule
-" for `contains_member` can ever fire inside `does_not_contain`, which is what
+" for `contains_member` can ever fire inside `does_not_contain_member`, which
 " keeps the pair from ever drawing half of each other. It is also why any
-" other spelling of a negation - `not_contains`, `contains_not` - is left
-" alone whole, and would need a row of its own.
+" other spelling of a negation - `not_contains_member`, `contains_not`, or
+" the shorter `does_not_contain` this row used to carry - is left alone
+" whole, and would need a row of its own.
 "
 " `contains_member` is named for this file's sake rather than Rocq's. The bare
 " `contains` was tried first and is an ordinary English word; the rules apply
@@ -147,7 +148,7 @@ let s:ops = [
       \ [s:pre . 'belongs_to' . s:post, 0x2208],
       \ [s:pre . 'contains_member' . s:post, 0x220B],
       \ [s:pre . 'does_not_belong_to' . s:post, 0x2209],
-      \ [s:pre . 'does_not_contain' . s:post, 0x220C],
+      \ [s:pre . 'does_not_contain_member' . s:post, 0x220C],
       \ [s:pre . 'True' . s:post, 0x22A4],
       \ [s:pre . 'Verum' . s:post, 0x22A4],
       \ [s:pre . 'VERUM' . s:post, 0x22A4],
