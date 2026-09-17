@@ -105,7 +105,7 @@ These answer in the Info panel, using the term under the cursor (or the visual s
 
 ## Symbols
 
-Twenty-seven pieces of ASCII are drawn as the symbols they stand for, plus the twenty-four Greek letter names in both cases ([below](#greek-letters)), so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
+Thirty pieces of ASCII are drawn as the symbols they stand for, plus the twenty-four Greek letter names in both cases ([below](#greek-letters)), so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
 
 | Written | Drawn | Codepoint |
 |---------|-------|-----------|
@@ -124,6 +124,9 @@ Twenty-seven pieces of ASCII are drawn as the symbols they stand for, plus the t
 | `\|=` | double turnstile - models | U+22A8 |
 | `\|\|-` | forces | U+22A9 |
 | `belongs_to` | element of | U+2208 |
+| `contains` | contains as member | U+220B |
+| `does_not_belong_to` | not an element of | U+2209 |
+| `does_not_contain` | does not contain as member | U+220C |
 | `True`, `Verum`, `VERUM`, `Truth` | verum / top | U+22A4 |
 | `False`, `Falsum`, `FALSUM`, `Falsehood` | falsum / bottom | U+22A5 |
 | `Alef` | alef | U+2135 |
@@ -131,7 +134,11 @@ Twenty-seven pieces of ASCII are drawn as the symbols they stand for, plus the t
 | `Gimel` | gimel | U+2137 |
 | `Dalet` | dalet | U+2138 |
 
-`belongs_to` is a **word, not an operator**, and it is drawn where the word stands rather than where the symbol conventionally goes: `belongs_to x s` reads as the element-of sign followed by its two arguments, in prefix position, not as `x` element-of `s`. Concealing replaces text in place and cannot move it, so an infix reading would have to come from a Rocq `Notation` instead. The underscore inside the name is an identifier character like any other, which means `not_belongs_to` is left alone whole rather than drawn as `not_` plus the symbol; a negated spelling would need its own row.
+The four **membership relations** are words, not operators, and they are drawn where the word stands rather than where the symbol conventionally goes: `belongs_to x s` reads as the element-of sign followed by its two arguments, in prefix position, not as `x` element-of `s`. Concealing replaces text in place and cannot move it, so an infix reading would have to come from a Rocq `Notation` instead.
+
+Each negation is its own row rather than a prefix rule, and it has to be: an underscore is an identifier character, and a word boundary cannot fall after one, so no rule for `contains` can ever fire inside `does_not_contain`. That is what stops the pair from drawing half of each other - and it is equally why **any other spelling of a negation is left alone whole**. `not_contains`, `contains_not` and `does_not_belong` are all untouched, and each would need a row of its own.
+
+One cost worth knowing before you keep `contains`: it is the only entry that is also an ordinary **English word**, and the rules apply inside comments, so a comment saying that something contains something else is drawn with the set-theory symbol in the middle of the sentence. Nothing else in the table can happen to appear in prose.
 
 **The arrows are deliberately absent, save one.** `->`, `<->`, `=>` and `|->` were drawn as arrows for part of 2026-09-16 and taken back out; `<=`, `>=`, `:=` and `fun` are absent too. The exception is `-/>`: a negation written as a slash through an ASCII arrow is easy to read past, which is exactly what a negation must not be, and unlike the plain arrow it has nothing it can be mistaken for. It does mean the file shows `a -> b` and `a` arrow-with-stroke `b` side by side, which is the price of keeping the common arrow out of the table. `fun` is still drawn in OCaml, see [ocaml](ocaml.md), and `:=` is the interesting absence - it is explained at the end of this section.
 
