@@ -87,12 +87,12 @@ let s:setpost = '\%(''*\k\@!\)\@='
 " a second bar - so none can fire on a bar followed by a bracket. That also
 " makes the pairs nest, and lets a `||` sit directly before a closing half.
 "
-" The triangles do need guards, because they overlap each other rather than
-" the bars. `<|` and `<||` start at the SAME column, so nothing about the scan
-" order settles them and only a guard can: `<|` refuses a second bar after it.
-" `|>` inside `||>` starts one column later, which the left-to-right scan
-" already settles, but it carries the mirror-image guard anyway so the outcome
-" does not depend on this list's order - the same pairing as `|-` and `||-`.
+" The two triangles keep their guards even though the doubled spellings they
+" were written against are gone: `<|` refuses a following bar and `|>` refuses
+" a preceding one, so `<||` and `||>` stay entirely ASCII rather than coming
+" out as a triangle with a stray bar beside it. That is the same job the
+" `\%(>\)\@!` on `|-` does for `|->`, and the reason is the same - a half
+" substitution reads worse than none.
 "
 " `::` refuses a colon on either side, so a run of three or more stays ASCII
 " rather than drawing one proportion sign and a leftover colon. That is the
@@ -111,6 +111,8 @@ let s:setpost = '\%(''*\k\@!\)\@='
 " '-/>' is the one arrow in the table, and it is here while '->' is not: the
 " plain arrow was tried and taken back out, but a negated arrow spelled in
 " ASCII is hard to read and there is nothing for it to be confused with.
+" '-/-' shares its first two characters and needs no guard against it, because
+" the two differ in the third and neither can match where the other does.
 "
 " The caret rule refuses a caret on either side, so a run of three or more
 " stays entirely ASCII. Without that `^^^` came out as TWO circled pluses -
@@ -139,6 +141,23 @@ let s:setpost = '\%(''*\k\@!\)\@='
 " the bool constructors `true` and `false`. That is also why the all-capital
 " spellings are their own rows: relaxing case for VERUM would take TRUE and
 " every other spelling with it.
+"
+" `bra` and `ket` draw the same two angle brackets the structure rows use, and
+" they need no guard beyond the usual pair: `bracket` keeps both of them out
+" by itself, since the trailing guard refuses the `c` after `bra` and no word
+" boundary falls before the `k`.
+"
+" `Because` and `Therefore` are capitalised, and `syn case match` is what keeps
+" the lower-case prose forms out. That leaves the capitalised forms, which do
+" open sentences: a comment beginning `Therefore the goal` is drawn with the
+" symbol in place of the word, the way `contains` was before it was renamed.
+" Neither spelling appears anywhere in the library today, which is why they
+" are here as written rather than under a suffixed name.
+"
+" `sqrt` and `cbrt` are drawn as the radical alone, without the vinculum that
+" would run over the argument in print. Nothing here can draw that bar: a
+" conceal replaces the characters of the word itself and reaches no further,
+" and the argument after it is ordinary text of unknown length.
 "
 " The four membership relations are the only words here whose symbol
 " conventionally sits BETWEEN its arguments. Concealing replaces text where it
@@ -192,6 +211,7 @@ let s:ops = [
       \ ['\%(\^\)\@<!\^\^\%(\^\)\@!', 0x2295],
       \ ['<>', 0x2260],
       \ ['-/>', 0x219B],
+      \ ['-/-', 0x233F],
       \ ['||-', 0x22A9],
       \ ['\%(|\)\@<!|-\%(>\)\@!', 0x22A2],
       \ ['|=', 0x22A8],
@@ -203,9 +223,13 @@ let s:ops = [
       \ ['|)', 0x2986],
       \ ['<|\%(|\)\@!', 0x25C1],
       \ ['\%(|\)\@<!|>', 0x25B7],
-      \ ['<||', 0x29CF],
-      \ ['||>', 0x29D0],
       \ ['\%(:\)\@<!::\%(:\)\@!', 0x2237],
+      \ [s:pre . 'bra' . s:post, 0x27E8],
+      \ [s:pre . 'ket' . s:post, 0x27E9],
+      \ [s:pre . 'Because' . s:post, 0x2235],
+      \ [s:pre . 'Therefore' . s:post, 0x2234],
+      \ [s:pre . 'sqrt' . s:post, 0x221A],
+      \ [s:pre . 'cbrt' . s:post, 0x221B],
       \ [s:pre . 'belongs_to' . s:post, 0x2208],
       \ [s:pre . 'contains_member' . s:post, 0x220B],
       \ [s:pre . 'does_not_belong_to' . s:post, 0x2209],

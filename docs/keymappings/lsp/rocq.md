@@ -105,7 +105,7 @@ These answer in the Info panel, using the term under the cursor (or the visual s
 
 ## Symbols
 
-Fifty-one pieces of ASCII are drawn as the symbols they stand for, plus the twenty-four Greek letter names in both cases ([below](#greek-letters)), so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
+Fifty-six pieces of ASCII are drawn as the symbols they stand for, plus the twenty-four Greek letter names in both cases ([below](#greek-letters)), so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
 
 | Written | Drawn | Codepoint |
 |---------|-------|-----------|
@@ -128,6 +128,7 @@ Fifty-one pieces of ASCII are drawn as the symbols they stand for, plus the twen
 | `~==` | approximately equal to | U+2245 |
 | `==` | identical to | U+2261 |
 | `-/>` | arrow with a stroke - does not imply | U+219B |
+| `-/-` | slash bar | U+233F |
 | `\|-` | right tack - entails | U+22A2 |
 | `\|=` | double turnstile - models | U+22A8 |
 | `\|\|-` | forces | U+22A9 |
@@ -139,13 +140,17 @@ Fifty-one pieces of ASCII are drawn as the symbols they stand for, plus the twen
 | `\|)` | right white parenthesis | U+2986 |
 | `<\|` | white left-pointing triangle | U+25C1 |
 | `\|>` | white right-pointing triangle | U+25B7 |
-| `<\|\|` | left triangle beside a bar | U+29CF |
-| `\|\|>` | bar beside a right triangle | U+29D0 |
 | `::` | proportion | U+2237 |
 | `belongs_to` | element of | U+2208 |
 | `contains_member` | contains as member | U+220B |
 | `does_not_belong_to` | not an element of | U+2209 |
 | `does_not_contain_member` | does not contain as member | U+220C |
+| `sqrt` | the radical | U+221A |
+| `cbrt` | the cube radical | U+221B |
+| `bra` | left angle bracket | U+27E8 |
+| `ket` | right angle bracket | U+27E9 |
+| `Because` | because | U+2235 |
+| `Therefore` | therefore | U+2234 |
 | `All` | n-ary logical AND - the list conjunction | U+22C0 |
 | `Any` | n-ary logical OR - the list disjunction | U+22C1 |
 | `True`, `Verum`, `VERUM`, `Truth` | verum / top | U+22A4 |
@@ -157,7 +162,13 @@ Fifty-one pieces of ASCII are drawn as the symbols they stand for, plus the twen
 
 The **bracket pairs** `{|`, `[|` and `(|` with their closing halves need no guard against the three bar rules above: each of those needs its own second character - `-`, `=`, or a second bar - so none can fire on a bar that is followed by a bracket. Nesting works for the same reason, and so does a `||` sitting immediately before a closing half.
 
-The **triangles** do need guards, because they overlap each other rather than the bars. `<|` and `<||` start at the same column, so nothing about the left-to-right scan settles them and only a guard can: `<|` refuses a second bar after it. `|>` inside `||>` starts one column later, which the scan already settles, but it carries the mirror-image guard anyway so the outcome does not depend on rule order - the same pairing as `|-` and `||-`.
+The **triangles** `<|` and `|>` keep guards against a doubled bar even though `<||` and `||>` are not in the table: `<|` refuses a following bar and `|>` refuses a preceding one, so those two spellings stay entirely ASCII rather than coming out as a triangle with a stray bar beside it. That is the same job the guard on `|-` does for `|->`.
+
+`sqrt` and `cbrt` are drawn as the **radical alone**, with the argument beside it rather than under it. Nothing here can draw the bar that would run over the argument in print: a conceal replaces the characters of the word itself and reaches no further, and the argument is ordinary text of unknown length.
+
+`Because` and `Therefore` are **capitalised**, and case sensitivity is what keeps the lower-case prose forms out. The capitalised forms do open sentences, though, so a comment beginning "Therefore the goal" is drawn with the symbol in place of the word - the same trap `contains` fell into before it was renamed. Neither spelling appears anywhere in the library today, which is why they are here as written rather than under a suffixed name.
+
+`bra` and `ket` reach the same two angle brackets the [structures](#algebraic-structures) use. `bracket` keeps both of them out by itself: the trailing guard refuses the `c` after `bra`, and no word boundary falls before the `k`.
 
 The three **equivalences** nest inside each other and inside the negation, so `~`, `~=`, `~==` and `==` only work as a set. `~` refuses a following equals, which keeps it out of the other three; `~=` refuses a second equals, which keeps it out of `~==`; and `==` refuses a tilde, an equals or a `<` before it and an equals or a `>` after it. That last list is not symmetry for its own sake - it is the four spellings a reader would otherwise meet half-drawn: `~==`, `===`, `==>` and `<==`. None of those is in the table, and uniform ASCII beats one symbol with a leftover character stuck to it. A tilde that is *not* part of an equivalence is still the negation, so `~=~` draws as two symbols side by side, and `::` likewise refuses a colon on either side so a run of three stays as written.
 
