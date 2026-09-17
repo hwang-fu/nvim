@@ -105,7 +105,7 @@ These answer in the Info panel, using the term under the cursor (or the visual s
 
 ## Symbols
 
-Twenty-six pieces of ASCII are drawn as the symbols they stand for, plus the twenty-four Greek letter names in both cases ([below](#greek-letters)), so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
+Twenty-seven pieces of ASCII are drawn as the symbols they stand for, plus the twenty-four Greek letter names in both cases ([below](#greek-letters)), so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
 
 | Written | Drawn | Codepoint |
 |---------|-------|-----------|
@@ -123,12 +123,15 @@ Twenty-six pieces of ASCII are drawn as the symbols they stand for, plus the twe
 | `\|-` | right tack - entails | U+22A2 |
 | `\|=` | double turnstile - models | U+22A8 |
 | `\|\|-` | forces | U+22A9 |
+| `belongs_to` | element of | U+2208 |
 | `True`, `Verum`, `VERUM`, `Truth` | verum / top | U+22A4 |
 | `False`, `Falsum`, `FALSUM`, `Falsehood` | falsum / bottom | U+22A5 |
 | `Alef` | alef | U+2135 |
 | `Bet` | bet | U+2136 |
 | `Gimel` | gimel | U+2137 |
 | `Dalet` | dalet | U+2138 |
+
+`belongs_to` is a **word, not an operator**, and it is drawn where the word stands rather than where the symbol conventionally goes: `belongs_to x s` reads as the element-of sign followed by its two arguments, in prefix position, not as `x` element-of `s`. Concealing replaces text in place and cannot move it, so an infix reading would have to come from a Rocq `Notation` instead. The underscore inside the name is an identifier character like any other, which means `not_belongs_to` is left alone whole rather than drawn as `not_` plus the symbol; a negated spelling would need its own row.
 
 **The arrows are deliberately absent, save one.** `->`, `<->`, `=>` and `|->` were drawn as arrows for part of 2026-09-16 and taken back out; `<=`, `>=`, `:=` and `fun` are absent too. The exception is `-/>`: a negation written as a slash through an ASCII arrow is easy to read past, which is exactly what a negation must not be, and unlike the plain arrow it has nothing it can be mistaken for. It does mean the file shows `a -> b` and `a` arrow-with-stroke `b` side by side, which is the price of keeping the common arrow out of the table. `fun` is still drawn in OCaml, see [ocaml](ocaml.md), and `:=` is the interesting absence - it is explained at the end of this section.
 

@@ -110,6 +110,11 @@ let s:setpost = '\%(''*\k\@!\)\@='
 " spellings are their own rows: relaxing case for VERUM would take TRUE and
 " every other spelling with it.
 "
+" `belongs_to` is the first entry carrying an underscore, and the guards treat
+" it as the identifier character it is: \< cannot match after one, so
+" `not_belongs_to` stays entirely ASCII rather than coming out as `not_`
+" followed by the symbol. A negated spelling would have to be its own row.
+"
 " The cardinals use U+2135-U+2138, the four Hebrew LETTERLIKE SYMBOLS, not the
 " Hebrew letters at U+05D0 onward. Those are bidi class R and would reorder the
 " line around them, and STIX carries none of them. The block holds exactly four
@@ -125,6 +130,7 @@ let s:ops = [
       \ ['||-', 0x22A9],
       \ ['\%(|\)\@<!|-\%(>\)\@!', 0x22A2],
       \ ['|=', 0x22A8],
+      \ [s:pre . 'belongs_to' . s:post, 0x2208],
       \ [s:pre . 'True' . s:post, 0x22A4],
       \ [s:pre . 'Verum' . s:post, 0x22A4],
       \ [s:pre . 'VERUM' . s:post, 0x22A4],
