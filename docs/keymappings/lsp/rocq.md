@@ -132,9 +132,9 @@ Fifty pieces of ASCII are drawn as the symbols they stand for, plus the twenty-f
 | `\|-` | right tack - entails | U+22A2 |
 | `\|=` | double turnstile - models | U+22A8 |
 | `\|\|-` | forces | U+22A9 |
+| `::` | proportion | U+2237 |
 | `<\|` | white left-pointing triangle | U+25C1 |
 | `\|>` | white right-pointing triangle | U+25B7 |
-| `::` | proportion | U+2237 |
 | `belongs_to` | element of | U+2208 |
 | `contains_member` | contains as member | U+220B |
 | `does_not_belong_to` | not an element of | U+2209 |
@@ -322,6 +322,21 @@ A replacement character is **always** painted with the `Conceal` highlight group
 That would normally mean every symbol turning up in whatever grey `Conceal` happens to be. `after/ftplugin/coq.lua` avoids it with `winhighlight`, which remaps a highlight group **for one window**: `Conceal:coqKwd` makes the glyphs render in Coqtail's keyword colour here and changes nothing in any other filetype. `coqKwd` is the right target because it is what Coqtail paints all seven substitutions with in the first place, so a symbol keeps the colour its ASCII had.
 
 The catch is inherent rather than a shortcut: `Conceal` is one group per window, so all seven necessarily share a colour. Giving them different ones is not expressible through syntax concealment at all.
+
+### One correction to Coqtail
+
+`after/syntax/coq.vim` ends with the file's only change to Coqtail's own parsing rather than an addition on top of it.
+
+Rocq lets a class field be written `field :: T`, which declares it an **instance** as well as a projection. Coqtail predates that form: its `coqRecField` region ends on a single colon, so in `reflexive :: Reflexive.R` the first colon closes the region as `coqVernacPunctuation` and the second falls through to the term inside as `coqTermPunctuation`. One token, drawn in two different colours - yellow then blue.
+
+The fix is Coqtail's own two region definitions, copied from `syntax/coq.vim:385-386` with three changes. The end pattern is widened from `:` to `::\|:`, ordered longest-first so a single-colon field parses exactly as it did and a record mixing both forms gets each field right.
+
+The other two changes are what make `::` **concealable** there, and they are worth reading together because each one repairs what the other breaks:
+
+- `matchgroup=NONE` on the end. A region's end match takes no contained items while a matchgroup is set on it - the same wall that keeps `:=` and `Module <name>` out of reach - so before this the conceal rule was never offered the column at all and `::` drew nothing in a class field while working everywhere else.
+- `keepend`. Without the matchgroup the conceal rule *does* reach the colons, and then it swallows them: the region's own end pattern no longer matches, the field region runs on to the end of the line, and the field's type comes out coloured as another field name. `keepend` stops a contained match extending past the end.
+
+Dropping the matchgroup costs the single colon its `coqVernacPunctuation` colour, since it now takes the region's own. That is why `coqRecField` is linked to `coqVernacPunctuation` on the line after - the colour is kept by naming it rather than by the matchgroup.
 
 ## Why not an LSP
 

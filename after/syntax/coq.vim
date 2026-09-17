@@ -95,6 +95,11 @@ let s:setpost = '\%(''*\k\@!\)\@='
 " rather than drawing one proportion sign and a leftover colon. That is the
 " same treatment `^^` gets, for the same reason.
 "
+" Reaching it in a class field takes the correction at the bottom of this
+" file: Coqtail ends its coqRecField region on the colon, and a region's end
+" match takes no contained items while a matchgroup is set on it, so before
+" that correction the rule was never offered the column at all.
+"
 " The three equivalences nest inside each other and inside the negation, so
 " all four rows carry guards and the set only works as a set. `~` refuses a
 " following equals, which is what keeps it out of `~=` and `~==`; `~=` refuses
@@ -400,3 +405,29 @@ endfor
 unlet! s:words s:ops s:n s:word s:pattern s:code
 unlet! s:pre s:post s:setpost s:greek s:i s:skip s:name s:Name
 unlet! s:sets s:chunks s:codes s:s s:k s:after s:pat s:opts
+
+" One correction to Coqtail's parsing rather than an addition to it.
+"
+" Rocq lets a class field be written `field :: T`, which declares it an
+" instance as well as a projection. Coqtail predates that form: its
+" coqRecField region ends on a single colon, so the first colon closes the
+" region as coqVernacPunctuation and the second falls through to the term
+" inside as coqTermPunctuation. One token, drawn in two different colours.
+"
+" The two regions below are Coqtail's own, at syntax/coq.vim:385-386, with two
+" changes. The end pattern is widened to take both colons, ordered longest
+" first so a single colon parses exactly as it did. And the end carries
+" `matchgroup=NONE`, which is what lets the conceal rule reach it: a region's
+" end match accepts no contained items while a matchgroup is set on it, and
+" that is the whole reason `::` drew nothing here before.
+"
+" The cost of matchgroup=NONE is that an unconcealed colon takes the region's
+" own colour instead of coqVernacPunctuation. That is why coqRecField is
+" linked to it below - the colour is preserved by naming it rather than by
+" the matchgroup.
+syntax clear coqRecField
+syntax region coqRecField contained contains=coqField keepend
+      \ matchgroup=coqVernacPunctuation start="{" matchgroup=NONE end="::\|:"
+syntax region coqRecField contained contains=coqField keepend
+      \ matchgroup=coqVernacPunctuation start=";" matchgroup=NONE end="::\|:"
+highlight! link coqRecField coqVernacPunctuation
