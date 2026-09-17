@@ -123,6 +123,20 @@ let s:setpost = '\%(''*\k\@!\)\@='
 " the shorter `does_not_contain` this row used to carry - is left alone
 " whole, and would need a row of its own.
 "
+" `All` and `Any` take the DOUBLED operators U+2A07 and U+2A08, and the pair
+" is easy to assign backwards: the two glyphs differ only in which way their
+" wedges point, and at one cell they are near enough identical to swap without
+" noticing. What settles it is how the library defines them - `All` folds with
+" /\ and is Verum on the empty list, `Any` folds with \/ and is Falsum - so
+" All is the AND and Any is the OR. The n-ary U+22C0 and U+22C1 would read the
+" same and are carried by almost nothing, which is the same reason /\ and \/
+" above use the binary pair rather than those.
+"
+" Both are ordinary English words and so can be drawn in prose, the way the
+" bare `contains` was. They are kept anyway because the collision is rarer -
+" only a capitalised, whole-word `All` or `Any` matches, and a qualified
+" `Core.All` or `Data.All` is already refused by the leading-dot guard.
+"
 " `contains_member` is named for this file's sake rather than Rocq's. The bare
 " `contains` was tried first and is an ordinary English word; the rules apply
 " inside comments, so a sentence saying one thing contains another came out
@@ -149,6 +163,8 @@ let s:ops = [
       \ [s:pre . 'contains_member' . s:post, 0x220B],
       \ [s:pre . 'does_not_belong_to' . s:post, 0x2209],
       \ [s:pre . 'does_not_contain_member' . s:post, 0x220C],
+      \ [s:pre . 'All' . s:post, 0x2A07],
+      \ [s:pre . 'Any' . s:post, 0x2A08],
       \ [s:pre . 'True' . s:post, 0x22A4],
       \ [s:pre . 'Verum' . s:post, 0x22A4],
       \ [s:pre . 'VERUM' . s:post, 0x22A4],
