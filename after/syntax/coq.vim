@@ -224,6 +224,11 @@ endfor
 " symbol font; the comma, `+` and `0` are the ASCII the surrounding text is
 " already drawn in.
 "
+" The two projections are here rather than among the Greek rows because they
+" need a second glyph for the subscript. They cannot collide with the plain
+" `pi` row that the Greek loop generates: that row's trailing guard refuses
+" the `_` following it here, the same way `Bool` steps aside for the monoids.
+"
 " `List` is the type constructor and is drawn as the bare script L, with its
 " parameter left standing beside it as written: `List Nat` reads as the script
 " L followed by Nat's own symbol. Drawing the parameter inside brackets was
@@ -240,6 +245,8 @@ endfor
 let s:sets = [
       \ [['Bool'],                         [0x1D539]],
       \ [['List'],                         [0x2112]],
+      \ [['pi', '_1'],                     [0x03C0, 0x2081]],
+      \ [['pi', '_2'],                     [0x03C0, 0x2082]],
       \ [['Nat'],                          [0x2115]],
       \ [['NatWithZer', 'o'],              [0x2115, 0x2080]],
       \ [['Integer'],                      [0x2124]],
