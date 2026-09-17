@@ -110,7 +110,7 @@ Twenty-six pieces of ASCII are drawn as the symbols they stand for, plus the twe
 | Written | Drawn | Codepoint |
 |---------|-------|-----------|
 | `Bool` | double-struck B | U+1D539 |
-| `List` | script L, then a literal `(A)` | U+2112 |
+| `List` | script L | U+2112 |
 | `forall` | the universal quantifier | U+2200 |
 | `exists` | the existential quantifier | U+2203 |
 | `\/` | logical OR | U+2228 |
@@ -180,7 +180,7 @@ Fifteen type and number-set names are drawn as a letter of their own, with super
 | `NonNegInteger` | Z, superscript plus, subscript zero | | `NegReal` | R with superscript minus |
 | `Complex` | double-struck C | | | |
 
-`List` is the one entry whose drawing is an **abbreviation** rather than a substitution. The `A` between the brackets is literal and does not follow the real argument: `List Nat` comes out as the script L, the brackets, an `A`, and then `Nat`'s own symbol standing beside them, and `List List Nat` draws the abbreviation twice. Following the argument is not reachable here - the closing bracket would need a source character *after* the argument to hang on, and `List` offers only its own four.
+`List` is a **type constructor** rather than a type, and only the constructor is drawn: `List Nat` reads as the script L followed by `Nat`'s own symbol, with the argument left standing beside it as written. Drawing the parameter inside brackets was tried on 2026-09-17 and dropped - a literal `A` there is not the real argument, and following the real one is not reachable, since the closing bracket would need a source character *after* the argument to hang on and the word offers only its own four.
 
 These names, and the five structures below, are the **one group drawn with a qualifier after them**: `Bool.and`, `Nat.add` and `NatWithZero.add` are drawn, where `alpha.b` and `True.b` are not. The reason is that Rocq's convention puts the operations on a type in a module of the same name - `Module Bool.` holds `Bool.and` - so the word before the dot *is* the type, and hiding it there would hide the type in exactly the position where a proof mentions it most. `alpha.b` has the same shape and not the same meaning: there `alpha` names a module that merely happens to be spelled like a letter.
 
