@@ -212,16 +212,25 @@ endfor
 " its backtracking engine and is then attempted at every column of every line,
 " which doubled the buffer's whole syntax cost.
 "
-" Bool and Pair are the supplementary-plane codepoints, and both are there for
-" the same reason. Unicode encoded a scattering of mathematical letters in
-" Letterlike Symbols long before it added the full alphabets at U+1D400, so
-" each alphabet now has holes where its earlier spelling lives, and a letter
-" is in the block or in the hole depending only on which side of that history
-" it fell. Double-struck skips C H N P Q R Z - which is why every number set
-" above sits under U+FFFF and B does not - and script skips B E F H I L M R,
-" which is why List is U+2112 down in Letterlike while Pair is U+1D4AB up in
-" the block. nr2char() returns a four-byte single character either way, and
-" cchar accepts it.
+" Bool, Pair, Empty and Unit are the supplementary-plane codepoints.
+"
+" For the first two it is Unicode's history showing through. A scattering of
+" mathematical letters went into Letterlike Symbols long before the full
+" alphabets arrived at U+1D400, so each alphabet now has holes where its
+" earlier spelling already lived, and a letter is in the block or in the hole
+" depending only on which side of that split it fell. Double-struck skips
+" C H N P Q R Z - which is why every number set above sits under U+FFFF and B
+" does not - and script skips B E F H I L M R, which is why List is U+2112 down
+" in Letterlike while Pair is U+1D4AB up in the block.
+"
+" Empty and Unit have no such history: the double-struck DIGITS at U+1D7D8 are
+" a complete run of ten with no earlier spellings and therefore no holes, so
+" the cardinality of the type is simply its digit. That is also why they are
+" these and not the ASCII 0 and 1 - those would read as numerals rather than
+" as the types, next to the ASCII 0 the monoid rows already draw.
+"
+" nr2char() returns a four-byte single character for all four, and cchar
+" accepts it.
 "
 " The algebraic structures stretch the same machinery further: a whole
 " identifier is drawn as its carrier, operation and unit inside angle
@@ -252,6 +261,8 @@ let s:sets = [
       \ [['Bool'],                         [0x1D539]],
       \ [['List'],                         [0x2112]],
       \ [['Pair'],                         [0x1D4AB]],
+      \ [['Empty'],                        [0x1D7D8]],
+      \ [['Unit'],                         [0x1D7D9]],
       \ [['pi', '_1'],                     [0x03C0, 0x2081]],
       \ [['pi', '_2'],                     [0x03C0, 0x2082]],
       \ [['Nat'],                          [0x2115]],
