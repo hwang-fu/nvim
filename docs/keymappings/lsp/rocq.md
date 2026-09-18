@@ -105,13 +105,14 @@ These answer in the Info panel, using the term under the cursor (or the visual s
 
 ## Symbols
 
-Fifty-one pieces of ASCII are drawn as the symbols they stand for, plus the twenty-four Greek letter names in both cases ([below](#greek-letters)), so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
+Fifty-two pieces of ASCII are drawn as the symbols they stand for, plus the twenty-four Greek letter names in both cases ([below](#greek-letters)), so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
 
 | Written | Drawn | Codepoint |
 |---------|-------|-----------|
 | `Bool` | double-struck B | U+1D539 |
 | `List` | script L | U+2112 |
-| `Pair` | script P | U+1D4AB |
+| `Type` | script U - the universe | U+1D4B0 |
+| `Prop` | script U, subscript p | U+1D4B0 U+209A |
 | `Empty` | double-struck zero | U+1D7D8 |
 | `Unit` | double-struck one | U+1D7D9 |
 | `pi_1` | pi with a subscript one | U+03C0 U+2081 |
@@ -251,13 +252,21 @@ The commas, ampersands, bars, `+` and `0` are ASCII and so come from the termina
 
 ### Codepoints outside the basic plane
 
-Four substitutions have codepoints in the **supplementary plane**: `Bool`, `Pair`, `Empty` and `Unit`.
+Five substitutions have codepoints in the **supplementary plane**: `Bool`, `Type`, `Prop`, `Empty` and `Unit`.
 
-For `Bool` and `Pair` it is Unicode's history showing through. A scattering of mathematical letters went into the Letterlike Symbols block long before the full alphabets arrived at U+1D400, so each alphabet now has **holes** where its earlier spelling already lived - and whether a given letter sits in the block or in the hole depends on nothing but which side of that split it fell on. Double-struck skips C, H, N, P, Q, R and Z, which is why every number set above is under U+FFFF while `Bool` is not. Script skips B, E, F, H, I, L, M and R, which is why `List` is U+2112 down in Letterlike while `Pair` is U+1D4AB up in the block - two script capitals, forty-seven thousand codepoints apart, for no reason visible in the glyphs.
+For `Bool` and the script U it is Unicode's history showing through. A scattering of mathematical letters went into the Letterlike Symbols block long before the full alphabets arrived at U+1D400, so each alphabet now has **holes** where its earlier spelling already lived - and whether a given letter sits in the block or in the hole depends on nothing but which side of that split it fell on. Double-struck skips C, H, N, P, Q, R and Z, which is why every number set above is under U+FFFF while `Bool` is not. Script skips B, E, F, H, I, L, M and R, which is why `List` is U+2112 down in Letterlike while the U of `Type` and `Prop` is U+1D4B0 up in the block - two script capitals, forty-seven thousand codepoints apart, for no reason visible in the glyphs.
 
 `Empty` and `Unit` have no such history. The double-struck **digits** at U+1D7D8 are a complete run of ten with no earlier spellings and so no holes, and the type is drawn as its own cardinality: nothing inhabits `Empty`, one thing inhabits `Unit`. They are these rather than a plain ASCII `0` and `1` because those would read as numerals - particularly next to the ASCII `0` that the monoid rows already draw as a unit element.
 
 Vim takes any of them: `cchar` means one character, not one byte.
+
+### Sorts
+
+`Type` is drawn as a script **U**, the universe, and `Prop` as the same U with a subscript **p**. `Set` is deliberately **absent**, though it was drawn with a subscript zero for part of 2026-09-18. `Set` is also the vernacular *command* - `Set Implicit Arguments.` - which Coqtail parses with a region that starts on the word, and a rule here wins that column by definition order and breaks the command. A guard refusing a following capitalised word kept the command whole, but the word is common enough in both roles that it was not worth carrying.
+
+The subscript p is **U+209A**, which STIX does not carry, so it is the one drawn codepoint deliberately left out of both font lists: routing it to STIX would draw tofu in kitty, where a `symbol_map` hit is final. Left alone, both terminals fall back to Noto Sans for it, whose subscript sits within 0.02 em of STIX's own subscript zero.
+
+One related guard lives on `All` rather than here. `Unset Printing All.` is the proof-debugging command, and Coqtail protects only the `Set` half of it - its region chain for `Set Printing` ends in a start match that covers the word - so without a guard refusing a preceding `Printing`, the `Unset` form drew the n-ary AND.
 
 Eight of the thirteen number sets need **more than one glyph**, and `cchar` accepts exactly one. The way round it is to stop thinking of a rule as covering a word: the word is cut into as many adjacent pieces as there are glyphs, and each piece gets its own one-character rule. Vim draws one replacement per concealed region and keeps neighbouring regions from different groups separate, so the pieces arrive side by side. Where the cut falls is arbitrary, because the glyphs appear in the order the *pieces* do rather than in any order the word implies.
 

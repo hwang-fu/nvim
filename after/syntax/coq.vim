@@ -191,6 +191,12 @@ let s:setpost = '\%(''*\k\@!\)\@='
 " only a capitalised, whole-word `All` or `Any` matches, and a qualified
 " `Core.All` or `Data.All` is already refused by the leading-dot guard.
 "
+" `All` carries one guard of its own: it refuses a preceding `Printing`, for
+" `Unset Printing All.` - the debugging command, not the quantifier. Coqtail
+" protects the `Set` form itself, inside a chain of regions whose last start
+" match covers the word; it has no region for `Unset`, so without this guard
+" that half drew the symbol.
+"
 " `contains_member` is named for this file's sake rather than Rocq's. The bare
 " `contains` was tried first and is an ordinary English word; the rules apply
 " inside comments, so a sentence saying one thing contains another came out
@@ -229,7 +235,7 @@ let s:ops = [
       \ [s:pre . 'contains_member' . s:post, 0x220B],
       \ [s:pre . 'does_not_belong_to' . s:post, 0x2209],
       \ [s:pre . 'does_not_contain_member' . s:post, 0x220C],
-      \ [s:pre . 'All' . s:post, 0x22C0],
+      \ ['\%(\<Printing\s\+\)\@<!' . s:pre . 'All' . s:post, 0x22C0],
       \ [s:pre . 'Any' . s:post, 0x22C1],
       \ [s:pre . 'True' . s:post, 0x22A4],
       \ [s:pre . 'Verum' . s:post, 0x22A4],
@@ -275,7 +281,7 @@ endfor
 " its backtracking engine and is then attempted at every column of every line,
 " which doubled the buffer's whole syntax cost.
 "
-" Bool, Pair, Empty and Unit are the supplementary-plane codepoints.
+" Bool, Type, Prop, Empty and Unit are the supplementary-plane codepoints.
 "
 " For the first two it is Unicode's history showing through. A scattering of
 " mathematical letters went into Letterlike Symbols long before the full
@@ -284,7 +290,8 @@ endfor
 " depending only on which side of that split it fell. Double-struck skips
 " C H N P Q R Z - which is why every number set above sits under U+FFFF and B
 " does not - and script skips B E F H I L M R, which is why List is U+2112 down
-" in Letterlike while Pair is U+1D4AB up in the block.
+" in Letterlike while the script U of Type and Prop is U+1D4B0 up in the
+" block.
 "
 " Empty and Unit have no such history: the double-struck DIGITS at U+1D7D8 are
 " a complete run of ten with no earlier spellings and therefore no holes, so
@@ -292,8 +299,22 @@ endfor
 " these and not the ASCII 0 and 1 - those would read as numerals rather than
 " as the types, next to the ASCII 0 the monoid rows already draw.
 "
-" nr2char() returns a four-byte single character for all four, and cchar
+" nr2char() returns a four-byte single character for all of them, and cchar
 " accepts it.
+"
+" Type and Prop share one letter, the script U, and Prop adds a subscript p.
+" Set is deliberately absent. It was drawn with a subscript zero for part of
+" 2026-09-18 and removed: Set is also a vernacular COMMAND - `Set Implicit
+" Arguments.` - which Coqtail parses with a region starting on the word, and a
+" rule here wins that column by definition order and breaks the command. A
+" guard refusing a following capitalised word kept the command whole, but the
+" word is common enough in both roles that it was not worth carrying.
+"
+" Prop's subscript p is U+209A, which the symbol font does not carry. It is
+" deliberately left out of both font lists: routing it there would draw tofu
+" in kitty, where a symbol_map hit is final. Unrouted, both terminals fall back
+" to Noto Sans for it, whose subscript sits within 0.02em of the symbol font's
+" subscript zero, so it does not look borrowed next to the number sets.
 "
 " The algebraic structures stretch the same machinery further: a whole
 " identifier is drawn as its carrier, operation and unit inside angle
@@ -325,9 +346,10 @@ endfor
 let s:sets = [
       \ [['Bool'],                         [0x1D539]],
       \ [['List'],                         [0x2112]],
-      \ [['Pair'],                         [0x1D4AB]],
       \ [['Empty'],                        [0x1D7D8]],
       \ [['Unit'],                         [0x1D7D9]],
+      \ [['Type'],                         [0x1D4B0]],
+      \ [['Pro', 'p'],                     [0x1D4B0, 0x209A]],
       \ [['pi', '_1'],                     [0x03C0, 0x2081]],
       \ [['pi', '_2'],                     [0x03C0, 0x2082]],
       \ [['iota', '_1'],                   [0x03B9, 0x2081]],
