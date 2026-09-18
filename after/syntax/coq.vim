@@ -434,3 +434,23 @@ syntax region coqRecField contained contains=coqField keepend
 syntax region coqRecField contained contains=coqField keepend
       \ matchgroup=coqVernacPunctuation start=";" matchgroup=NONE end="::\|:"
 highlight! link coqRecField coqVernacPunctuation
+
+" The second correction, and the same shape of problem in a different place.
+"
+" Coqtail matches its operators with one long alternation of single and double
+" characters (syntax/coq.vim:75). `-/>` is in none of its branches, so the
+" three characters are drawn as three runs: `-` and `>` each match the `-` and
+" `>` branches as coqKwd, and the slash between them is in no branch at all
+" and falls through to whatever region encloses it. One operator, two colours,
+" split down the middle.
+"
+" One match over the whole spelling replaces all three. It is a match against
+" Coqtail's match, which definition order settles, and an after/syntax file is
+" sourced last - the same reason every conceal rule above wins its column.
+"
+" `Type` because this is a type-level operator: `a -/> b` is the proposition
+" that a does not imply b, so it reads as a constructor of propositions rather
+" than as punctuation. The link is a `default` one, so naming the group again
+" elsewhere overrides it without touching this file.
+syntax match rocqNotImplies "-/>" containedin=ALL
+highlight default link rocqNotImplies Type

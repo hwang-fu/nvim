@@ -324,9 +324,9 @@ That would normally mean every symbol turning up in whatever grey `Conceal` happ
 
 The catch is inherent rather than a shortcut: `Conceal` is one group per window, so all seven necessarily share a colour. Giving them different ones is not expressible through syntax concealment at all.
 
-### One correction to Coqtail
+### Two corrections to Coqtail
 
-`after/syntax/coq.vim` ends with the file's only change to Coqtail's own parsing rather than an addition on top of it.
+`after/syntax/coq.vim` ends with the file's only changes to Coqtail's own parsing rather than additions on top of it. Both repair the same shape of defect: **one token drawn in more than one colour**, because Coqtail predates the spelling.
 
 Rocq lets a class field be written `field :: T`, which declares it an **instance** as well as a projection. Coqtail predates that form: its `coqRecField` region ends on a single colon, so in `reflexive :: Reflexive.R` the first colon closes the region as `coqVernacPunctuation` and the second falls through to the term inside as `coqTermPunctuation`. One token, drawn in two different colours - yellow then blue.
 
@@ -338,6 +338,10 @@ The other two changes are what make `::` **concealable** there, and they are wor
 - `keepend`. Without the matchgroup the conceal rule *does* reach the colons, and then it swallows them: the region's own end pattern no longer matches, the field region runs on to the end of the line, and the field's type comes out coloured as another field name. `keepend` stops a contained match extending past the end.
 
 Dropping the matchgroup costs the single colon its `coqVernacPunctuation` colour, since it now takes the region's own. That is why `coqRecField` is linked to `coqVernacPunctuation` on the line after - the colour is kept by naming it rather than by the matchgroup.
+
+The second correction is `-/>`. Coqtail matches its operators with one long alternation of single and double characters (`syntax/coq.vim:75`), and `-/>` is in none of its branches - so the three characters came out as **three runs**: `-` and `>` each matched their own branch as `coqKwd`, and the slash between them matched nothing and fell through to whatever region enclosed it. One operator, split down the middle in two colours.
+
+A single match over the whole spelling replaces all three, and it wins the column for the ordinary reason: match against match is settled by definition order, and an `after/syntax` file is sourced last. It is linked to **`Type`**, because `a -/> b` is the proposition that `a` does not imply `b` and so reads as a constructor of propositions rather than as punctuation. The link is a `default` one, so naming the group elsewhere overrides it without editing this file.
 
 ## Why not an LSP
 
