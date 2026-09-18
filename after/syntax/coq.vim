@@ -74,7 +74,7 @@ let s:setpost = '\%(''*\k\@!\)\@='
 " matching Rocq's \/ - and '/\\' the same the other way round. '\~' is escaped
 " because a bare ~ in a Vim pattern means the previous substitute string, and
 " the carets because an unescaped ^ at the start of a pattern anchors to the
-" start of the line. '<>' and '-/>' need no escaping: it is \< and \> that are
+" start of the line. '<>' and '-/-' need no escaping: it is \< and \> that are
 " the word boundaries, and the slash is only special as a pattern delimiter,
 " which these patterns do not use. The bar in '|>' needs none either: 'magic'
 " is in force, where a bar counts only as part of \|.
@@ -110,11 +110,11 @@ let s:setpost = '\%(''*\k\@!\)\@='
 " `<==`. None of those four is in the table, and uniform ASCII beats one
 " symbol with a leftover character stuck to it.
 "
-" '-/>' is the one arrow in the table, and it is here while '->' is not: the
-" plain arrow was tried and taken back out, but a negated arrow spelled in
-" ASCII is hard to read and there is nothing for it to be confused with.
-" '-/-' shares its first two characters and needs no guard against it, because
-" the two differ in the third and neither can match where the other does.
+" No arrow is drawn. '->', '<->', '=>' and '|->' were tried on 2026-09-16 and
+" removed, and '-/>' followed them on 2026-09-18 after a day in the table.
+" '-/-' is the near miss worth naming: it shares those first two characters
+" but is a slash bar rather than an arrow, and it needed no guard against the
+" arrow while that existed, because the two differed in the third character.
 "
 " The caret rule refuses a caret on either side, so a run of three or more
 " stays entirely ASCII. Without that `^^^` came out as TWO circled pluses -
@@ -212,7 +212,6 @@ let s:ops = [
       \ ['\%(\~\|=\|<\)\@<!==\%(=\|>\)\@!', 0x2261],
       \ ['\%(\^\)\@<!\^\^\%(\^\)\@!', 0x2295],
       \ ['<>', 0x2260],
-      \ ['-/>', 0x219B],
       \ ['-/-', 0x233F],
       \ ['||-', 0x22A9],
       \ ['\%(|\)\@<!|-\%(>\)\@!', 0x22A2],
