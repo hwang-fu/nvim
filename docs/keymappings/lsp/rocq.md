@@ -105,7 +105,7 @@ These answer in the Info panel, using the term under the cursor (or the visual s
 
 ## Symbols
 
-Fifty pieces of ASCII are drawn as the symbols they stand for, plus the twenty-four Greek letter names in both cases ([below](#greek-letters)), so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
+Fifty-two pieces of ASCII are drawn as the symbols they stand for, plus the twenty-four Greek letter names in both cases ([below](#greek-letters)), so a statement reads closer to how it would be written on paper. It is on by default, and it applies everywhere in the file - inside theorem statements, inside definitions, and inside comments alike.
 
 | Written | Drawn | Codepoint |
 |---------|-------|-----------|
@@ -116,6 +116,8 @@ Fifty pieces of ASCII are drawn as the symbols they stand for, plus the twenty-f
 | `Unit` | double-struck one | U+1D7D9 |
 | `pi_1` | pi with a subscript one | U+03C0 U+2081 |
 | `pi_2` | pi with a subscript two | U+03C0 U+2082 |
+| `iota_1` | iota with a subscript one | U+03B9 U+2081 |
+| `iota_2` | iota with a subscript two | U+03B9 U+2082 |
 | `forall` | the universal quantifier | U+2200 |
 | `exists` | the existential quantifier | U+2203 |
 | `\/` | logical OR | U+2228 |
@@ -291,7 +293,7 @@ nu xi omicron pi rho sigma tau upsilon phi chi psi omega
 
 They carry the same qualified-name guard as `True` and `False`, for the same reason - `M.alpha` and `Setoid.gamma` stay as written - and the same **primed-name** rule described below.
 
-The two projections `pi_1` and `pi_2` are drawn as pi with a subscript, and they are listed in the main table rather than here because a second glyph makes them chunked rules rather than generated ones. The plain `pi` row cannot fire inside them: the underscore that follows it is an identifier character and the trailing guard refuses it, which is the same way `Bool` steps aside for `Bool_and_monoid`. That guard is also what leaves `pi_3`, `pi_10` and `pi_1_snd` entirely alone - only the two exact names are drawn.
+The product projections `pi_1`, `pi_2` and the sum injections `iota_1`, `iota_2` are drawn as their Greek letter with a subscript, and they are listed in the main table rather than here because a second glyph makes them chunked rules rather than generated ones. The plain `pi` and `iota` rows cannot fire inside them: the underscore that follows is an identifier character and the trailing guard refuses it, which is the same way `Bool` steps aside for `Bool_and_monoid`. That guard is also what leaves `pi_3`, `pi_10`, `pi_1_snd` and `iota_1x` entirely alone - only the four exact names are drawn.
 
 The forty-eight rules are **generated** from the name list in `after/syntax/coq.vim` rather than written out, so a codepoint can only be got wrong in one place instead of forty-eight. Both Greek blocks run in the order above, which makes the codepoint the index - with one irregularity worth knowing before editing the list: U+03A2 is unassigned and U+03C2 is *final* sigma, the word-ending form, which is not what a mathematical sigma means. Both blocks therefore shift by one from sigma onward, and because they shift at the same index a single correction covers both.
 
