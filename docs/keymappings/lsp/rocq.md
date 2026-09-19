@@ -314,6 +314,8 @@ This is much the largest group here, and it is worth knowing it costs almost not
 | `:RocqUnconceal` | Show the file as written, in this window |
 | `:RocqConceal` | Back to symbols |
 
+**The Goal and Info panels draw the same symbols.** Coqtail gives them syntaxes of their own (`coq-goals`, `coq-infos`), so `after/syntax/coq-goals.vim` and `coq-infos.vim` source the same rule file, and `lua/jwa/rocq_panels.lua` sets the window options. Those options are applied when a panel buffer **enters its window**, not when its filetype is set, and the reason is how Coqtail builds a panel: it edits the panel buffer inside the *main* window, sets the filetype there, and only then shows it in a split. Setting window options at filetype time lands them on the main window and leaves the panel at `conceallevel` 0 - which is what the panels showed before this. Both commands above act on the current window only, so toggling in the source window leaves the panels as they are.
+
 You rarely need either, because the line you are working on un-conceals itself. `concealcursor` is set to `n`, which means the cursor line joins the concealing **only in normal mode**: start typing or select a region and that line snaps back to `forall` while everything around it stays symbolic. That matters more than it sounds - a concealed word occupies one cell instead of six, so while it is drawn as a symbol the cursor's real column stops matching where it appears.
 
 The symbol tables are in `after/syntax/coq.vim`. There are **two** of them, and which one a new substitution belongs in is not a style choice - it decides whether the rule works at all:

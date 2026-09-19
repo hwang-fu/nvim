@@ -6,6 +6,10 @@
 " in after/ftplugin/coq.lua; docs/keymappings/lsp/rocq.md has the full table
 " and the reasoning behind what is in it and what is deliberately not.
 "
+" Coqtail's Goal and Info panels source this same file from
+" after/syntax/coq-goals.vim and coq-infos.vim, so every rule here applies to
+" them too, and b:current_syntax tells the three apart where that matters.
+"
 " Two engine rules shape everything below, and both cost a version of this
 " file before they were understood:
 "
@@ -450,12 +454,19 @@ unlet! s:sets s:chunks s:codes s:s s:k s:after s:pat s:opts
 " own colour instead of coqVernacPunctuation. That is why coqRecField is
 " linked to it below - the colour is preserved by naming it rather than by
 " the matchgroup.
-syntax clear coqRecField
-syntax region coqRecField contained contains=coqField keepend
-      \ matchgroup=coqVernacPunctuation start="{" matchgroup=NONE end="::\|:"
-syntax region coqRecField contained contains=coqField keepend
-      \ matchgroup=coqVernacPunctuation start=";" matchgroup=NONE end="::\|:"
-highlight! link coqRecField coqVernacPunctuation
+"
+" This file is also sourced for the Info and Goal panels. The Info panel's
+" syntax carries the same two regions word for word (coq-infos.vim:122-123),
+" so the correction applies there as well; the Goal panel's has no records at
+" all, and `syntax clear` on a group it has never defined fails with E28.
+if index(['coq', 'coq-infos'], get(b:, 'current_syntax', '')) >= 0
+  syntax clear coqRecField
+  syntax region coqRecField contained contains=coqField keepend
+        \ matchgroup=coqVernacPunctuation start="{" matchgroup=NONE end="::\|:"
+  syntax region coqRecField contained contains=coqField keepend
+        \ matchgroup=coqVernacPunctuation start=";" matchgroup=NONE end="::\|:"
+  highlight! link coqRecField coqVernacPunctuation
+endif
 
 " The second correction, and the same shape of problem in a different place.
 "
